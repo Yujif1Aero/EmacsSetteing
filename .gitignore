@@ -9,3 +9,9 @@ custom.el
 *.dat
 kkcrc
 *.elbk
+.recentf
+*_
+.README.md*
+..*
+.custome*
+.init*
