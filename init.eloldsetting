@@ -1,0 +1,242 @@
+;;; ------ Startup definitions for YaTeX Original Yuji SHIMOJIMA ------ ;;;
+;;   (setq auto-mode-alist
+;;     (cons (cons "\.tex$" 'yatex-mode) auto-mode-alist))
+;;   (autoload 'yatex-mode "yatex" "Yet Another LaTeX mode" t)
+;;   (add-to-list 'load-path "/Applications/Emacs.app/Contents/Resources/share//Applications/Emacs.app/Contents/MacOS/Emacs/site-lisp/yatex")
+;;   (setq YaTeX-help-file "/Applications/Emacs.app/Contents/Resources/share//Applications/Emacs.app/Contents/MacOS/Emacs/site-lisp/yatex/help/YATEXHLP.eng")
+;;   (setq tex-command "platex")
+;;   (setq dvi2-command "xdvi")
+;;   (setq tex-pdfview-command "acroread")
+;;   (setq bibtex-command "jbibtex")
+;; ;; ;Bibtex fix
+;;   (add-hook 'yatex-mode-hook 'turn-on-reftex)
+
+;;;;
+;;;emacs seting
+
+(add-to-list 'default-frame-alist '(cursor-type . box))
+(global-linum-mode t)
+(electric-pair-mode 1)
+(setq inhibit-startup-message t)
+(setq make-backup-files nil)
+;; ;;;(global-hl-line-mode t)
+;; (require 'hl-line)
+;; ;;; hl-lineを無効にするメジャーモードを指定する
+;; (defvar global-hl-line-timer-exclude-modes '(todotxt-mode))
+;; (defun global-hl-line-timer-function ()
+;;   (unless (memq major-mode global-hl-line-timer-exclude-modes)
+;;     (global-hl-line-unhighlight-all)
+;;     (let ((global-hl-line-mode t))
+;;       (global-hl-line-highlight))))
+;; (setq global-hl-line-timer
+;;       (run-with-idle-timer 0.03 t 'global-hl-line-timer-function))
+;; ;; (cancel-timer global-hl-line-timer)
+
+
+;; キーワードのカラー表示を有効化
+(global-font-lock-mode t)
+
+
+
+;; 対応するカッコをハイライト
+(show-paren-mode t)
+
+
+;; 行間
+(setq-default line-spacing 0)
+
+
+; in the current buffer,
+(hl-line-mode) ; enable or disable highlight cursor line 
+(hl-line-mode t) ; enable highlight cursor line 
+(hl-line-mode nil) ; disable highlight cursor line 
+
+; globally,
+;; (global-hl-line-mode) ; enables or disables highlight cursor line
+;; (global-hl-line-mode t) ; enable highlight cursor line 
+;; (global-hl-line-mode nil) ; disable highlight cursor line 
+
+;change highlight color
+;; (custom-set-faces
+;;  '(highlight ((((class color)) (:background "light slate gray"))))
+;;  )
+
+(set-face-background 'region "SkyBlue")
+;;(set-face-background 'region "#E0DFDB")
+
+
+
+;;(show-paren-mode 1)
+(show-paren-mode t)
+(setq its-hira-period "．")
+(setq its-hira-comma "，")
+(defun replace-kv-region (l)
+  (save-excursion
+    (save-restriction
+      (narrow-to-region b e)
+      (format-replace-strings l)
+      ))
+  )
+;
+(defun query-replace-strings (a)
+  (dolist (i a)
+    (goto-char b)
+    (query-replace (car i) (cdr i))
+    )
+)
+(defun query-replace-kv-region (l)
+  (save-excursion
+    (save-restriction
+      (narrow-to-region b e)
+      (query-replace-strings l)
+      ))
+  )
+;
+(defconst kutoten-zenpunct-kv '(("。" . "．") ("、" . "，")))
+(defconst zenpunct-kutoten-kv '(("．" . "。") ("，" . "、")))
+(defconst zenpunct-hanpunct-kv '(("．" . ". ") ("，" . ", ") ("。" . "｡ ") ("、" . "､ ")))
+(defconst hanpunct-zenpunct-kv '((". " . "．") (", " . "，") ("｡ " . "。") ("､ " . "、")))
+;
+(defun replace-kutoten-zenpunct-region (b e)
+  (interactive "r")
+  (replace-kv-region kutoten-zenpunct-kv))
+(defun replace-zenpunct-kutoten-region (b e)
+  (interactive "r")
+  (replace-kv-region zenpunct-kutoten-kv))
+(defun replace-zenpunct-hanpunct-region (b e)
+  (interactive "r")
+  (replace-kv-region zenpunct-hanpunct-kv))
+(defun replace-hanpunct-zenpunct-region (b e)
+  (interactive "r")
+  (replace-kv-region hanpunct-zenpunct-kv))
+;
+(defun query-replace-kutoten-zenpunct-region (b e)
+  (interactive "r")
+  (query-replace-kv-region kutoten-zenpunct-kv))
+(defun query-replace-zenpunct-kutoten-region (b e)
+  (interactive "r")
+  (query-replace-kv-region zenpunct-kutoten-kv))
+(defun query-replace-zenpunct-hanpunct-region (b e)
+  (interactive "r")
+  (query-replace-kv-region zenpunct-hanpunct-kv))
+(defun query-replace-hanpunct-zenpunct-region (b e)
+  (interactive "r")
+  (query-replace-kv-region hanpunct-zenpunct-kv))
+;
+(global-set-key "\C-x\C-m/" 'replace-kutoten-zenpunct-region) 
+(global-set-key "\C-x\C-m?" 'replace-zenpunct-kutoten-region) 
+(global-set-key "\C-x\C-m." 'replace-zenpunct-hanpunct-region) 
+(global-set-key "\C-x\C-m," 'replace-hanpunct-zenpunct-region) 
+;
+(global-set-key "\C-x\C-m\M-/" 'query-replace-kutoten-zenpunct-region) 
+(global-set-key "\C-x\C-m\M-?" 'query-replace-zenpunct-kutoten-region) 
+(global-set-key "\C-x\C-m\M-." 'query-replace-zenpunct-hanpunct-region) 
+(global-set-key "\C-x\C-m\M-," 'query-replace-hanpunct-zenpunct-region)
+
+;(set-face-background 'show-paren-match-face "red") 
+;(set-face-foreground 'show-paren-match-face "black")
+(show-paren-mode 1)
+(set-language-environment "Japanese")
+;(global-linum-mode t)
+;(set-face-background 'default "black")
+;(set-face-foreground 'default "green")
+
+; windmove
+(global-set-key (kbd "C-c <left>")  'windmove-left)
+(global-set-key (kbd "C-c <down>")  'windmove-down)
+(global-set-key (kbd "C-c <up>")    'windmove-up)
+(global-set-key (kbd "C-c <right>") 'windmove-right)
+
+;;---------emacs でコピーしたものを他のアプリでも使用可能にする
+;;; Copy and Paste parameters
+;;; http://www.gnu.org/software/emacs/manual/html_node/emacs/Clipboard.html
+;(setq interprogram-cut-function nil)
+;(setq interprogram-paste-function nil)
+
+;; old linux
+;; (setq x-select-enable-clipboard nil)
+;; (setq save-interprogram-paste-before-kill nil)
+;; (setq yank-pop-change-selection nil)
+;; (setq x-select-enable-clipboard-manager nil)
+;; (setq x-select-enable-primary t)
+;; (setq mouse-drag-copy-region t
+;; ;; Key binding
+;; (global-set-key [f5] 'clipboard-kill-region)
+;; (global-set-key [f6] 'clipboard-kill-ring-save)
+;; (global-set-key [f7] 'clipboard-yank)
+
+;;for linux
+;;(setq select-enable-primary nil)
+;;(setq select-enable-clipboard t)
+
+;; for windows
+;; (cond (window-system
+;;        (setq x-select-enable-clipboard t)
+;;        ))
+
+
+;; for linux(wsl) new
+;; sync with x clipboard
+(unless window-system
+  (when (getenv "DISPLAY")
+    ;; Callback for when user cuts
+    (defun xsel-cut-function (text &optional push)
+      ;; Insert text to temp-buffer, and "send" content to xsel stdin
+      (with-temp-buffer
+        (insert text)
+        ;; I prefer using the "clipboard" selection (the one the
+        ;; typically is used by c-c/c-v) before the primary selection
+        ;; (that uses mouse-select/middle-button-click)
+        (call-process-region (point-min) (point-max) "xsel" nil 0 nil "--clipboard" "--input")))
+    ;; Call back for when user pastes
+    (defun xsel-paste-function()
+      ;; Find out what is current selection by xsel. If it is different
+      ;; from the top of the kill-ring (car kill-ring), then return
+      ;; it. Else, nil is returned, so whatever is in the top of the
+      ;; kill-ring will be used.
+      (let ((xsel-output (shell-command-to-string "xsel --clipboard --output")))
+        (unless (string= (car kill-ring) xsel-output)
+          xsel-output )))
+    ;; Attach callbacks to hooks
+    (setq interprogram-cut-function 'xsel-cut-function)
+    (setq interprogram-paste-function 'xsel-paste-function)
+    ;; Idea from
+    ;; http://shreevatsa.wordpress.com/2006/10/22/emacs-copypaste-and-x/
+    ;; http://www.mail-archive.com/help-gnu-emacs@gnu.org/msg03577.html
+    ))
+
+;;日本語の設定
+;https://utsuboiwa.blogspot.com/2014/07/sunnyside-emacs.html
+(set-language-environment "Japanese")
+(prefer-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-buffer-file-coding-system 'utf-8)
+(setq default-buffer-file-coding-system 'utf-8)
+(set-buffer-file-coding-system 'utf-8)
+(set-clipboard-coding-system 'utf-8)
+
+
+(setq auto-mode-alist (cons '("\\.cu$" . c++-mode) auto-mode-alist))
+(setq auto-mode-alist (cons '("\\.cuh$" . c++-mode) auto-mode-alist))
+
+
+(require 'flymake)
+(defun flymake-get-make-cmdline (source base-dir)
+  (list "make"
+        (list "-s" "-C"
+              base-dir
+              (concat "CHK_SOURCES=" source)
+              "SYNTAX_CHECK_MODE=1")))
+
+;; (when (require 'package nil t)
+;;   (add-to-list 'package-archives
+;;     '("melpa-stable" . "https://stable.melpa.org/packages/"))
+;;   (package-initialize))
+
+
+;; xterm のマウスイベントを取得する
+(xterm-mouse-mode t)
+;; マウスホイールを取得する
+(mouse-wheel-mode t)
