@@ -1,0 +1,304 @@
+;;まずやっておく設定
+;; 参考:https://qiita.com/blue0513/items/ff8b5822701aeb2e9aae
+;; https://qiita.com/namn1125/items/5cd6a9cbbf17fb85c740#packageel-%E3%82%92%E7%9B%B4%E6%8E%A5%E5%88%A9%E7%94%A8%E3%81%97%E3%81%AA%E3%81%84%E7%90%86%E7%94%B1%E3%81%A8gitgithub%E3%81%AB%E3%82%88%E3%82%8B-initel-%E3%81%AE%E7%AE%A1%E7%90%86
+;; package management					;
+(prog1 "prepare leaf"
+  (prog1 "package"
+    (custom-set-variables
+     '(package-archives '(("org"   . "https://orgmode.org/elpa/")
+                          ("melpa" . "https://melpa.org/packages/")
+                          ("gnu"   . "https://elpa.gnu.org/packages/"))))
+    (package-initialize))
+
+  (prog1 "leaf"
+    (unless (package-installed-p 'leaf)
+      (unless (assoc 'leaf package-archive-contents)
+        (package-refresh-contents))
+      (condition-case err
+          (package-install 'leaf)
+        (error
+         (package-refresh-contents)       ; renew local melpa cache if fail
+         (package-install 'leaf))))
+
+    (leaf leaf-keywords
+      :ensure t
+      :config (leaf-keywords-init)))
+
+  (prog1 "optional packages for leaf-keywords"
+    ;; optional packages if you want to use :hydra, :el-get,,,
+    (leaf hydra :ensure t)
+    (leaf el-get :ensure t
+      :custom ((el-get-git-shallow-clone  . t)))))
+
+;; バックスペースの設定
+(global-set-key (kbd "C-h") 'delete-backward-char)
+
+;; auto-complete（自動補完）
+(require 'auto-complete-config)
+(global-auto-complete-mode 0.5)
+
+;;見た目の設定
+;; font
+(add-to-list 'default-frame-alist '(font . "ricty-12"))
+
+;; color theme
+(load-theme 'monokai t)
+
+;; alpha
+(if window-system 
+    (progn
+      (set-frame-parameter nil 'alpha 95)))
+
+;; 非アクティブウィンドウの背景色を設定
+(require 'hiwin)
+(hiwin-activate)
+(set-face-background 'hiwin-face "gray30")
+
+;; line numberの表示
+(require 'linum)
+(global-linum-mode 1)
+
+;; tabサイズ
+(setq default-tab-width 4)
+
+;; メニューバーを非表示
+(menu-bar-mode 0)
+
+;; ツールバーを非表示
+(tool-bar-mode 0)
+
+;; default scroll bar消去
+(scroll-bar-mode -1)
+
+;; 現在ポイントがある関数名をモードラインに表示
+(which-function-mode 1)
+
+;; 対応する括弧をハイライト
+(show-paren-mode 1)
+
+;; リージョンのハイライト
+(transient-mark-mode 1)
+
+;; タイトルにフルパス表示
+(setq frame-title-format "%f")
+
+;;current directory 表示
+(let ((ls (member 'mode-line-buffer-identification
+                  mode-line-format)))
+  (setcdr ls
+    (cons '(:eval (concat " ("
+            (abbreviate-file-name default-directory)
+            ")"))
+            (cdr ls))))
+
+;;起動時の設定
+;; スタートアップメッセージを表示させない
+(setq inhibit-startup-message 1)
+
+;; ターミナルで起動したときにメニューを表示しない
+(if (eq window-system 'x)
+    (menu-bar-mode 1) (menu-bar-mode 0))
+(menu-bar-mode nil)
+
+;; scratchの初期メッセージ消去
+(setq initial-scratch-message "")
+
+;;TabやSidebarのカスタム
+;; elscreen（上部タブ）
+(require 'elscreen)
+(elscreen-start)
+(global-set-key (kbd "s-t") 'elscreen-create)
+(global-set-key "\C-l" 'elscreen-next)
+(global-set-key "\C-r" 'elscreen-previous)
+(global-set-key (kbd "s-d") 'elscreen-kill)
+(set-face-attribute 'elscreen-tab-background-face nil
+                    :background "grey10"
+                    :foreground "grey90")
+(set-face-attribute 'elscreen-tab-control-face nil
+                    :background "grey20"
+                    :foreground "grey90")
+(set-face-attribute 'elscreen-tab-current-screen-face nil
+                    :background "grey20"
+                    :foreground "grey90")
+(set-face-attribute 'elscreen-tab-other-screen-face nil
+                    :background "grey30"
+                    :foreground "grey60")
+;;; [X]を表示しない
+(setq elscreen-tab-display-kill-screen nil)
+;;; [<->]を表示しない
+(setq elscreen-tab-display-control nil)
+;;; タブに表示させる内容を決定
+(setq elscreen-buffer-to-nickname-alist
+      '(("^dired-mode$" .
+         (lambda ()
+           (format "Dired(%s)" dired-directory)))
+        ("^Info-mode$" .
+         (lambda ()
+           (format "Info(%s)" (file-name-nondirectory Info-current-file))))
+        ("^mew-draft-mode$" .
+         (lambda ()
+           (format "Mew(%s)" (buffer-name (current-buffer)))))
+        ("^mew-" . "Mew")
+        ("^irchat-" . "IRChat")
+        ("^liece-" . "Liece")
+        ("^lookup-" . "Lookup")))
+(setq elscreen-mode-to-nickname-alist
+      '(("[Ss]hell" . "shell")
+        ("compilation" . "compile")
+        ("-telnet" . "telnet")
+        ("dict" . "OnlineDict")
+        ("*WL:Message*" . "Wanderlust")))
+
+;; neotree（サイドバー）
+(require 'neotree)
+(global-set-key "\C-o" 'neotree-toggle)
+
+
+;;操作性の向上
+;; スクロールは1行ごとに
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 5)))
+
+;; スクロールの加速をやめる
+(setq mouse-wheel-progressive-speed nil)
+
+;; bufferの最後でカーソルを動かそうとしても音をならなくする
+(defun next-line (arg)
+  (interactive "p")
+  (condition-case nil
+      (line-move arg)
+    (end-of-buffer)))
+
+;; エラー音をならなくする
+(setq ring-bell-function 'ignore)
+
+
+;; ウィンドウ操作
+;; golden ratio
+(golden-ratio-mode 1)
+(add-to-list 'golden-ratio-exclude-buffer-names " *NeoTree*")
+
+;; active window move
+(global-set-key (kbd "<C-left>")  'windmove-left)
+(global-set-key (kbd "<C-down>")  'windmove-down)
+(global-set-key (kbd "<C-up>")    'windmove-up)
+(global-set-key (kbd "<C-right>") 'windmove-right)
+(define-key global-map (kbd "C-t") 'other-window) ; ウィンドウ切り替え
+;;検索性の向上
+;; 大文字・小文字を区別しない
+(setq case-fold-search t)
+
+;; ファイル名検索
+(define-key global-map [(super i)] 'find-name-dired)
+
+;; ファイル内検索（いらないメッセージは消去）
+(define-key global-map [(super f)] 'rgrep)
+;; rgrepのheader messageを消去
+(defun delete-grep-header ()
+  (save-excursion
+    (with-current-buffer grep-last-buffer
+      (goto-line 5)
+      (narrow-to-region (point) (point-max)))))
+(defadvice grep (after delete-grep-header activate) (delete-grep-header))
+(defadvice rgrep (after delete-grep-header activate) (delete-grep-header))
+
+;; rgrep時などに，新規にwindowを立ち上げる
+(setq special-display-buffer-names '("*Help*" "*compilation*" "*interpretation*" "*grep*" ))
+
+;; "grepバッファに切り替える"
+(defun my-switch-grep-buffer()
+  (interactive)
+    (if (get-buffer "*grep*")
+            (pop-to-buffer "*grep*")
+      (message "No grep buffer")))
+(global-set-key (kbd "s-e") 'my-switch-grep-buffer)
+
+
+;; 履歴参照
+(defmacro with-suppressed-message (&rest body)
+  "Suppress new messages temporarily in the echo area and the `*Messages*' buffer while BODY is evaluated."
+  (declare (indent 0))
+  (let ((message-log-max nil))
+    `(with-temp-message (or (current-message) "") ,@body)))
+(require 'recentf)
+(setq recentf-save-file "~/.emacs.d/.recentf")
+(setq recentf-max-saved-items 1000)            ;; recentf に保存するファイルの数
+(setq recentf-exclude '(".recentf"))           ;; .recentf自体は含まない
+(setq recentf-auto-cleanup 'never)             ;; 保存する内容を整理
+(run-with-idle-timer 30 t '(lambda ()          ;; 30秒ごとに .recentf を保存
+                             (with-suppressed-message (recentf-save-list))))
+(require 'recentf-ext)
+(define-key global-map [(super r)] 'recentf-open-files)
+
+;; コメントアウト
+;; 選択範囲
+(global-set-key (kbd "s-;") 'comment-region)
+
+;; コメントアウト
+;; 一行
+(defun one-line-comment ()
+  (interactive)
+  (save-excursion
+    (beginning-of-line)
+    (set-mark (point))
+    (end-of-line)
+    (comment-or-uncomment-region (region-beginning) (region-end))))
+(global-set-key (kbd "s-/") 'one-line-comment)
+
+;; 直前のバッファに戻る
+(global-set-key (kbd "s-[") 'switch-to-prev-buffer)
+
+;; 次のバッファに進む
+(global-set-key (kbd "s-]") 'switch-to-next-buffer)
+
+;; redo+
+(require 'redo+)
+(global-set-key (kbd "M-/") 'redo)
+(setq undo-no-redo t) ; 過去のundoがredoされないようにする
+(setq undo-limit 600000)
+(setq undo-strong-limit 900000)
+
+
+
+
+;; eshell + shell-pop
+(setq shell-pop-shell-type '("eshell" "*eshell*" (lambda () (eshell))))
+(global-set-key (kbd "C-c o") 'shell-pop)
+
+
+(add-to-list 'default-frame-alist '(cursor-type . box))
+(global-linum-mode t)
+(electric-pair-mode 1)
+(setq inhibit-startup-message t)
+;(setq make-backup-files nil)
+
+;; キーワードのカラー表示を有効化
+(global-font-lock-mode t)
+
+;; 対応するカッコをハイライト
+(show-paren-mode t)
+
+
+;; 行間
+(setq-default line-spacing 0)
+
+
+; in the current buffer,
+(hl-line-mode) ; enable or disable highlight cursor line 
+(hl-line-mode t) ; enable highlight cursor line 
+(hl-line-mode nil) ; disable highlight cursor line 
+
+; globally,
+;; (global-hl-line-mode) ; enables or disables highlight cursor line
+;; (global-hl-line-mode t) ; enable highlight cursor line 
+;; (global-hl-line-mode nil) ; disable highlight cursor line 
+
+;change highlight color
+;; (custom-set-faces
+;;  '(highlight ((((class color)) (:background "light slate gray"))))
+;;  )
+
+(set-face-background 'region "SkyBlue")
+;;(set-face-background 'region "#E0DFDB")
+
+(show-paren-mode 1)
+(set-language-environment "Japanese")

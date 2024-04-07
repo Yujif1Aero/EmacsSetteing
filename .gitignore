@@ -1,0 +1,11 @@
+/elpa
+/elisp
+/conf
+/auto-save-list
+/transient
+/eshell
+custom.el
+*#*#*
+*.dat
+kkcrc
+*.elbk
