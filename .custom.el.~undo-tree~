@@ -1,9 +1,0 @@
-(undo-tree-save-format-version . 1)
-"08ff9a7fe3ed49ec51d4e141238522778204ff88"
-[nil nil nil nil (26130 46939 8520 84000) 0 nil]
-([nil current ((629 . 998) (#("
-" 0 1 (fontified nil)) . -629) (522 . 630) (#(" " 0 1 (fontified nil)) . 522) (492 . 523) (444 . 449) (#("  " 0 2 (fontified nil)) . 444) (397 . 402) (#("  " 0 2 (fontified nil)) . 397) (#("
-" 0 1 (fontified nil)) . -486) (441 . 443) (397 . 399) (482 . 483) (438 . 439) (#("
-" 0 1 (fontified nil)) . 438) (438 . 439) (#(" " 0 1 (fontified nil)) . -438) (396 . 397) (#("
-" 0 1 (fontified nil)) . 396) (396 . 397) (#(" " 0 1 (fontified nil)) . -396) (353 . 482) (#(" " 0 1 (fontified nil)) . 353) (1 . 354) (t 26130 46828 406311 840000)) nil (26130 46939 8514 313000) 0 nil])
-nil
