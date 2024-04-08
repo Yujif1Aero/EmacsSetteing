@@ -15,5 +15,5 @@ kkcrc
 ..*
 .custome*
 .init*
-.*~
+*.*~
 .custom.el.~undo-tree~
