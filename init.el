@@ -516,29 +516,10 @@
 (global-set-key (kbd "C-c e") 'my-switch-grep-buffer)
 
 ;; eshelの設定
-;; (leaf eshell
+;; (leaf eshell-git-prompt
+;;   :ensure t
 ;;   :config
-;;   ;; eshellプロンプト関数の定義
-;;   (defun my/eshell-git-prompt ()
-;;     "Eshell prompt with Git branch and staging status."
-;;     (let* ((git-branch (shell-command-to-string "git rev-parse --abbrev-ref HEAD 2>/dev/null"))
-;; 	   (staged (shell-command-to-string "git diff --cached --quiet || echo '*'"))
-;; 	   (branch-name (if (not (string= git-branch ""))
-;; 			    ;; Gitブランチが存在する場合、プロンプトをフォーマット
-;; 			    (replace-regexp-in-string "\n" "" git-branch)
-;; 			  nil)))
-;;       (if branch-name
-;; 	  (format "[%s%s] $ " branch-name (if (string= staged "\n") "" "*"))
-;; 	;; Gitブランチが存在しない場合、通常のプロンプトを表示
-;; 	"$ ")))
-;;   ;; eshellプロンプト関数の設定
-;;   (setq eshell-prompt-function 'my/eshell-git-prompt)
-;;   ;; eshellプロンプトのハイライトを無効化
-;;   (setq eshell-highlight-prompt nil))
-(leaf eshell-git-prompt
-  :ensure t
-  :config
-  (eshell-git-prompt-use-theme 'robbyrussell))
+;;   (eshell-git-prompt-use-theme 'git-radar))
 
 
 
@@ -548,6 +529,7 @@
   :require t
   :custom
   ;; shell-popで使用するシェルのタイプを設定します。ここではeshellを使用します。
+
 
 
 
