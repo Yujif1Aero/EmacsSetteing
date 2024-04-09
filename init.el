@@ -515,13 +515,14 @@
 
 
 
-;; eshell
+
 ;; eshell or term
 (leaf shell-pop
   :ensure t
   :require t
   :custom
   ;; shell-popで使用するシェルのタイプを設定します。ここではeshellを使用します。
+
   ;; (shell-pop-shell-type . '("eshell" "*eshell*" (lambda () (eshell))))
   ;;   (shell-pop-shell-type . '("term" "*term*" (lambda () (term "/run/current-system/sw/bin/zsh"))))
      (shell-pop-shell-type . '("term" "*term*" (lambda () (term "/bin/bash"))))
