@@ -63,6 +63,7 @@
 (setq make-backup-files nil)
 (global-set-key "\C-x\C-b" 'buffer-menu)
 ;;次のwindowに移動
+(define-key global-map (kbd "C-c o")'other-window)
 ;(define-key global-map (kbd "C-i")'other-window)
 ;;コードを折りたたむ
 (leaf *truncate-lines
@@ -507,20 +508,22 @@
 
 
 ;; eshell
-
+;; eshell or term
 (leaf shell-pop
   :ensure t
   :require t
   :custom
   ;; shell-popで使用するシェルのタイプを設定します。ここではeshellを使用します。
-  (shell-pop-shell-type . '("eshell" "*eshell*" (lambda () (eshell))))
-  ;; shell-popのウィンドウサイズや表示位置など、その他のオプションもここで設定できます。
-   (shell-pop-window-size . 30)
+  ;; (shell-pop-shell-type . '("eshell" "*eshell*" (lambda () (eshell))))
+
+   (shell-pop-shell-type . '("term" "*term*" (lambda () (term "/run/current-system/sw/bin/zsh"))))
+
   ;; 例: (shell-pop-window-size . 30) ; ウィンドウのサイズを30%に設定
   ;;     (shell-pop-full-span . t) ; フル幅で表示
   :bind
-  ;; 特定のキーバインド（ここでは C-c o）をshell-popのトグル関数にバインドします。
+  ;; 特定のキーバインド（ここでは C-t ）をshell-popのトグル関数にバインドします。
   (("C-t" . shell-pop)))
+
 
 
 ;;auto-complete
