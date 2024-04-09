@@ -513,6 +513,42 @@
       (message "No grep buffer")))
 (global-set-key (kbd "C-c e") 'my-switch-grep-buffer)
 
+;; eshelの設定
+(leaf eshell
+  :config
+    ;; eshellプロンプト関数の定義
+  (defun my/eshell-git-prompt ()
+    "Eshell prompt with Git branch and staging status."
+    (let* ((git-branch (shell-command-to-string "git rev-parse --abbrev-ref HEAD 2>/dev/null"))
+           (staged (shell-command-to-string "git diff --cached --quiet || echo '*'"))
+           (branch-name (if (not (string= git-branch ""))
+                             ;; Gitブランチが存在する場合、プロンプトをフォーマット
+                            (replace-regexp-in-string "\n" "" git-branch)
+                          nil)))
+      (if branch-name
+          (format "[%s%s] $ " branch-name (if (string= staged "\n") "" "*"))
+        ;; Gitブランチが存在しない場合、通常のプロンプトを表示
+        "$ ")))
+   ;; eshellプロンプト関数の設定
+  (setq eshell-prompt-function 'my/eshell-git-prompt)
+    ;; eshellプロンプトのハイライトを無効化
+  (setq eshell-highlight-prompt nil))
+
+(leaf eshell
+  :config
+  ;; eshellプロンプト関数の定義
+  (defun my/eshell-git-prompt ()
+    "Eshell prompt with Git information."
+    (let ((git-branch (shell-command-to-string "git rev-parse --abbrev-ref HEAD 2>/dev/null")))
+      (if (not (string= git-branch ""))
+          ;; Gitブランチが存在する場合、プロンプトをフォーマット
+          (format "[%s] $ " (replace-regexp-in-string "\n" "" git-branch))
+        ;; Gitブランチが存在しない場合、通常のプロンプトを表示
+        "$ ")))
+  ;; eshellプロンプト関数の設定
+  (setq eshell-prompt-function 'my/eshell-git-prompt)
+  ;; eshellプロンプトのハイライトを無効化
+  (setq eshell-highlight-prompt nil))
 
 
 
@@ -523,9 +559,12 @@
   :custom
   ;; shell-popで使用するシェルのタイプを設定します。ここではeshellを使用します。
 
+
   ;; (shell-pop-shell-type . '("eshell" "*eshell*" (lambda () (eshell))))
   ;;   (shell-pop-shell-type . '("term" "*term*" (lambda () (term "/run/current-system/sw/bin/zsh"))))
      (shell-pop-shell-type . '("term" "*term*" (lambda () (term "/bin/bash"))))
+
+
 
   ;; 例: (shell-pop-window-size . 30) ; ウィンドウのサイズを30%に設定
   ;;     (shell-pop-full-span . t) ; フル幅で表示
