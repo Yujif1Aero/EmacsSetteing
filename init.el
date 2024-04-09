@@ -1,7 +1,7 @@
 ;;;;
 ;; package management
 ;;https://qiita.com/namn1125/items/5cd6a9cbbf17fb85c740#packageel-%E3%82%92%E7%9B%B4%E6%8E%A5%E5%88%A9%E7%94%A8%E3%81%97%E3%81%AA%E3%81%84%E7%90%86%E7%94%B1%E3%81%A8gitgithub%E3%81%AB%E3%82%88%E3%82%8B-initel-%E3%81%AE%E7%AE%A1%E7%90%86
- (setq debug-on-error t)
+(setq debug-on-error t)
 (when (< emacs-major-version 23)
   (defvar user-emacs-directory "~/.emacs.d/"))
 
@@ -9,12 +9,12 @@
   (let (path)
     (dolist (path paths paths)
       (let ((default-directory
-              (expand-file-name (concat user-emacs-directory path))))
-        (unless (file-exists-p default-directory)
-          (make-directory default-directory))
-        (add-to-list 'load-path default-directory)
-        (if (fboundp 'normal-top-level-add-subdirs-to-load-path)
-            (normal-top-level-add-subdirs-to-load-path))))))
+	     (expand-file-name (concat user-emacs-directory path))))
+	(unless (file-exists-p default-directory)
+	  (make-directory default-directory))
+	(add-to-list 'load-path default-directory)
+	(if (fboundp 'normal-top-level-add-subdirs-to-load-path)
+	    (normal-top-level-add-subdirs-to-load-path))))))
 
 (namn/add-to-load-path "elisp" "conf")
 
@@ -28,19 +28,19 @@
   (prog1 "package"
     (custom-set-variables
      '(package-archives '(("org"   . "http://orgmode.org/elpa/")
-                          ("melpa" . "http://melpa.org/packages/")
-                          ("gnu"   . "http://elpa.gnu.org/packages/"))))
+			  ("melpa" . "http://melpa.org/packages/")
+			  ("gnu"   . "http://elpa.gnu.org/packages/"))))
     (package-initialize))
 
   (prog1 "leaf"
     (unless (package-installed-p 'leaf)
       (unless (assoc 'leaf package-archive-contents)
-        (package-refresh-contents))
+	(package-refresh-contents))
       (condition-case err
-          (package-install 'leaf)
-        (error
-         (package-refresh-contents)       ; renew local melpa cache if fail
-         (package-install 'leaf))))
+	  (package-install 'leaf)
+	(error
+	 (package-refresh-contents)       ; renew local melpa cache if fail
+	 (package-install 'leaf))))
 
     (leaf leaf-keywords
       :ensure t
@@ -63,8 +63,10 @@
 (setq make-backup-files nil)
 (global-set-key "\C-x\C-b" 'buffer-menu)
 ;;次のwindowに移動
+
 (define-key global-map (kbd "C-c o")'other-window)
 ;(define-key global-map (kbd "C-i")'other-window)
+
 ;;コードを折りたたむ
 (leaf *truncate-lines
   :bind ("M-z" . toggle-truncate-lines))
@@ -78,10 +80,10 @@
 (setq-default line-spacing 0)
 
 
-; in the current buffer,
+					; in the current buffer,
 (hl-line-mode) ; enable or disable highlight cursor line
-(hl-line-mode t) ; enable highlight cursor line 
-(hl-line-mode nil) ; disable highlight cursor line 
+(hl-line-mode t) ; enable highlight cursor line
+(hl-line-mode nil) ; disable highlight cursor line
 
 
 ;;(set-face-background 'region "SkyBlue")
@@ -100,13 +102,13 @@
       (format-replace-strings l)
       ))
   )
-;
+					;
 (defun query-replace-strings (a)
   (dolist (i a)
     (goto-char b)
     (query-replace (car i) (cdr i))
     )
-)
+  )
 (defun query-replace-kv-region (l)
   (save-excursion
     (save-restriction
@@ -144,16 +146,16 @@
   :if (executable-find "mozc_emacs_helper")
   :config
   (setq default-input-method "japanese-mozc"
-        mozc-candidate-style 'overlay)
+	mozc-candidate-style 'overlay)
   :bind (("C-\\" . mozc-mode)))
 
 
 
 (defconst kutoten-zenpunct-kv '(("。" . "．") ("、" . "，")))
 (defconst zenpunct-kutoten-kv '(("．" . "。") ("，" . "、")))
-(defconst zenpunct-hanpunct-kv '(("．" . ". ") ("，" . ", ") ("。" . "｡ ") ("、" . "､ ")))  
+(defconst zenpunct-hanpunct-kv '(("．" . ". ") ("，" . ", ") ("。" . "｡ ") ("、" . "､ ")))
 (defconst hanpunct-zenpunct-kv '((". " . "．") (", " . "，") ("｡ " . "。") ("､ " . "、")))
-;
+					;
 (defun replace-kutoten-zenpunct-region (b e)
   (interactive "r")
   (replace-kv-region kutoten-zenpunct-kv))
@@ -166,7 +168,7 @@
 (defun replace-hanpunct-zenpunct-region (b e)
   (interactive "r")
   (replace-kv-region hanpunct-zenpunct-kv))
-;
+					;
 (defun query-replace-kutoten-zenpunct-region (b e)
   (interactive "r")
   (query-replace-kv-region kutoten-zenpunct-kv))
@@ -179,12 +181,12 @@
 (defun query-replace-hanpunct-zenpunct-region (b e)
   (interactive "r")
   (query-replace-kv-region hanpunct-zenpunct-kv))
-;
-(global-set-key "\C-x\C-m/" 'replace-kutoten-zenpunct-region) 
-(global-set-key "\C-x\C-m?" 'replace-zenpunct-kutoten-region) 
-(global-set-key "\C-x\C-m." 'replace-zenpunct-hanpunct-region) 
-(global-set-key "\C-x\C-m," 'replace-hanpunct-zenpunct-region) 
-;
+					;
+(global-set-key "\C-x\C-m/" 'replace-kutoten-zenpunct-region)
+(global-set-key "\C-x\C-m?" 'replace-zenpunct-kutoten-region)
+(global-set-key "\C-x\C-m." 'replace-zenpunct-hanpunct-region)
+(global-set-key "\C-x\C-m," 'replace-hanpunct-zenpunct-region)
+					;
 (global-set-key "\C-x\C-m\M-/" 'query-replace-kutoten-zenpunct-region)
 (global-set-key "\C-x\C-m\M-?" 'query-replace-zenpunct-kutoten-region)
 (global-set-key "\C-x\C-m\M-." 'query-replace-zenpunct-hanpunct-region)
@@ -195,8 +197,8 @@
 ;;---------emacs でコピーしたものを他のアプリでも使用可能にする
 ;;; Copy and Paste parameters
 ;;; http://www.gnu.org/software/emacs/manual/html_node/emacs/Clipboard.html
-;(setq interprogram-cut-function nil)
-;(setq interprogram-paste-function nil)
+					;(setq interprogram-cut-function nil)
+					;(setq interprogram-paste-function nil)
 
 ;; old linux
 ;; (setq x-select-enable-clipboard nil)
@@ -211,7 +213,7 @@
 ;; (global-set-key [f7] 'clipboard-yank)
 
 ;;for linux
-;(setq select-enable-primary nil)
+					;(setq select-enable-primary nil)
 (setq x-select-enable-clipboard t)
 (leaf xclip
   :ensure t
@@ -256,7 +258,7 @@
 ;;     ))
 
 
-;;editer colour 
+;;editer colour
 (setq auto-mode-alist (cons '("\\.cu$" . c++-mode) auto-mode-alist))
 (setq auto-mode-alist (cons '("\\.cuh$" . c++-mode) auto-mode-alist))
 (leaf nix-mode
@@ -267,10 +269,10 @@
 (require 'flymake)
 (defun flymake-get-make-cmdline (source base-dir)
   (list "make"
-        (list "-s" "-C"
-              base-dir
-              (concat "CHK_SOURCES=" source)
-              "SYNTAX_CHECK_MODE=1")))
+	(list "-s" "-C"
+	      base-dir
+	      (concat "CHK_SOURCES=" source)
+	      "SYNTAX_CHECK_MODE=1")))
 
 ;; (when (require 'package nil t)
 ;;   (add-to-list 'package-archives
@@ -286,12 +288,12 @@
 
 
 ;; cmdキーを superとして割り当てる
-;(setq mac-command-modifier 'super)
+					;(setq mac-command-modifier 'super)
 ;; バックスペースの設定
 (global-set-key (kbd "C-h") 'delete-backward-char)
 
 
-;redo
+					;redo
 (leaf undo-tree
   :ensure t
   :leaf-defer nil
@@ -301,28 +303,28 @@
 (setq undo-limit 600000)
 (setq undo-strong-limit 900000)
 
-;tab 可視化
+					;tab 可視化
 (leaf whitespace
   :ensure t
   :custom
   ((whitespace-style . '(face
-                         trailing
-                         tabs
-                         ;; spaces
-                         ;; empty
-                         space-mark
-                         tab-mark))
+			 trailing
+			 tabs
+			 ;; spaces
+			 ;; empty
+			 space-mark
+			 tab-mark))
    (whitespace-display-mappings . '((tab-mark ?\t [?\u00BB ?\t] [?\\ ?\t])))
    (global-whitespace-mode . t)))
 
 ;;tabを使えないようにする
-;(setq-default indent-tabs-mode nil)
+					;(setq-default indent-tabs-mode nil)
 ;;tabをスペース4つに
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
 (global-set-key (kbd "TAB") 'tab-to-tab-stop)
 
-;見た目:https://qiita.com/blue0513/items/ff8b5822701aeb2e9aae
+					;見た目:https://qiita.com/blue0513/items/ff8b5822701aeb2e9aae
 
 ;; font
 ;;(add-to-list 'default-frame-alist '(font . "ricty-12"))
@@ -375,12 +377,12 @@
 
 ;;current directory 表示
 (let ((ls (member 'mode-line-buffer-identification
-                  mode-line-format)))
+		  mode-line-format)))
   (setcdr ls
-    (cons '(:eval (concat " ("
-            (abbreviate-file-name default-directory)
-            ")"))
-          (cdr ls))))
+	  (cons '(:eval (concat " ("
+				(abbreviate-file-name default-directory)
+				")"))
+		(cdr ls))))
 
 ;;;TabやSidebarのカスタム
 ;; elscreen（上部タブ）
@@ -405,41 +407,41 @@
   ;; タブ表示のカスタマイズ
   ;; タブの[X]ボタンと[<->]ボタンを非表示にします。
   (setq elscreen-tab-display-kill-screen nil
-        elscreen-tab-display-control nil)
+	elscreen-tab-display-control nil)
   ;; タブの見た目（背景色、前景色）を設定します。
   (set-face-attribute 'elscreen-tab-background-face nil
-                      :background "grey10"
-                      :foreground "grey90")
+		      :background "grey10"
+		      :foreground "grey90")
   (set-face-attribute 'elscreen-tab-control-face nil
-                      :background "grey20"
-                      :foreground "grey90")
+		      :background "grey20"
+		      :foreground "grey90")
   (set-face-attribute 'elscreen-tab-current-screen-face nil
-                      :background "grey20"
-                      :foreground "grey90")
+		      :background "grey20"
+		      :foreground "grey90")
   (set-face-attribute 'elscreen-tab-other-screen-face nil
-                      :background "grey30"
-                      :foreground "grey60")
+		      :background "grey30"
+		      :foreground "grey60")
   ;; タブに表示する内容（バッファ名やモード名）をカスタマイズします。
-   (setq elscreen-buffer-to-nickname-alist
-        '(("^dired-mode$" .
-           (lambda ()
-             (format "Dired(%s)" dired-directory)))
-          ("^Info-mode$" .
-           (lambda ()
-             (format "Info(%s)" (file-name-nondirectory Info-current-file))))
-          ("^mew-draft-mode$" .
-           (lambda ()
-             (format "Mew(%s)" (buffer-name (current-buffer)))))
-          ("^mew-" . "Mew")
-          ("^irchat-" . "IRChat")
-          ("^liece-" . "Liece")
-          ("^lookup-" . "Lookup"))
-        elscreen-mode-to-nickname-alist
-        '(("[Ss]hell" . "shell")
-          ("compilation" . "compile")
-          ("-telnet" . "telnet")
-          ("dict" . "OnlineDict")
-          ("*WL:Message*" . "Wanderlust"))))
+  (setq elscreen-buffer-to-nickname-alist
+	'(("^dired-mode$" .
+	   (lambda ()
+	     (format "Dired(%s)" dired-directory)))
+	  ("^Info-mode$" .
+	   (lambda ()
+	     (format "Info(%s)" (file-name-nondirectory Info-current-file))))
+	  ("^mew-draft-mode$" .
+	   (lambda ()
+	     (format "Mew(%s)" (buffer-name (current-buffer)))))
+	  ("^mew-" . "Mew")
+	  ("^irchat-" . "IRChat")
+	  ("^liece-" . "Liece")
+	  ("^lookup-" . "Lookup"))
+	elscreen-mode-to-nickname-alist
+	'(("[Ss]hell" . "shell")
+	  ("compilation" . "compile")
+	  ("-telnet" . "telnet")
+	  ("dict" . "OnlineDict")
+	  ("*WL:Message*" . "Wanderlust"))))
 
 ;; neotree の設定
 (leaf neotree
@@ -498,57 +500,45 @@
 (defadvice rgrep (after delete-grep-header activate) (delete-grep-header))
 
 ;; rgrep時などに，新規にwindowを立ち上げる
-;(setq display-buffer-alist '("*Help*" "*compilation*" "*interpretation*" "*grep*" ))
+					;(setq display-buffer-alist '("*Help*" "*compilation*" "*interpretation*" "*grep*" ))
 (setq display-buffer-alist
       '(("\\*Help\\*" display-buffer-pop-up-window)
-        ("\\*compilation\\*" display-buffer-pop-up-window)
-        ("\\*interpretation\\*" display-buffer-pop-up-window)
-        ("\\*grep\\*" display-buffer-pop-up-window)))
+	("\\*compilation\\*" display-buffer-pop-up-window)
+	("\\*interpretation\\*" display-buffer-pop-up-window)
+	("\\*grep\\*" display-buffer-pop-up-window)))
 
 ;; "grepバッファに切り替える"
 (defun my-switch-grep-buffer()
   (interactive)
-    (if (get-buffer "*grep*")
-            (pop-to-buffer "*grep*")
-      (message "No grep buffer")))
+  (if (get-buffer "*grep*")
+      (pop-to-buffer "*grep*")
+    (message "No grep buffer")))
 (global-set-key (kbd "C-c e") 'my-switch-grep-buffer)
 
 ;; eshelの設定
-(leaf eshell
+;; (leaf eshell
+;;   :config
+;;   ;; eshellプロンプト関数の定義
+;;   (defun my/eshell-git-prompt ()
+;;     "Eshell prompt with Git branch and staging status."
+;;     (let* ((git-branch (shell-command-to-string "git rev-parse --abbrev-ref HEAD 2>/dev/null"))
+;; 	   (staged (shell-command-to-string "git diff --cached --quiet || echo '*'"))
+;; 	   (branch-name (if (not (string= git-branch ""))
+;; 			    ;; Gitブランチが存在する場合、プロンプトをフォーマット
+;; 			    (replace-regexp-in-string "\n" "" git-branch)
+;; 			  nil)))
+;;       (if branch-name
+;; 	  (format "[%s%s] $ " branch-name (if (string= staged "\n") "" "*"))
+;; 	;; Gitブランチが存在しない場合、通常のプロンプトを表示
+;; 	"$ ")))
+;;   ;; eshellプロンプト関数の設定
+;;   (setq eshell-prompt-function 'my/eshell-git-prompt)
+;;   ;; eshellプロンプトのハイライトを無効化
+;;   (setq eshell-highlight-prompt nil))
+(leaf eshell-git-prompt
+  :ensure t
   :config
-    ;; eshellプロンプト関数の定義
-  (defun my/eshell-git-prompt ()
-    "Eshell prompt with Git branch and staging status."
-    (let* ((git-branch (shell-command-to-string "git rev-parse --abbrev-ref HEAD 2>/dev/null"))
-           (staged (shell-command-to-string "git diff --cached --quiet || echo '*'"))
-           (branch-name (if (not (string= git-branch ""))
-                             ;; Gitブランチが存在する場合、プロンプトをフォーマット
-                            (replace-regexp-in-string "\n" "" git-branch)
-                          nil)))
-      (if branch-name
-          (format "[%s%s] $ " branch-name (if (string= staged "\n") "" "*"))
-        ;; Gitブランチが存在しない場合、通常のプロンプトを表示
-        "$ ")))
-   ;; eshellプロンプト関数の設定
-  (setq eshell-prompt-function 'my/eshell-git-prompt)
-    ;; eshellプロンプトのハイライトを無効化
-  (setq eshell-highlight-prompt nil))
-
-(leaf eshell
-  :config
-  ;; eshellプロンプト関数の定義
-  (defun my/eshell-git-prompt ()
-    "Eshell prompt with Git information."
-    (let ((git-branch (shell-command-to-string "git rev-parse --abbrev-ref HEAD 2>/dev/null")))
-      (if (not (string= git-branch ""))
-          ;; Gitブランチが存在する場合、プロンプトをフォーマット
-          (format "[%s] $ " (replace-regexp-in-string "\n" "" git-branch))
-        ;; Gitブランチが存在しない場合、通常のプロンプトを表示
-        "$ ")))
-  ;; eshellプロンプト関数の設定
-  (setq eshell-prompt-function 'my/eshell-git-prompt)
-  ;; eshellプロンプトのハイライトを無効化
-  (setq eshell-highlight-prompt nil))
+  (eshell-git-prompt-use-theme 'robbyrussell))
 
 
 
@@ -560,9 +550,13 @@
   ;; shell-popで使用するシェルのタイプを設定します。ここではeshellを使用します。
 
 
+
   ;; (shell-pop-shell-type . '("eshell" "*eshell*" (lambda () (eshell))))
   ;;   (shell-pop-shell-type . '("term" "*term*" (lambda () (term "/run/current-system/sw/bin/zsh"))))
      (shell-pop-shell-type . '("term" "*term*" (lambda () (term "/bin/bash"))))
+
+
+
 
 
 
@@ -581,25 +575,25 @@
   :config
   (ac-config-default)
   :custom ((ac-use-menu-map . t)
-           (ac-ignore-case . nil))
+	   (ac-ignore-case . nil))
   :bind (:ac-mode-map
-         ; ("M-TAB" . auto-complete))
-         ("M-t" . auto-complete)))
+					; ("M-TAB" . auto-complete))
+	 ("M-t" . auto-complete)))
 
 
 ;; 履歴参照
 (leaf recentf
   :config
   (setq recentf-save-file "~/.emacs.d/.recentf"
-        recentf-max-saved-items 1000
-        recentf-exclude '(".recentf")
-        recentf-auto-cleanup 'never)
+	recentf-max-saved-items 1000
+	recentf-exclude '(".recentf")
+	recentf-auto-cleanup 'never)
   (recentf-mode 1)
   (run-with-idle-timer 30 t
-                        (lambda ()
-                          (let ((message-log-max nil))
-                            (with-temp-message ""
-                              (recentf-save-list)))))
+		       (lambda ()
+			 (let ((message-log-max nil))
+			   (with-temp-message ""
+			     (recentf-save-list)))))
   :bind (("C-c h" . recentf-open-files)))
 
 
@@ -616,14 +610,14 @@
 ;;     (set-mark (point))
 ;;     (end-of-line)
 ;;     (comment-or-uncomment-region (region-beginning) (region-end))))
-;;(global-set-key (kbd "s-/") 'one-line-comment) 
+;;(global-set-key (kbd "s-/") 'one-line-comment)
 
 ;; 直前のバッファに戻る
-;(global-set-key (kbd "M-[") 'switch-to-prev-buffer)
+					;(global-set-key (kbd "M-[") 'switch-to-prev-buffer)
 (global-set-key (kbd "C-M-[") 'previous-buffer)
 
 ;; 次のバッファに進む
-;(global-set-key (kbd "M-]") 'switch-to-next-buffer)
+					;(global-set-key (kbd "M-]") 'switch-to-next-buffer)
 (global-set-key (kbd "C-M-]") 'next-buffer)
 
 ;; ;; ;;GIT
@@ -633,14 +627,17 @@
 (leaf magit
   :ensure t
   :bind ((magit-mode-map
-          ("C-c n" . magit-section-forward)
-          ("C-c p" . magit-section-backward))
-         ("C-c C-g" . magit-diff-working-tree)))
+	  ("C-c n" . magit-section-forward)
+	  ("C-c p" . magit-section-backward))
+	 ("C-c C-g" . magit-diff-working-tree)))
 
 
 (leaf autorevert
   :config
+
   (global-auto-revert-mode 1))
 
 ;;goto-line
 (global-set-key (kbd "C-x C-g") 'goto-line)
+
+
