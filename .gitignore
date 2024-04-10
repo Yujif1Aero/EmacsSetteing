@@ -1,9 +1,9 @@
-/elpa
-/elisp
-/conf
-/auto-save-list
-/transient
-/eshell
+elpa
+elisp
+conf
+auto-save-list
+transient
+eshell
 custom.el
 *#*#*
 *.dat
@@ -17,3 +17,4 @@ kkcrc
 .init*
 *.*~
 .custom.el.~undo-tree~
+eln-cache
