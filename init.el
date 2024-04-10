@@ -396,8 +396,8 @@
   :bind
   ;; キーバインドの設定: タブの作成、次/前のタブへの移動、現在のタブの削除を行います。
   (( "C-M-t" . elscreen-create)  ; 新しいタブを作成します。
-   ("C-l" . elscreen-next)    ; 次のタブに移動します。
-   ("C-r" . elscreen-previous)  ; 前のタブに移動します。
+   ("C-M-l" . elscreen-next)    ; 次のタブに移動します。
+   ("C-M-r" . elscreen-previous)  ; 前のタブに移動します。
    ( "C-M-c" . elscreen-kill))  ; 現在のタブを閉じます。
 
   :config
