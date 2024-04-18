@@ -1,0 +1,77 @@
+[33mcommit 68673f612052f72281ac66cc6835f53c599434b3[m[33m ([m[1;36mHEAD[m[33m, [m[1;31morigin/linux_nixos[m[33m, [m[1;32mlinux_nixos[m[33m)[m
+Author: Yuji Shimojima <yuji.shimojima.s@gmail.com>
+Date:   Wed Apr 10 22:04:56 2024 +0200
+
+    tab key changed
+
+[33mcommit f8da3f5cf7bf0fea5cf444c684bdf42a705bd45c[m
+Author: Yuji Shimojima <yuji.shimojima.s@gmail.com>
+Date:   Wed Apr 10 22:04:23 2024 +0200
+
+    modified .gitignore
+
+[33mcommit f2917a051aa1c4a64555ea7e5617db116016c256[m
+Author: Yuji Shimojima <yuji.shimojima.s@gmail.com>
+Date:   Tue Apr 9 12:53:24 2024 +0200
+
+    modified eshel to switch buffer  c-c o and add define-key other-window c-c o
+
+[33mcommit 345a4333cd9435321b358c545bcbf567d2bbe9b3[m
+Author: Yuji Shimojima <yuji.shimojima.s@gmail.com>
+Date:   Tue Apr 9 12:35:31 2024 +0200
+
+    eshell modi
+
+[33mcommit 2b26d0b691c1a74bbb2f980e71548fda512e41e1[m
+Author: Yuji Shimojima <yuji.shimojima.s@gmail.com>
+Date:   Tue Apr 9 11:30:14 2024 +0200
+
+    term doesnot use c-x o so use eshell with git prompt
+
+[33mcommit e22ef58ae50795507065487ff9ef86e77292dab8[m
+Author: Yuji Shimojima <yuji.shimojima.s@gmail.com>
+Date:   Tue Apr 9 11:14:19 2024 +0200
+
+    modified shell-pop from eshell to term
+
+[33mcommit 8ae1755260d640e1ace805ee956beb2b681d2c83[m
+Author: Yuji Shimojima <yuji.shimojima.s@gmail.com>
+Date:   Mon Apr 8 17:35:36 2024 +0200
+
+    linux version
+
+[33mcommit a671026b6cd8a2a35bc18dc0175fa134a5b3617f[m
+Author: Yuji_morgen_laptop1 <shimojima@morgenrot.net>
+Date:   Mon Apr 8 15:55:19 2024 +0200
+
+    eddited gitignore
+
+[33mcommit ffffd87c53053f386c013a0e55aa48ebc38bfd1c[m
+Author: Yuji_morgen_laptop1 <shimojima@morgenrot.net>
+Date:   Sun Apr 7 21:15:16 2024 +0200
+
+    emacs setting
+
+[33mcommit c8d1aaed42119091558b7808fd80ab204e42327a[m
+Author: Yuji_morgen_laptop1 <shimojima@morgenrot.net>
+Date:   Sun Apr 7 21:12:56 2024 +0200
+
+    emacs setting
+
+[33mcommit 6fb9ea8d387ec9866c50f0061939b249151c0be5[m
+Author: Yuji_morgen_laptop1 <shimojima@morgenrot.net>
+Date:   Sun Apr 7 21:11:12 2024 +0200
+
+    emacs setting
+
+[33mcommit c3bc11d9d5d447e5c9ddff0191228a66e7bb6c1c[m
+Author: Yuji_morgen_laptop1 <shimojima@morgenrot.net>
+Date:   Sun Apr 7 14:32:13 2024 +0200
+
+    README.md
+
+[33mcommit 1f1370ac75d0962a39a2589c03ce274b53ff0d3d[m
+Author: Yuji_morgen_laptop1 <shimojima@morgenrot.net>
+Date:   Sun Apr 7 14:20:45 2024 +0200
+
+    first commit

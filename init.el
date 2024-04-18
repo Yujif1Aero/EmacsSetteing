@@ -530,16 +530,9 @@
   :custom
   ;; shell-popで使用するシェルのタイプを設定します。ここではeshellを使用します。
 
-
-
-
   ;; (shell-pop-shell-type . '("eshell" "*eshell*" (lambda () (eshell))))
   ;;   (shell-pop-shell-type . '("term" "*term*" (lambda () (term "/run/current-system/sw/bin/zsh"))))
      (shell-pop-shell-type . '("term" "*term*" (lambda () (term "/bin/bash"))))
-
-
-
-
 
 
   ;; 例: (shell-pop-window-size . 30) ; ウィンドウのサイズを30%に設定
@@ -621,5 +614,3 @@
 
 ;;goto-line
 (global-set-key (kbd "C-x C-g") 'goto-line)
-
-
