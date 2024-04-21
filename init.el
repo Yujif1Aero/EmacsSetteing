@@ -142,55 +142,55 @@
 ;;    :bind
 ;;   (("C-\\" . toggle-input-method)))
 
-(leaf mozc
-  :if (executable-find "mozc_emacs_helper")
-  :config
-  (setq default-input-method "japanese-mozc"
-	mozc-candidate-style 'overlay)
-  :bind (("C-\\" . mozc-mode)))
+;; (leaf mozc
+;;   :if (executable-find "mozc_emacs_helper")
+;;   :config
+;;   (setq default-input-method "japanese-mozc"
+;; 	mozc-candidate-style 'overlay)
+;;   :bind (("C-\\" . mozc-mode)))
 
 
 
-(defconst kutoten-zenpunct-kv '(("。" . "．") ("、" . "，")))
-(defconst zenpunct-kutoten-kv '(("．" . "。") ("，" . "、")))
-(defconst zenpunct-hanpunct-kv '(("．" . ". ") ("，" . ", ") ("。" . "｡ ") ("、" . "､ ")))
-(defconst hanpunct-zenpunct-kv '((". " . "．") (", " . "，") ("｡ " . "。") ("､ " . "、")))
-					;
-(defun replace-kutoten-zenpunct-region (b e)
-  (interactive "r")
-  (replace-kv-region kutoten-zenpunct-kv))
-(defun replace-zenpunct-kutoten-region (b e)
-  (interactive "r")
-  (replace-kv-region zenpunct-kutoten-kv))
-(defun replace-zenpunct-hanpunct-region (b e)
-  (interactive "r")
-  (replace-kv-region zenpunct-hanpunct-kv))
-(defun replace-hanpunct-zenpunct-region (b e)
-  (interactive "r")
-  (replace-kv-region hanpunct-zenpunct-kv))
-					;
-(defun query-replace-kutoten-zenpunct-region (b e)
-  (interactive "r")
-  (query-replace-kv-region kutoten-zenpunct-kv))
-(defun query-replace-zenpunct-kutoten-region (b e)
-  (interactive "r")
-  (query-replace-kv-region zenpunct-kutoten-kv))
-(defun query-replace-zenpunct-hanpunct-region (b e)
-  (interactive "r")
-  (query-replace-kv-region zenpunct-hanpunct-kv))
-(defun query-replace-hanpunct-zenpunct-region (b e)
-  (interactive "r")
-  (query-replace-kv-region hanpunct-zenpunct-kv))
-					;
-(global-set-key "\C-x\C-m/" 'replace-kutoten-zenpunct-region)
-(global-set-key "\C-x\C-m?" 'replace-zenpunct-kutoten-region)
-(global-set-key "\C-x\C-m." 'replace-zenpunct-hanpunct-region)
-(global-set-key "\C-x\C-m," 'replace-hanpunct-zenpunct-region)
-					;
-(global-set-key "\C-x\C-m\M-/" 'query-replace-kutoten-zenpunct-region)
-(global-set-key "\C-x\C-m\M-?" 'query-replace-zenpunct-kutoten-region)
-(global-set-key "\C-x\C-m\M-." 'query-replace-zenpunct-hanpunct-region)
-(global-set-key "\C-x\C-m\M-," 'query-replace-hanpunct-zenpunct-region)
+;; (defconst kutoten-zenpunct-kv '(("。" . "．") ("、" . "，")))
+;; (defconst zenpunct-kutoten-kv '(("．" . "。") ("，" . "、")))
+;; (defconst zenpunct-hanpunct-kv '(("．" . ". ") ("，" . ", ") ("。" . "｡ ") ("、" . "､ ")))
+;; (defconst hanpunct-zenpunct-kv '((". " . "．") (", " . "，") ("｡ " . "。") ("､ " . "、")))
+;; 					;
+;; (defun replace-kutoten-zenpunct-region (b e)
+;;   (interactive "r")
+;;   (replace-kv-region kutoten-zenpunct-kv))
+;; (defun replace-zenpunct-kutoten-region (b e)
+;;   (interactive "r")
+;;   (replace-kv-region zenpunct-kutoten-kv))
+;; (defun replace-zenpunct-hanpunct-region (b e)
+;;   (interactive "r")
+;;   (replace-kv-region zenpunct-hanpunct-kv))
+;; (defun replace-hanpunct-zenpunct-region (b e)
+;;   (interactive "r")
+;;   (replace-kv-region hanpunct-zenpunct-kv))
+;; 					;
+;; (defun query-replace-kutoten-zenpunct-region (b e)
+;;   (interactive "r")
+;;   (query-replace-kv-region kutoten-zenpunct-kv))
+;; (defun query-replace-zenpunct-kutoten-region (b e)
+;;   (interactive "r")
+;;   (query-replace-kv-region zenpunct-kutoten-kv))
+;; (defun query-replace-zenpunct-hanpunct-region (b e)
+;;   (interactive "r")
+;;   (query-replace-kv-region zenpunct-hanpunct-kv))
+;; (defun query-replace-hanpunct-zenpunct-region (b e)
+;;   (interactive "r")
+;;   (query-replace-kv-region hanpunct-zenpunct-kv))
+;; 					;
+;; (global-set-key "\C-x\C-m/" 'replace-kutoten-zenpunct-region)
+;; (global-set-key "\C-x\C-m?" 'replace-zenpunct-kutoten-region)
+;; (global-set-key "\C-x\C-m." 'replace-zenpunct-hanpunct-region)
+;; (global-set-key "\C-x\C-m," 'replace-hanpunct-zenpunct-region)
+;; 					;
+;; (global-set-key "\C-x\C-m\M-/" 'query-replace-kutoten-zenpunct-region)
+;; (global-set-key "\C-x\C-m\M-?" 'query-replace-zenpunct-kutoten-region)
+;; (global-set-key "\C-x\C-m\M-." 'query-replace-zenpunct-hanpunct-region)
+;; (global-set-key "\C-x\C-m\M-," 'query-replace-hanpunct-zenpunct-region)
 
 
 
@@ -229,33 +229,33 @@
 
 ;; ;; for linux(wsl) new
 ;; ;; sync with x clipboard
-(unless window-system
-  (when (getenv "DISPLAY")
-    ;; Callback for when user cuts
-    (defun xsel-cut-function (text &optional push)
-      ;; Insert text to temp-buffer, and "send" content to xsel stdin
-      (with-temp-buffer
-        (insert text)
-        ;; I prefer using the "clipboard" selection (the one the
-        ;; typically is used by c-c/c-v) before the primary selection
-        ;; (that uses mouse-select/middle-button-click)
-        (call-process-region (point-min) (point-max) "xsel" nil 0 nil "--clipboard" "--input")))
-    ;; Call back for when user pastes
-    (defun xsel-paste-function()
-      ;; Find out what is current selection by xsel. If it is different
-      ;; from the top of the kill-ring (car kill-ring), then return
-      ;; it. Else, nil is returned, so whatever is in the top of the
-      ;; kill-ring will be used.
-      (let ((xsel-output (shell-command-to-string "xsel --clipboard --output")))
-        (unless (string= (car kill-ring) xsel-output)
-          xsel-output )))
-    ;; Attach callbacks to hooks
-    (setq interprogram-cut-function 'xsel-cut-function)
-    (setq interprogram-paste-function 'xsel-paste-function)
-    ;; Idea from
-    ;; http://shreevatsa.wordpress.com/2006/10/22/emacs-copypaste-and-x/
-    ;; http://www.mail-archive.com/help-gnu-emacs@gnu.org/msg03577.html
-    ))
+;; (unless window-system
+;;   (when (getenv "DISPLAY")
+;;     ;; Callback for when user cuts
+;;     (defun xsel-cut-function (text &optional push)
+;;       ;; Insert text to temp-buffer, and "send" content to xsel stdin
+;;       (with-temp-buffer
+;;         (insert text)
+;;         ;; I prefer using the "clipboard" selection (the one the
+;;         ;; typically is used by c-c/c-v) before the primary selection
+;;         ;; (that uses mouse-select/middle-button-click)
+;;         (call-process-region (point-min) (point-max) "xsel" nil 0 nil "--clipboard" "--input")))
+;;     ;; Call back for when user pastes
+;;     (defun xsel-paste-function()
+;;       ;; Find out what is current selection by xsel. If it is different
+;;       ;; from the top of the kill-ring (car kill-ring), then return
+;;       ;; it. Else, nil is returned, so whatever is in the top of the
+;;       ;; kill-ring will be used.
+;;       (let ((xsel-output (shell-command-to-string "xsel --clipboard --output")))
+;;         (unless (string= (car kill-ring) xsel-output)
+;;           xsel-output )))
+;;     ;; Attach callbacks to hooks
+;;     (setq interprogram-cut-function 'xsel-cut-function)
+;;     (setq interprogram-paste-function 'xsel-paste-function)
+;;     ;; Idea from
+;;     ;; http://shreevatsa.wordpress.com/2006/10/22/emacs-copypaste-and-x/
+;;     ;; http://www.mail-archive.com/help-gnu-emacs@gnu.org/msg03577.html
+;;     ))
 
 
 ;;editer colour
@@ -280,17 +280,17 @@
 ;;   (package-initialize))
 
 
-;; xterm のマウスイベントを取得する
-(xterm-mouse-mode t)
-;; マウスホイールを取得する
-(mouse-wheel-mode t)
+;; ;; xterm のマウスイベントを取得する
+;; (xterm-mouse-mode t)
+;; ;; マウスホイールを取得する
+;; (mouse-wheel-mode t)
 
 
 
 ;; cmdキーを superとして割り当てる
 					;(setq mac-command-modifier 'super)
 ;; バックスペースの設定
-(global-set-key (kbd "C-h") 'delete-backward-char)
+;(global-set-key (kbd "C-h") 'delete-backward-char)
 
 
 					;redo
@@ -454,10 +454,10 @@
 ;;操作性の向上
 
 ;; スクロールは1行ごとに
-(setq mouse-wheel-scroll-amount '(1 ((shift) . 5)))
+;(setq mouse-wheel-scroll-amount '(1 ((shift) . 5)))
 
 ;; スクロールの加速をやめる
-(setq mouse-wheel-progressive-speed nil)
+;(setq mouse-wheel-progressive-speed nil)
 
 ;; bufferの最後でカーソルを動かそうとしても音をならなくする
 (defun next-line (arg)
