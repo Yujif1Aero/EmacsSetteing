@@ -18,3 +18,7 @@ kkcrc
 *.*~
 .custom.el.~undo-tree~
 eln-cache*
+GPATH
+GRTAGS
+GTAGS
+shellenv.el
