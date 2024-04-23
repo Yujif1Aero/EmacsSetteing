@@ -1,7 +1,8 @@
 ;;;;
 ;; package management
 ;;https://qiita.com/namn1125/items/5cd6a9cbbf17fb85c740#packageel-%E3%82%92%E7%9B%B4%E6%8E%A5%E5%88%A9%E7%94%A8%E3%81%97%E3%81%AA%E3%81%84%E7%90%86%E7%94%B1%E3%81%A8gitgithub%E3%81%AB%E3%82%88%E3%82%8B-initel-%E3%81%AE%E7%AE%A1%E7%90%86
-(setq debug-on-error t)
+;;Backtrace バッファが表示されないようにするに
+(setq debug-on-error nil)
 (when (< emacs-major-version 23)
   (defvar user-emacs-directory "~/.emacs.d/"))
 
@@ -454,10 +455,11 @@
 ;;操作性の向上
 
 ;; スクロールは1行ごとに
-;(setq mouse-wheel-scroll-amount '(1 ((shift) . 5)))
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 5)))
 
 ;; スクロールの加速をやめる
-;(setq mouse-wheel-progressive-speed nil)
+(setq mouse-wheel-progressive-speed nil)
+
 
 ;; bufferの最後でカーソルを動かそうとしても音をならなくする
 (defun next-line (arg)
@@ -516,10 +518,10 @@
 (global-set-key (kbd "C-c e") 'my-switch-grep-buffer)
 
 ;; eshelの設定
-;; (leaf eshell-git-prompt
-;;   :ensure t
-;;   :config
-;;   (eshell-git-prompt-use-theme 'git-radar))
+(leaf eshell-git-prompt
+  :ensure t
+  :config
+  (eshell-git-prompt-use-theme 'git-radar))
 
 
 
@@ -619,3 +621,12 @@
 (global-set-key (kbd "C-x C-g") 'goto-line)
 
 
+
+
+;; eshell からファイルを開く.
+(with-eval-after-load 'eshell
+  (defun setup-eshell-aliases ()
+    (eshell/alias "emacs" "find-file $1")
+    (eshell/alias "m" "find-file $1")
+    (eshell/alias "mc" "find-file $1"))
+  (add-hook 'eshell-mode-hook 'setup-eshell-aliases))
