@@ -447,10 +447,10 @@
 ;;操作性の向上
 
 ;; スクロールは1行ごとに
-(setq mouse-wheel-scroll-amount '(1 ((shift) . 5)))
+;;(setq mouse-wheel-scroll-amount '(1 ((shift) . 5)))
 
 ;; スクロールの加速をやめる
-(setq mouse-wheel-progressive-speed nil)
+;;(setq mouse-wheel-progressive-speed nil)
 
 
 ;; bufferの最後でカーソルを動かそうとしても音をならなくする
