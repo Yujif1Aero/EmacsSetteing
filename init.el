@@ -629,3 +629,16 @@
     (eshell/alias "m" "find-file $1")
     (eshell/alias "mc" "find-file $1"))
   (add-hook 'eshell-mode-hook 'setup-eshell-aliases))
+
+
+
+
+(leaf ggtags
+  :ensure t  ;; gnu-global パッケージを自動でインストール
+  :hook (c-mode-common-hook) ;; Hook を利用して自動的に ggtags-mode を有効に
+  :init
+  ;; gtags-mode がロードされた後で設定を行う
+  (with-eval-after-load 'ggtags
+    ;; キーバインドの設定
+    (define-key ggtags-mode-map (kbd "M-.") 'ggtags-find-tag)
+    (define-key ggtags-mode-map (kbd "M-,") 'ggtags-find-rtag)))
