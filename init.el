@@ -123,75 +123,67 @@
 ;;日本語の設定
 ;;https://utsuboiwa.blogspot.com/2014/07/sunnyside-emacs.html
 
-;; (prefer-coding-system 'utf-8)
-;; (set-default-coding-systems 'utf-8)
-;; (set-terminal-coding-system 'utf-8)
-;; (set-keyboard-coding-system 'utf-8)
-;; (set-buffer-file-coding-system 'utf-8)
-;; (setq default-buffer-file-coding-system 'utf-8)
-;; (set-buffer-file-coding-system 'utf-8)
-;; (set-clipboard-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-buffer-file-coding-system 'utf-8)
+(setq default-buffer-file-coding-system 'utf-8)
+(set-buffer-file-coding-system 'utf-8)
+(set-clipboard-coding-system 'utf-8)
 
-;;(set-language-environment "Japanese")
-;;
-;; (leaf mozc
-;;   :if (executable-find "mozc_emacs_helper")
-;;   :config
-;;   ;; mozcの設定
-;;   (setq default-input-method "japanese-mozc")
-;;   (setq mozc-candidate-style 'overlay))
-;;    :bind
-;;   (("C-\\" . toggle-input-method)))
+(set-language-environment "Japanese")
 
-;; (leaf mozc
-;;   :if (executable-find "mozc_emacs_helper")
-;;   :config
-;;   (setq default-input-method "japanese-mozc"
-;; 	mozc-candidate-style 'overlay)
-;;   :bind (("C-\\" . mozc-mode)))
+
+(leaf mozc
+  :if (executable-find "mozc_emacs_helper")
+  :config
+  (setq default-input-method "japanese-mozc"
+	mozc-candidate-style 'overlay)
+  :bind (("C-\\" . mozc-mode)))
 
 
 
-;; (defconst kutoten-zenpunct-kv '(("。" . "．") ("、" . "，")))
-;; (defconst zenpunct-kutoten-kv '(("．" . "。") ("，" . "、")))
-;; (defconst zenpunct-hanpunct-kv '(("．" . ". ") ("，" . ", ") ("。" . "｡ ") ("、" . "､ ")))
-;; (defconst hanpunct-zenpunct-kv '((". " . "．") (", " . "，") ("｡ " . "。") ("､ " . "、")))
-;; 					;
-;; (defun replace-kutoten-zenpunct-region (b e)
-;;   (interactive "r")
-;;   (replace-kv-region kutoten-zenpunct-kv))
-;; (defun replace-zenpunct-kutoten-region (b e)
-;;   (interactive "r")
-;;   (replace-kv-region zenpunct-kutoten-kv))
-;; (defun replace-zenpunct-hanpunct-region (b e)
-;;   (interactive "r")
-;;   (replace-kv-region zenpunct-hanpunct-kv))
-;; (defun replace-hanpunct-zenpunct-region (b e)
-;;   (interactive "r")
-;;   (replace-kv-region hanpunct-zenpunct-kv))
-;; 					;
-;; (defun query-replace-kutoten-zenpunct-region (b e)
-;;   (interactive "r")
-;;   (query-replace-kv-region kutoten-zenpunct-kv))
-;; (defun query-replace-zenpunct-kutoten-region (b e)
-;;   (interactive "r")
-;;   (query-replace-kv-region zenpunct-kutoten-kv))
-;; (defun query-replace-zenpunct-hanpunct-region (b e)
-;;   (interactive "r")
-;;   (query-replace-kv-region zenpunct-hanpunct-kv))
-;; (defun query-replace-hanpunct-zenpunct-region (b e)
-;;   (interactive "r")
-;;   (query-replace-kv-region hanpunct-zenpunct-kv))
-;; 					;
-;; (global-set-key "\C-x\C-m/" 'replace-kutoten-zenpunct-region)
-;; (global-set-key "\C-x\C-m?" 'replace-zenpunct-kutoten-region)
-;; (global-set-key "\C-x\C-m." 'replace-zenpunct-hanpunct-region)
-;; (global-set-key "\C-x\C-m," 'replace-hanpunct-zenpunct-region)
-;; 					;
-;; (global-set-key "\C-x\C-m\M-/" 'query-replace-kutoten-zenpunct-region)
-;; (global-set-key "\C-x\C-m\M-?" 'query-replace-zenpunct-kutoten-region)
-;; (global-set-key "\C-x\C-m\M-." 'query-replace-zenpunct-hanpunct-region)
-;; (global-set-key "\C-x\C-m\M-," 'query-replace-hanpunct-zenpunct-region)
+(defconst kutoten-zenpunct-kv '(("。" . "．") ("、" . "，")))
+(defconst zenpunct-kutoten-kv '(("．" . "。") ("，" . "、")))
+(defconst zenpunct-hanpunct-kv '(("．" . ". ") ("，" . ", ") ("。" . "｡ ") ("、" . "､ ")))
+(defconst hanpunct-zenpunct-kv '((". " . "．") (", " . "，") ("｡ " . "。") ("､ " . "、")))
+					;
+(defun replace-kutoten-zenpunct-region (b e)
+  (interactive "r")
+  (replace-kv-region kutoten-zenpunct-kv))
+(defun replace-zenpunct-kutoten-region (b e)
+  (interactive "r")
+  (replace-kv-region zenpunct-kutoten-kv))
+(defun replace-zenpunct-hanpunct-region (b e)
+  (interactive "r")
+  (replace-kv-region zenpunct-hanpunct-kv))
+(defun replace-hanpunct-zenpunct-region (b e)
+  (interactive "r")
+  (replace-kv-region hanpunct-zenpunct-kv))
+					;
+(defun query-replace-kutoten-zenpunct-region (b e)
+  (interactive "r")
+  (query-replace-kv-region kutoten-zenpunct-kv))
+(defun query-replace-zenpunct-kutoten-region (b e)
+  (interactive "r")
+  (query-replace-kv-region zenpunct-kutoten-kv))
+(defun query-replace-zenpunct-hanpunct-region (b e)
+  (interactive "r")
+  (query-replace-kv-region zenpunct-hanpunct-kv))
+(defun query-replace-hanpunct-zenpunct-region (b e)
+  (interactive "r")
+  (query-replace-kv-region hanpunct-zenpunct-kv))
+					;
+(global-set-key "\C-x\C-m/" 'replace-kutoten-zenpunct-region)
+(global-set-key "\C-x\C-m?" 'replace-zenpunct-kutoten-region)
+(global-set-key "\C-x\C-m." 'replace-zenpunct-hanpunct-region)
+(global-set-key "\C-x\C-m," 'replace-hanpunct-zenpunct-region)
+					;
+(global-set-key "\C-x\C-m\M-/" 'query-replace-kutoten-zenpunct-region)
+(global-set-key "\C-x\C-m\M-?" 'query-replace-zenpunct-kutoten-region)
+(global-set-key "\C-x\C-m\M-." 'query-replace-zenpunct-hanpunct-region)
+(global-set-key "\C-x\C-m\M-," 'query-replace-hanpunct-zenpunct-region)
 
 
 
