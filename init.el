@@ -625,13 +625,65 @@
 
 
 
+;; gnu-global
+;; (leaf ggtags
+;;   :ensure t  ;; gnu-global パッケージを自動でインストール
+;;   :hook (c-mode-common-hook) ;; Hook を利用して自動的に ggtags-mode を有効に
+;;   :init
+;;   ;; gtags-mode がロードされた後で設定を行う
+;;   (with-eval-after-load 'ggtags
+;;     ;; キーバインドの設定
+;;     (define-key ggtags-mode-map (kbd "M-.") 'ggtags-find-tag)
+;;     (define-key ggtags-mode-map (kbd "M-,") 'ggtags-find-rtag)))
+;; (leaf ggtags
+;;   :ensure t  ;; gnu-global パッケージを自動でインストール
+;;   :hook (c-mode-common-hook) ;; Hook を利用して自動的に ggtags-mode を有効に
+;;   :init
+;;   ;; gtags-mode がロードされた後で設定を行う
+;;   (with-eval-after-load 'ggtags
+;;     ;; ラッパー関数の定義
+;;     (defun my-ggtags-find-tag ()
+;;       "Find the tag at point using `ggtags-find-tag'."
+;;       (interactive)
+;;       (let ((tag (thing-at-point 'symbol)))
+;;         (if tag
+;;             (ggtags-find-tag tag)
+;;           (message "No tag found at point!"))))
+    
+;;     (defun my-ggtags-find-rtag ()
+;;       "Find the reference tag at point using `ggtags-find-rtag'."
+;;       (interactive)
+;;       (let ((tag (thing-at-point 'symbol)))
+;;         (if tag
+;;             (ggtags-find-rtag tag)
+;;           (message "No reference tag found at point!"))))
+    
+;;     ;; キーバインドの設定
+;;     (define-key ggtags-mode-map (kbd "M-.") 'my-ggtags-find-tag)
+;;     (define-key ggtags-mode-map (kbd "M-,") 'my-ggtags-find-rtag)))
 
-(leaf ggtags
-  :ensure t  ;; gnu-global パッケージを自動でインストール
-  :hook (c-mode-common-hook) ;; Hook を利用して自動的に ggtags-mode を有効に
-  :init
-  ;; gtags-mode がロードされた後で設定を行う
-  (with-eval-after-load 'ggtags
-    ;; キーバインドの設定
-    (define-key ggtags-mode-map (kbd "M-.") 'ggtags-find-tag)
-    (define-key ggtags-mode-map (kbd "M-,") 'ggtags-find-rtag)))
+(autoload 'gtags-mode "gtags" "" t)
+(setq gtags-mode-hook
+      '(lambda ()
+         (local-set-key "\M-." 'gtags-find-tag)
+         (local-set-key "\M-," 'gtags-find-rtag)
+         (local-set-key "\M-s" 'gtags-find-symbol)
+         (local-set-key "\M-t" 'gtags-pop-stack)
+         ))
+(add-hook 'c-mode-common-hook
+          '(lambda()
+             (gtags-mode 1)
+             (gtags-make-complete-list)
+             ))
+
+;; Ediffのハイライト色を設定
+(custom-set-faces
+ '(ediff-current-diff-A ((t (:background "#1c1c1c" :foreground "#ffffff"))))
+ '(ediff-current-diff-B ((t (:background "#1c1c1c" :foreground "#ffffff"))))
+ '(ediff-current-diff-C ((t (:background "#1c1c1c" :foreground "#ffffff"))))
+ '(ediff-even-diff-A ((t (:background "#262626"))))
+ '(ediff-even-diff-B ((t (:background "#262626"))))
+ '(ediff-even-diff-C ((t (:background "#262626"))))
+ '(ediff-odd-diff-A ((t (:background "#262626"))))
+ '(ediff-odd-diff-B ((t (:background "#262626"))))
+ '(ediff-odd-diff-C ((t (:background "#262626")))))
