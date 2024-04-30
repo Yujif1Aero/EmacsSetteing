@@ -1,4 +1,4 @@
-## emacssetting
+# emacssetting
 - write this into ~/.bashrc or shell something.Some PAHT in bash is used in eshell
 
 \## create emacs env file
@@ -7,7 +7,7 @@ perl -wle \
     PATH > ~/.emacs.d/shellenv.el
 
 
-# for ubutsu 
+## for ubutsu 
 ```bash
  $npm install -g pyright
  $sudo apt install clangd
@@ -15,7 +15,7 @@ perl -wle \
 ```
 
 
-# for installing key
+## for installing key
 
 ```
 1. Emacsを開き、M-x package-install-file を実行します。
@@ -28,3 +28,4 @@ perl -wle \
 1. https://qiita.com/fnobi/items/8906c8e7759751d32b6b
 1. https://github.com/xuchunyang/eshell-git-prompt
 1. https://qiita.com/namn1125/items/5cd6a9cbbf17fb85c740
+1. https://qiita.com/blue0513/items/acc962738c7f4da26656
