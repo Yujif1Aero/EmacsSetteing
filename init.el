@@ -677,69 +677,69 @@
 ;;              ))
 
 
-;; ;; LSPモードの設定とキーバインドの調整(ref ::https://qiita.com/kari_tech/items/4754fac39504dccfd7be ) LSPの代わりにeglotを使用
-;; (leaf lsp-mode
-;;   :ensure t
-;;   :commands lsp
-;;   :hook ((c-mode-hook c++-mode-hook python-mode-hook) . lsp)
-;;   :init
-;;   (setq lsp-prefer-flymake nil)  ;; FlymakeではなくFlycheckを使用
-;; ;;  (setq lsp-clients-clangd-args '("--header-insertion=never"))
-;;   :config
-;;   ;; キーバインドをGTAGSからLSPに再割り当て
-;;   (define-key lsp-mode-map (kbd "M-.") #'lsp-find-definition)
-;;   (define-key lsp-mode-map (kbd "M-,") #'lsp-find-references)
-;;   (define-key lsp-mode-map (kbd "M-s") #'lsp-ui-sideline-mode)
-;;   (define-key lsp-mode-map (kbd "M-t") #'lsp-ui-peek-jump-backward))
+;; LSPモードの設定とキーバインドの調整(ref ::https://qiita.com/kari_tech/items/4754fac39504dccfd7be ) LSPの代わりにeglotを使用
+(leaf lsp-mode
+  :ensure t
+  :commands lsp
+  :hook ((c-mode-hook c++-mode-hook python-mode-hook) . lsp)
+  :init
+  (setq lsp-prefer-flymake nil)  ;; FlymakeではなくFlycheckを使用
+  (setq lsp-clients-clangd-args '("--header-insertion=never"))
+  :config
+  ;; キーバインドをGTAGSからLSPに再割り当て
+  (define-key lsp-mode-map (kbd "M-.") #'lsp-find-definition)
+  (define-key lsp-mode-map (kbd "M-,") #'lsp-find-references)
+  (define-key lsp-mode-map (kbd "M-s") #'lsp-find-implementation)
+  (define-key lsp-mode-map (kbd "M-t") #'lsp-find-declaration))
 
-;; ;; lsp-pyright の設定
-;; (leaf lsp-pyright
-;;   :ensure t
-;;   :after lsp-mode
-;;   :hook (python-mode-hook . (lambda ()
-;;                               (require 'lsp-pyright)
-;;                               (lsp))))  ;; Pythonファイルで自動的にlspを起動
+;; lsp-pyright の設定
+(leaf lsp-pyright
+  :ensure t
+  :after lsp-mode
+  :hook (python-mode-hook . (lambda ()
+                              (require 'lsp-pyright)
+                              (lsp))))  ;; Pythonファイルで自動的にlspを起動
 
-;; ;; LSP UIの追加設定
-;; (leaf lsp-ui
-;;   :ensure t
-;;   :commands lsp-ui-mode
-;;   :config
-;;   (setq lsp-ui-doc-enable t
-;;         lsp-ui-doc-use-childframe t
-;;         lsp-ui-doc-position 'top
-;;         lsp-ui-doc-include-signature t
-;;         lsp-ui-sideline-enable nil
-;;         lsp-ui-flycheck-enable t
-;;         lsp-ui-flycheck-list-position 'right
-;;         lsp-ui-flycheck-live-reporting t
-;;         lsp-ui-peek-enable t
-;;         lsp-ui-peek-list-width 60
-;;         lsp-ui-peek-peek-height 25))
+;; LSP UIの追加設定
+(leaf lsp-ui
+  :ensure t
+  :commands lsp-ui-mode
+  :config
+  (setq lsp-ui-doc-enable t
+        lsp-ui-doc-use-childframe t
+        lsp-ui-doc-position 'top
+        lsp-ui-doc-include-signature t
+        lsp-ui-sideline-enable nil
+        lsp-ui-flycheck-enable t
+        lsp-ui-flycheck-list-position 'right
+        lsp-ui-flycheck-live-reporting t
+        lsp-ui-peek-enable t
+        lsp-ui-peek-list-width 60
+        lsp-ui-peek-peek-height 25))
 
-;;eglot(https://github.com/joaotavora/eglot)(https://rn.nyaomin.info/entry/2024/01/16/224657)LSPの簡略版だがうまくつかえない
-(leaf eglot
-      :ensure t
-      :config
-      (add-to-list 'eglot-server-programs '((c-mode c++-mode python-mode js-mode js-ts-mode typescript-mode typescript-ts-mode) . (eglot-deno "deno" "lsp")))
-      (defclass eglot-deno (eglot-lsp-server) () :documentation "A custom class for deno lsp.")
-      (cl-defmethod eglot-initialization-options ((server eglot-deno))
-        "Passes through required deno initialization options"
-        (list :enable t :lint t))
-     ;; (setq eglot-ignored-server-capabilities '(:documentHighlightProvider :inlayHintProvider))
-      (setq eldoc-echo-area-use-multiline-p nil)
-      :hook
-      ((sh-mode
-        c-mode
-        c++-mode
-        python-mode
-        ruby-mode
-        rust-mode
-        html-mode
-        css-mode
-        js-mode
-        ) . eglot-ensure)
-      )
+;; ;;eglot(https://github.com/joaotavora/eglot)(https://rn.nyaomin.info/entry/2024/01/16/224657)LSPの簡略版だがうまくつかえない
+;; (leaf eglot
+;;       :ensure t
+;;       :config
+;;       (add-to-list 'eglot-server-programs '((c-mode c++-mode python-mode js-mode js-ts-mode typescript-mode typescript-ts-mode) . (eglot-deno "deno" "lsp")))
+;;       (defclass eglot-deno (eglot-lsp-server) () :documentation "A custom class for deno lsp.")
+;;       (cl-defmethod eglot-initialization-options ((server eglot-deno))
+;;         "Passes through required deno initialization options"
+;;         (list :enable t :lint t))
+;;      ;; (setq eglot-ignored-server-capabilities '(:documentHighlightProvider :inlayHintProvider))
+;;       (setq eldoc-echo-area-use-multiline-p nil)
+;;       :hook
+;;       ((sh-mode
+;;         c-mode
+;;         c++-mode
+;;         python-mode
+;;         ruby-mode
+;;         rust-mode
+;;         html-mode
+;;         css-mode
+;;         js-mode
+;;         ) . eglot-ensure)
+;;       )
 
 ;; companyの設定
 (leaf company
