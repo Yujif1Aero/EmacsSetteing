@@ -23,13 +23,11 @@ compiledb make
 
 ## for installing key
 
-```
 1. Emacsを開き、M-x package-install-file を実行します。
 1. プロンプトが表示されたら、ダウンロードした gnu-elpa-keyring-update の .tar ファイルへの完全なパスを入力します。
 1. インストールが完了したら、Emacsを再起動してください。
 
-```
-## eglot
+## eglot(今は使っていない)
 
 ```
 M-x eglot
@@ -37,15 +35,15 @@ if you do not have `compile_commands.json` , for example put clangd in C++/C. CH
 ref : https://github.com/joaotavora/eglot
 ```
 
-## additional instaling for eglot 
+## additional instaling for LSP
 
 for ubutsu
- (python code)
+ 1. python code
 ```bash
  npm install -g pyright
 
 ```
- c/c++ code 
+ 1. c/c++ code 
 ```bash
  sudo apt install clangd
 ```
