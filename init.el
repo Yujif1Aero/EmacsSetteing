@@ -677,7 +677,7 @@
 ;;              ))
 
 
-;; LSPモードの設定とキーバインドの調整(ref ::https://qiita.com/kari_tech/items/4754fac39504dccfd7be ) LSPの代わりにeglotを使用
+;;;; LSPモードの設定とキーバインドの調整(ref ::https://qiita.com/kari_tech/items/4754fac39504dccfd7be ) LSPの代わりにeglotを使用
 (leaf lsp-mode
   :ensure t
   :commands lsp
@@ -740,6 +740,19 @@
 ;;         js-mode
 ;;         ) . eglot-ensure)
 ;;       )
+
+
+;;eglot(https://github.com/joaotavora/eglot)
+;; (leaf eglot
+;;   :ensure t
+;;   :hook (
+;;          (c-mode-hook . eglot-ensure)
+;;          (c++-mode-hook . eglot-ensure)
+;;          (python-mode-hook . eglot-ensure))
+;;   :config
+;;   ;; オプション設定（必要に応じて）
+;;   (setq eglot-keep-workspace-alive nil))  ;; Emacs終了時にLSPサーバを自動的にシャットダウン
+
 
 ;; companyの設定
 (leaf company
