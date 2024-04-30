@@ -55,7 +55,7 @@
 
 
 ;;;emacs seting;
-(add-to-list 'default-frame-alist '(cursor-type . bar))
+;;(add-to-list 'default-frame-alist '(cursor-type . bar))
 ;; 現在開いている各フレームに対してカーソル形状を適用
 (dolist (frame (frame-list))
   (modify-frame-parameters frame '((cursor-type . bar))))
