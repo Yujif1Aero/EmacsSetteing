@@ -15,6 +15,15 @@ perl -wle \
 ```
 
 
+# for installing key
+
+```
+1. Emacsを開き、M-x package-install-file を実行します。
+1. プロンプトが表示されたら、ダウンロードした gnu-elpa-keyring-update の .tar ファイルへの完全なパスを入力します。
+1. インストールが完了したら、Emacsを再起動してください。
+
+```
+
 - ref : 
 1. https://qiita.com/fnobi/items/8906c8e7759751d32b6b
 1. https://github.com/xuchunyang/eshell-git-prompt
