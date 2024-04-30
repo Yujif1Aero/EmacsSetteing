@@ -625,7 +625,7 @@
 
 
 
-;; gnu-global
+;; gnu-global->LSPに比べると精度が良くない
 ;; (leaf ggtags
 ;;   :ensure t  ;; gnu-global パッケージを自動でインストール
 ;;   :hook (c-mode-common-hook) ;; Hook を利用して自動的に ggtags-mode を有効に
@@ -677,60 +677,71 @@
 ;;              ))
 
 
-;; LSPモードの設定とキーバインドの調整
-(leaf lsp-mode
+;; ;; LSPモードの設定とキーバインドの調整->どこか変
+;; (leaf lsp-mode
+;;   :ensure t
+;;   :commands lsp
+;;   :hook ((c-mode-hook c++-mode-hook python-mode-hook) . lsp)
+;;   :init
+;;   (setq lsp-prefer-flymake nil)  ;; FlymakeではなくFlycheckを使用
+;;   (setq lsp-clients-clangd-args '("--header-insertion=never"))
+;;   :config
+;;   ;; キーバインドをGTAGSからLSPに再割り当て
+;;   (define-key lsp-mode-map (kbd "M-.") #'lsp-find-definition)
+;;   (define-key lsp-mode-map (kbd "M-,") #'lsp-find-references)
+;;   (define-key lsp-mode-map (kbd "M-s") #'lsp-ui-sideline-mode)
+;;   (define-key lsp-mode-map (kbd "M-t") #'lsp-ui-peek-jump-backward))
+
+;; ;; lsp-pyright の設定
+;; (leaf lsp-pyright
+;;   :ensure t
+;;   :after lsp-mode
+;;   :hook (python-mode-hook . (lambda ()
+;;                               (require 'lsp-pyright)
+;;                               (lsp))))  ;; Pythonファイルで自動的にlspを起動
+
+;; ;; companyの設定
+;; (leaf company
+;;   :ensure t
+;;   :init
+;;   (global-company-mode)
+;;   :config
+;;   (setq company-idle-delay 0.0)  ;; 自動補完の遅延なし
+;;   (setq company-minimum-prefix-length 1))  ;; 1文字入力されたら補完を開始
+
+;; ;; flycheckの設定
+;; (leaf flycheck
+;;   :ensure t
+;;   :init
+;;   (global-flycheck-mode))
+
+;; ;; LSP UIの追加設定
+;; (leaf lsp-ui
+;;   :ensure t
+;;   :commands lsp-ui-mode
+;;   :config
+;;   (setq lsp-ui-doc-enable t
+;;         lsp-ui-doc-use-childframe t
+;;         lsp-ui-doc-position 'top
+;;         lsp-ui-doc-include-signature t
+;;         lsp-ui-sideline-enable nil
+;;         lsp-ui-flycheck-enable t
+;;         lsp-ui-flycheck-list-position 'right
+;;         lsp-ui-flycheck-live-reporting t
+;;         lsp-ui-peek-enable t
+;;         lsp-ui-peek-list-width 60
+;;         lsp-ui-peek-peek-height 25))
+
+;;eglot(https://github.com/joaotavora/eglot)
+(leaf eglot
   :ensure t
-  :commands lsp
-  :hook ((c-mode-hook c++-mode-hook python-mode-hook) . lsp)
-  :init
-  (setq lsp-prefer-flymake nil)  ;; FlymakeではなくFlycheckを使用
-  (setq lsp-clients-clangd-args '("--header-insertion=never"))
+  :hook (
+         (c-mode-hook . eglot-ensure)
+         (c++-mode-hook . eglot-ensure)
+         (python-mode-hook . eglot-ensure))
   :config
-  ;; キーバインドをGTAGSからLSPに再割り当て
-  (define-key lsp-mode-map (kbd "M-.") #'lsp-find-definition)
-  (define-key lsp-mode-map (kbd "M-,") #'lsp-find-references)
-  (define-key lsp-mode-map (kbd "M-s") #'lsp-ui-sideline-mode)
-  (define-key lsp-mode-map (kbd "M-t") #'lsp-ui-peek-jump-backward))
-
-;; lsp-pyright の設定
-(leaf lsp-pyright
-  :ensure t
-  :after lsp-mode
-  :hook (python-mode-hook . (lambda ()
-                              (require 'lsp-pyright)
-                              (lsp))))  ;; Pythonファイルで自動的にlspを起動
-
-;; companyの設定
-(leaf company
-  :ensure t
-  :init
-  (global-company-mode)
-  :config
-  (setq company-idle-delay 0.0)  ;; 自動補完の遅延なし
-  (setq company-minimum-prefix-length 1))  ;; 1文字入力されたら補完を開始
-
-;; flycheckの設定
-(leaf flycheck
-  :ensure t
-  :init
-  (global-flycheck-mode))
-
-;; LSP UIの追加設定
-(leaf lsp-ui
-  :ensure t
-  :commands lsp-ui-mode
-  :config
-  (setq lsp-ui-doc-enable t
-        lsp-ui-doc-use-childframe t
-        lsp-ui-doc-position 'top
-        lsp-ui-doc-include-signature t
-        lsp-ui-sideline-enable nil
-        lsp-ui-flycheck-enable t
-        lsp-ui-flycheck-list-position 'right
-        lsp-ui-flycheck-live-reporting t
-        lsp-ui-peek-enable t
-        lsp-ui-peek-list-width 60
-        lsp-ui-peek-peek-height 25))
+  ;; オプション設定（必要に応じて）
+  (setq eglot-keep-workspace-alive nil))  ;; Emacs終了時にLSPサーバを自動的にシャットダウン
 
 
 
