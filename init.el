@@ -677,14 +677,14 @@
 ;;              ))
 
 
-;; ;; LSPモードの設定とキーバインドの調整->どこか変
+;; ;; LSPモードの設定とキーバインドの調整(ref ::https://qiita.com/kari_tech/items/4754fac39504dccfd7be ) LSPの代わりにeglotを使用
 ;; (leaf lsp-mode
 ;;   :ensure t
 ;;   :commands lsp
 ;;   :hook ((c-mode-hook c++-mode-hook python-mode-hook) . lsp)
 ;;   :init
 ;;   (setq lsp-prefer-flymake nil)  ;; FlymakeではなくFlycheckを使用
-;;   (setq lsp-clients-clangd-args '("--header-insertion=never"))
+;; ;;  (setq lsp-clients-clangd-args '("--header-insertion=never"))
 ;;   :config
 ;;   ;; キーバインドをGTAGSからLSPに再割り当て
 ;;   (define-key lsp-mode-map (kbd "M-.") #'lsp-find-definition)
@@ -699,21 +699,6 @@
 ;;   :hook (python-mode-hook . (lambda ()
 ;;                               (require 'lsp-pyright)
 ;;                               (lsp))))  ;; Pythonファイルで自動的にlspを起動
-
-;; ;; companyの設定
-;; (leaf company
-;;   :ensure t
-;;   :init
-;;   (global-company-mode)
-;;   :config
-;;   (setq company-idle-delay 0.0)  ;; 自動補完の遅延なし
-;;   (setq company-minimum-prefix-length 1))  ;; 1文字入力されたら補完を開始
-
-;; ;; flycheckの設定
-;; (leaf flycheck
-;;   :ensure t
-;;   :init
-;;   (global-flycheck-mode))
 
 ;; ;; LSP UIの追加設定
 ;; (leaf lsp-ui
@@ -732,19 +717,45 @@
 ;;         lsp-ui-peek-list-width 60
 ;;         lsp-ui-peek-peek-height 25))
 
-;;eglot(https://github.com/joaotavora/eglot)
+;;eglot(https://github.com/joaotavora/eglot)(https://rn.nyaomin.info/entry/2024/01/16/224657)LSPの簡略版だがうまくつかえない
 (leaf eglot
+      :ensure t
+      :config
+      (add-to-list 'eglot-server-programs '((c-mode c++-mode python-mode js-mode js-ts-mode typescript-mode typescript-ts-mode) . (eglot-deno "deno" "lsp")))
+      (defclass eglot-deno (eglot-lsp-server) () :documentation "A custom class for deno lsp.")
+      (cl-defmethod eglot-initialization-options ((server eglot-deno))
+        "Passes through required deno initialization options"
+        (list :enable t :lint t))
+     ;; (setq eglot-ignored-server-capabilities '(:documentHighlightProvider :inlayHintProvider))
+      (setq eldoc-echo-area-use-multiline-p nil)
+      :hook
+      ((sh-mode
+        c-mode
+        c++-mode
+        python-mode
+        ruby-mode
+        rust-mode
+        html-mode
+        css-mode
+        js-mode
+        ) . eglot-ensure)
+      )
+
+;; companyの設定
+(leaf company
   :ensure t
-  :hook (
-         (c-mode-hook . eglot-ensure)
-         (c++-mode-hook . eglot-ensure)
-         (python-mode-hook . eglot-ensure))
+  :init
+  ;;(global-company-mode)
+   :hook ((c-mode-hook c++-mode-hook python-mode-hook) . company-mode)
   :config
-  ;; オプション設定（必要に応じて）
-  (setq eglot-keep-workspace-alive nil))  ;; Emacs終了時にLSPサーバを自動的にシャットダウン
+  (setq company-idle-delay 0.0)  ;; 自動補完の遅延なし
+  (setq company-minimum-prefix-length 1))  ;; 1文字入力されたら補完を開始
 
-
-
+;; flycheckの設定
+(leaf flycheck
+  :ensure t
+  :init
+  (global-flycheck-mode))
 
 ;; Ediffのハイライト色を設定
 (custom-set-faces
