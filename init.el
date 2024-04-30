@@ -537,17 +537,17 @@
 
 
 
-;;auto-complete
-(leaf auto-complete
-  :ensure t
-  :leaf-defer nil
-  :config
-  (ac-config-default)
-  :custom ((ac-use-menu-map . t)
-	   (ac-ignore-case . nil))
-  :bind (:ac-mode-map
-					; ("M-TAB" . auto-complete))
-	 ("M-t" . auto-complete)))
+;; ;;auto-complete -> LSPが同じ機能を持っている
+;; (leaf auto-complete
+;;   :ensure t
+;;   :leaf-defer nil
+;;   :config
+;;   (ac-config-default)
+;;   :custom ((ac-use-menu-map . t)
+;; 	   (ac-ignore-case . nil))
+;;   :bind (:ac-mode-map
+;; 					; ("M-TAB" . auto-complete))
+;; 	 ("M-p" . auto-complete)))
 
 
 ;; 履歴参照
@@ -662,19 +662,78 @@
 ;;     (define-key ggtags-mode-map (kbd "M-.") 'my-ggtags-find-tag)
 ;;     (define-key ggtags-mode-map (kbd "M-,") 'my-ggtags-find-rtag)))
 
-(autoload 'gtags-mode "gtags" "" t)
-(setq gtags-mode-hook
-      '(lambda ()
-         (local-set-key "\M-." 'gtags-find-tag)
-         (local-set-key "\M-," 'gtags-find-rtag)
-         (local-set-key "\M-s" 'gtags-find-symbol)
-         (local-set-key "\M-t" 'gtags-pop-stack)
-         ))
-(add-hook 'c-mode-common-hook
-          '(lambda()
-             (gtags-mode 1)
-             (gtags-make-complete-list)
-             ))
+;; (autoload 'gtags-mode "gtags" "" t)
+;; (setq gtags-mode-hook
+;;       '(lambda ()
+;;          (local-set-key "\M-." 'gtags-find-tag)
+;;          (local-set-key "\M-," 'gtags-find-rtag)
+;;          (local-set-key "\M-s" 'gtags-find-symbol)
+;;          (local-set-key "\M-t" 'gtags-pop-stack)
+;;          ))
+;; (add-hook 'c-mode-common-hook
+;;           '(lambda()
+;;              (gtags-mode 1)
+;;              (gtags-make-complete-list)
+;;              ))
+
+
+;; LSPモードの設定とキーバインドの調整
+(leaf lsp-mode
+  :ensure t
+  :commands lsp
+  :hook ((c-mode-hook c++-mode-hook python-mode-hook) . lsp)
+  :init
+  (setq lsp-prefer-flymake nil)  ;; FlymakeではなくFlycheckを使用
+  (setq lsp-clients-clangd-args '("--header-insertion=never"))
+  :config
+  ;; キーバインドをGTAGSからLSPに再割り当て
+  (define-key lsp-mode-map (kbd "M-.") #'lsp-find-definition)
+  (define-key lsp-mode-map (kbd "M-,") #'lsp-find-references)
+  (define-key lsp-mode-map (kbd "M-s") #'lsp-ui-sideline-mode)
+  (define-key lsp-mode-map (kbd "M-t") #'lsp-ui-peek-jump-backward))
+
+;; lsp-pyright の設定
+(leaf lsp-pyright
+  :ensure t
+  :after lsp-mode
+  :hook (python-mode-hook . (lambda ()
+                              (require 'lsp-pyright)
+                              (lsp))))  ;; Pythonファイルで自動的にlspを起動
+
+;; companyの設定
+(leaf company
+  :ensure t
+  :init
+  (global-company-mode)
+  :config
+  (setq company-idle-delay 0.0)  ;; 自動補完の遅延なし
+  (setq company-minimum-prefix-length 1))  ;; 1文字入力されたら補完を開始
+
+;; flycheckの設定
+(leaf flycheck
+  :ensure t
+  :init
+  (global-flycheck-mode))
+
+;; LSP UIの追加設定
+(leaf lsp-ui
+  :ensure t
+  :commands lsp-ui-mode
+  :config
+  (setq lsp-ui-doc-enable t
+        lsp-ui-doc-use-childframe t
+        lsp-ui-doc-position 'top
+        lsp-ui-doc-include-signature t
+        lsp-ui-sideline-enable nil
+        lsp-ui-flycheck-enable t
+        lsp-ui-flycheck-list-position 'right
+        lsp-ui-flycheck-live-reporting t
+        lsp-ui-peek-enable t
+        lsp-ui-peek-list-width 60
+        lsp-ui-peek-peek-height 25))
+
+
+
 
 ;; Ediffのハイライト色を設定
 (custom-set-faces
@@ -687,3 +746,9 @@
  '(ediff-odd-diff-A ((t (:background "#262626"))))
  '(ediff-odd-diff-B ((t (:background "#262626"))))
  '(ediff-odd-diff-C ((t (:background "#262626")))))
+
+
+
+;; 署名検証を無効にする
+;;(setq package-check-signature nil)
+;;(require 'gnu-elpa-keyring-update)
