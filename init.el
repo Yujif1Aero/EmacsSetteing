@@ -880,3 +880,6 @@
     :ensure t
     )
   )
+
+;; M-x eval-expression を使って評価するか、Emacs の設定ファイルに追加
+;;(put 'lsp 'safe-local-eval-function t)
