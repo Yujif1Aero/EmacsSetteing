@@ -34,9 +34,9 @@ compiledb make
 M-x eglot
 if you do not have `compile_commands.json` , for example put clangd in C++/C. CHECK sever list in refernce git URL. 
 ref : https://github.com/joaotavora/eglot
-```
+```      
 
-## additional instaling for LSP
+## additional instaling for LSP ( もしかしたら，メタプログラミングに不向き？)
 
 for ubutsu
  1. python code
