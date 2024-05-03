@@ -49,6 +49,13 @@ for ubutsu
  sudo apt install clangd
 ```
 
+## ccls(clangdよりも重い) 
+
+```bash
+sudo apt install ccls
+
+```
+
 
 
 - ref : 

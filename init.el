@@ -676,12 +676,22 @@
 ;;              (gtags-make-complete-list)
 ;;              ))
 
+;;ccls を導入
+(leaf ccls
+  :ensure t
+  :after lsp-mode
+  :init
+  (setq ccls-executable "/usr/bin/ccls")  ;; cclsの実行可能ファイルのパスを適切に設定
+  :config
+  (setq lsp-enable-snippet nil
+        lsp-enable-semantic-highlighting t
+        lsp-ccls-enable t))
 
-;;;; LSPモードの設定とキーバインドの調整(ref ::https://qiita.com/kari_tech/items/4754fac39504dccfd7be ) LSPの代わりにeglotを使用
+;;;; LSPモードの設定とキーバインドの調整(ref ::https://qiita.com/kari_tech/items/4754fac39504dccfd7be )
 (leaf lsp-mode
   :ensure t
   :commands lsp
-  :hook ((c-mode-hook c++-mode-hook python-mode-hook) . lsp)
+;;  :hook ((c-mode-hook c++-mode-hook python-mode-hook) . lsp)
   :init
   (setq lsp-prefer-flymake nil)  ;; FlymakeではなくFlycheckを使用
   (setq lsp-clients-clangd-args '("--header-insertion=never"))
