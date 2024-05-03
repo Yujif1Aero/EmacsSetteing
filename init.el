@@ -769,7 +769,7 @@
   :ensure t
   :init
   ;;(global-company-mode)
-   :hook ((c-mode-hook c++-mode-hook python-mode-hook) . company-mode)
+;;   :hook ((c-mode-hook c++-mode-hook python-mode-hook) . company-mode)
   :config
   (setq company-idle-delay 0.0)  ;; 自動補完の遅延なし
   (setq company-minimum-prefix-length 1))  ;; 1文字入力されたら補完を開始
@@ -797,3 +797,12 @@
 ;; 署名検証を無効にする
 ;;(setq package-check-signature nil)
 ;;(require 'gnu-elpa-keyring-update)
+
+;; projectile
+(leaf projectile
+  :ensure t
+  :config
+  (leaf consult-projectile
+    :ensure t
+    )
+  )
