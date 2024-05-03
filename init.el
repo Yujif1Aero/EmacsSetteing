@@ -677,11 +677,18 @@
 ;;              ))
 
 ;;ccls を導入
+;; (leaf ccls
+;;   :ensure t
+;;  ;; :after lsp-mode
+;;   :custom (ccls-executable "/usr/bin/ccls")  ;; cclsの実行可能ファイルのパスを適切に設定
+;;   :config
+;;   (setq lsp-enable-snippet nil
+;;         lsp-enable-semantic-highlighting t
+;;         lsp-ccls-enable t))
+
 (leaf ccls
   :ensure t
-  :after lsp-mode
-  :init
-  (setq ccls-executable "/usr/bin/ccls")  ;; cclsの実行可能ファイルのパスを適切に設定
+  :custom ((ccls-executable . "/usr/bin/ccls"))  ;; cclsの実行可能ファイルのパスを適切に設定
   :config
   (setq lsp-enable-snippet nil
         lsp-enable-semantic-highlighting t
@@ -693,8 +700,26 @@
   :commands lsp
 ;;  :hook ((c-mode-hook c++-mode-hook python-mode-hook) . lsp)
   :init
-  (setq lsp-prefer-flymake nil)  ;; FlymakeではなくFlycheckを使用
+  ;;(setq lsp-prefer-flymake nil)  ;; FlymakeではなくFlycheckを使用
   (setq lsp-clients-clangd-args '("--header-insertion=never"))
+
+    :custom
+  ((lsp-print-io . nil)
+   ;; LSP通信のデバッグ出力を無効化
+   (lsp-trace . nil)
+   ;; LSPのトレースログを無効化
+   (lsp-print-performance . nil)
+   ;; パフォーマンスログを無効化
+   (lsp-auto-guess-root . t)
+   ;; プロジェクトのルートディレクトリを自動的に推測
+   (lsp-document-sync-method . 'incremental)
+   ;; ドキュメントの同期方法をインクリメンタルに設定
+   (lsp-response-timeout . 5)
+   ;; LSPサーバーからのレスポンスのタイムアウト時間を5秒に設定
+   (lsp-prefer-flymake . 'flymake)
+   ;; 警告やエラーを表示するためにflymakeを使用
+   (lsp-enable-completion-at-point . nil))
+   ;; ポイントでの補完を無効化
   :config
   ;; キーバインドをGTAGSからLSPに再割り当て
   (define-key lsp-mode-map (kbd "M-.") #'lsp-find-definition)
@@ -706,26 +731,66 @@
 (leaf lsp-pyright
   :ensure t
   :after lsp-mode
-  :hook (python-mode-hook . (lambda ()
-                              (require 'lsp-pyright)
-                              (lsp))))  ;; Pythonファイルで自動的にlspを起動
-
+ ;; :hook (python-mode-hook . (lambda ()
+ ;;                             (require 'lsp-pyright)
+ ;;                             (lsp)))  ;; Pythonファイルで自動的にlspを起動
+)
 ;; LSP UIの追加設定
+;; (leaf lsp-ui
+;;   :ensure t
+;;   :commands lsp-ui-mode
+;;   :config
+;;   (setq lsp-ui-doc-enable t
+;;         lsp-ui-doc-use-childframe t
+;;         lsp-ui-doc-position 'top
+;;         lsp-ui-doc-include-signature t
+;;         lsp-ui-sideline-enable nil
+;;         lsp-ui-flycheck-enable t
+;;         lsp-ui-flycheck-list-position 'right
+;;         lsp-ui-flycheck-live-reporting t
+;;         lsp-ui-peek-enable t
+;;         lsp-ui-peek-list-width 60
+;;         lsp-ui-peek-peek-height 25))
+
 (leaf lsp-ui
   :ensure t
-  :commands lsp-ui-mode
-  :config
-  (setq lsp-ui-doc-enable t
-        lsp-ui-doc-use-childframe t
-        lsp-ui-doc-position 'top
-        lsp-ui-doc-include-signature t
-        lsp-ui-sideline-enable nil
-        lsp-ui-flycheck-enable t
-        lsp-ui-flycheck-list-position 'right
-        lsp-ui-flycheck-live-reporting t
-        lsp-ui-peek-enable t
-        lsp-ui-peek-list-width 60
-        lsp-ui-peek-peek-height 25))
+  :custom
+  ((lsp-ui-doc-enable . t)
+   ;; LSP UI ドキュメントの表示を有効化
+   (lsp-ui-doc-header . t)
+   ;; ドキュメントのヘッダー表示を有効化
+   (lsp-ui-doc-include-signature . t)
+   ;; ドキュメントにシグネチャを含める
+   (lsp-ui-doc-position . 'top)
+   ;; ドキュメントの表示位置を上部に設定
+   (lsp-ui-doc-max-width . 150)
+   ;; ドキュメントの最大幅を150に設定
+   (lsp-ui-doc-max-height . 30)
+   ;; ドキュメントの最大高さを30に設定
+   (lsp-ui-doc-use-childframe . t)
+   ;; ドキュメントを子フレームで表示
+   (lsp-ui-doc-use-webkit . t)
+   ;; Webkitを使用してドキュメントを表示
+   (lsp-ui-flycheck-enable . nil)
+   ;; lsp-uiによるflycheckの有効化を無効に
+   (lsp-ui-sideline-enable . nil)
+   ;; サイドラインの情報表示を無効に
+   (lsp-ui-sideline-show-diagnostics . nil)
+   ;; 診断をサイドラインに表示しない
+   (lsp-ui-sideline-show-code-actions . nil))
+   ;; コードアクションをサイドラインに表示しない
+  :preface
+  (defun ladicle/toggle-lsp-ui-doc ()
+    (interactive)
+    (if lsp-ui-doc-mode
+        (progn
+          (lsp-ui-doc-mode -1)
+          (lsp-ui-doc--hide-frame))
+      (lsp-ui-doc-mode 1)))
+  )
+  ;; ドキュメント表示の切り
+
+
 
 ;; ;;eglot(https://github.com/joaotavora/eglot)(https://rn.nyaomin.info/entry/2024/01/16/224657)LSPの簡略版だがうまくつかえない
 ;; (leaf eglot
@@ -753,32 +818,41 @@
 
 
 ;;eglot(https://github.com/joaotavora/eglot)
-;; (leaf eglot
-;;   :ensure t
-;;   :hook (
-;;          (c-mode-hook . eglot-ensure)
-;;          (c++-mode-hook . eglot-ensure)
-;;          (python-mode-hook . eglot-ensure))
-;;   :config
-;;   ;; オプション設定（必要に応じて）
-;;   (setq eglot-keep-workspace-alive nil))  ;; Emacs終了時にLSPサーバを自動的にシャットダウン
+;;  (leaf eglot
+;;    :ensure t
+;; ;;   :hook (
+;; ;;          (c-mode-hook . eglot-ensure)
+;; ;;          (c++-mode-hook . eglot-ensure)
+;; ;;          (python-mode-hook . eglot-ensure))
+;; ;;   :config
+;; ;;   ;; オプション設定（必要に応じて）
+;;    ;;   (setq eglot-keep-workspace-alive nil)  ;; Emacs終了時にLSPサーバを自動的にシャットダウン
+;;    ) 
 
 
-;; companyの設定
+;;companyの設定
 (leaf company
   :ensure t
   :init
-  ;;(global-company-mode)
-;;   :hook ((c-mode-hook c++-mode-hook python-mode-hook) . company-mode)
-  :config
-  (setq company-idle-delay 0.0)  ;; 自動補完の遅延なし
-  (setq company-minimum-prefix-length 1))  ;; 1文字入力されたら補完を開始
+  ;; (global-company-mode)  ;; グローバルにcompanyを有効化する場合はこのコメントを外す
+  :hook ((c-mode-hook c++-mode-hook python-mode-hook) . company-mode)  ;; フックを有効にする場合はこのコメントを外す
+  :custom
+  ;; (company-lsp-cache-candidates . t) ;; 候補のキャッシュを常に使用
+  ;; (company-lsp-async . t)           ;; 非同期補完を有効化
+  ;; (company-lsp-enable-recompletion . nil)  ;; 再補完を無効化
+  (company-idle-delay . 0.0)        ;; 自動補完の遅延なし
+  (company-minimum-prefix-length . 1)   ;; 1文字入力されたら補完を開始
+  )
 
-;; flycheckの設定
-(leaf flycheck
-  :ensure t
-  :init
-  (global-flycheck-mode))
+
+
+
+
+;; ;; flycheckの設定
+;; (leaf flycheck
+;;   :ensure t
+;;   :init
+;;   (global-flycheck-mode))
 
 ;; Ediffのハイライト色を設定
 (custom-set-faces
