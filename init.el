@@ -1054,4 +1054,6 @@
             (message "Emacs 起動時間: %s" (emacs-init-time))))
 
 ;; プロファイル結果の出力
+(leaf esup
+  :ensure t)
 (require 'esup)
