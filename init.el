@@ -24,7 +24,7 @@
 (unless (file-exists-p custom-file)
   (write-region "" nil custom-file))
 (load custom-file)
-
+;; Leaf
 (prog1 "prepare leaf"
   (prog1 "package"
     (custom-set-variables
@@ -40,7 +40,7 @@
       (condition-case err
 	  (package-install 'leaf)
 	(error
-	 (package-refresh-contents)       ; renew local melpa cache if fail
+	 (package-refresh-contents)
 	 (package-install 'leaf))))
 
     (leaf leaf-keywords
@@ -49,26 +49,43 @@
 
   (prog1 "optional packages for leaf-keywords"
     ;; optional packages if you want to use :hydra, :el-get,,,
-    (leaf hydra :ensure t)
-    (leaf el-get :ensure t
-      :custom ((el-get-git-shallow-clone  . t)))))
+    (leaf hydra
+      :ensure t
+      :commands (el-get-list-packages)
+      )
+    (leaf el-get
+      :ensure t
+      :commands (el-get-list-packages)
+      :custom ((el-get-git-shallow-clone . t)))))
 
-
-
-;;use package
+;; Use Package
 (require 'package)
 (setq package-archives
       '(("org"   . "http://orgmode.org/elpa/")
         ("melpa" . "http://melpa.org/packages/")
         ("gnu"   . "http://elpa.gnu.org/packages/")))
 
-;;(package-initialize)
 
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
 
 (require 'use-package)
+
+
+;;;; パッケージの遅延読み込み方法例
+;; ;; Use-package の設定例
+;; (use-package example-package
+;;   :ensure t
+;;   :defer t)
+
+;; ;; leafの設定例
+;; (leaf some-package
+;;   :ensure t
+;;   :hook (some-mode . some-package-function)  ;; 特定のモードが起動した時にロード
+;;   :commands (some-command))                  ;; 特定のコマンドが呼ばれた時にロード
+
+
 
 ;;;emacs seting;
 ;;(add-to-list 'default-frame-alist '(cursor-type . bar))
