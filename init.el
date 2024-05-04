@@ -1045,3 +1045,13 @@
   :after (treemacs)
   :ensure t
   :config (treemacs-set-scope-type 'Tabs))
+
+
+
+;; 起動プロファイルの収集
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (message "Emacs 起動時間: %s" (emacs-init-time))))
+
+;; プロファイル結果の出力
+(require 'esup)
