@@ -26,3 +26,4 @@ shellenv.el
 projects
 !.dir-locals.el
 .cache
+*.eld
