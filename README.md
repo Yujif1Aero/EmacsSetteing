@@ -49,7 +49,7 @@ for ubutsu
  sudo apt install clangd
 ```
 
-## ccls(clangdよりも重い) 
+## ccls(clangdよりも重い) (NVCCが使えない)
 
 ```bash
 sudo apt install ccls
