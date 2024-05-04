@@ -406,6 +406,10 @@
 ;; `leaf` は Emacs の設定を簡潔にし、パッケージの遅延ロードや設定の明示性を向上させるマクロを提供します。
 ;; 以下では、`elscreen` と `neotree` のインストールと設定を `leaf` を使って行います。
 
+
+;;;;;;;;;;;;;;;package の設定終わり;;;;;;;;;;;;;;;;;;;
+
+
 ;; elscreen の設定
 (leaf elscreen
   :ensure t  ; elscreen パッケージがインストールされていなければ自動的にインストールします。
@@ -486,11 +490,6 @@
 ;; エラー音をならなくする
 (setq ring-bell-function 'ignore)
 
-
-;; ;;windowの操作
-;; ;; golden ratio
-;; (golden-ratio-mode 1)
-;; (add-to-list 'golden-ratio-exclude-buffer-names " *NeoTree*")
 
 ;; active window move
 (global-set-key (kbd "<C-left>")  'windmove-left)
@@ -700,23 +699,6 @@
 ;;              ))
 
 ;;ccls を導入
-;; (leaf ccls
-;;   :ensure t
-;;  ;; :after lsp-mode
-;;   :custom (ccls-executable "/usr/bin/ccls")  ;; cclsの実行可能ファイルのパスを適切に設定
-;;   :config
-;;   (setq lsp-enable-snippet nil
-;;         lsp-enable-semantic-highlighting t
-;;         lsp-ccls-enable t))
-
-;; (leaf ccls
-;;   :ensure t
-;;   :custom ((ccls-executable . "/usr/bin/ccls"))  ;; cclsの実行可能ファイルのパスを適切に設定
-;;   :config
-;;   (setq lsp-enable-snippet nil
-;;         lsp-enable-semantic-highlighting t
-;;         lsp-ccls-enable t))
-
 (leaf ccls
   :ensure t
   :after lsp-mode
@@ -770,21 +752,6 @@
  ;;                             (lsp)))  ;; Pythonファイルで自動的にlspを起動
 )
 ;; LSP UIの追加設定
-;; (leaf lsp-ui
-;;   :ensure t
-;;   :commands lsp-ui-mode
-;;   :config
-;;   (setq lsp-ui-doc-enable t
-;;         lsp-ui-doc-use-childframe t
-;;         lsp-ui-doc-position 'top
-;;         lsp-ui-doc-include-signature t
-;;         lsp-ui-sideline-enable nil
-;;         lsp-ui-flycheck-enable t
-;;         lsp-ui-flycheck-list-position 'right
-;;         lsp-ui-flycheck-live-reporting t
-;;         lsp-ui-peek-enable t
-;;         lsp-ui-peek-list-width 60
-;;         lsp-ui-peek-peek-height 25))
 
 (leaf lsp-ui
   :ensure t
@@ -878,10 +845,6 @@
   (company-minimum-prefix-length . 1)   ;; 1文字入力されたら補完を開始
   )
 
-
-
-
-
 ;; ;; flycheckの設定
 ;; (leaf flycheck
 ;;   :ensure t
@@ -914,9 +877,6 @@
   (progn
     (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
     (projectile-mode +1)))
-
-;; M-x eval-expression を使って評価するか、Emacs の設定ファイルに追加
-;;(put 'lsp 'safe-local-eval-function t)
 
 ;;which-key
 (leaf leaf-keywords
