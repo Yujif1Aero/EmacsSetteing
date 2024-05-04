@@ -1,4 +1,4 @@
-# emacssetting
+# emacs setting
 - write this into ~/.bashrc or shell something.Some PAHT in bash is used in eshell
 
 \## create emacs env file
@@ -49,7 +49,7 @@ for ubutsu
  sudo apt install clangd
 ```
 
-## ccls(clangdよりも重い) (NVCCが使えない)
+## ccls(clangdよりも重い) けど優秀
 
 ```bash
 sudo apt install ccls
