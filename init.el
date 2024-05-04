@@ -709,13 +709,24 @@
 ;;         lsp-enable-semantic-highlighting t
 ;;         lsp-ccls-enable t))
 
+;; (leaf ccls
+;;   :ensure t
+;;   :custom ((ccls-executable . "/usr/bin/ccls"))  ;; cclsの実行可能ファイルのパスを適切に設定
+;;   :config
+;;   (setq lsp-enable-snippet nil
+;;         lsp-enable-semantic-highlighting t
+;;         lsp-ccls-enable t))
+
 (leaf ccls
   :ensure t
-  :custom ((ccls-executable . "/usr/bin/ccls"))  ;; cclsの実行可能ファイルのパスを適切に設定
+  :after lsp-mode
+  :init
+  (setq ccls-executable "/usr/bin/ccls")  ;; cclsの実行可能ファイルのパスを適切に設定
   :config
   (setq lsp-enable-snippet nil
         lsp-enable-semantic-highlighting t
         lsp-ccls-enable t))
+
 
 ;;;; LSPモードの設定とキーバインドの調整(ref ::https://qiita.com/kari_tech/items/4754fac39504dccfd7be )
 (leaf lsp-mode
@@ -726,23 +737,23 @@
   ;;(setq lsp-prefer-flymake nil)  ;; FlymakeではなくFlycheckを使用
   (setq lsp-clients-clangd-args '("--header-insertion=never"))
 
-    :custom
-  ((lsp-print-io . nil)
-   ;; LSP通信のデバッグ出力を無効化
-   (lsp-trace . nil)
-   ;; LSPのトレースログを無効化
-   (lsp-print-performance . nil)
-   ;; パフォーマンスログを無効化
-   (lsp-auto-guess-root . t)
-   ;; プロジェクトのルートディレクトリを自動的に推測
-   (lsp-document-sync-method . 'incremental)
-   ;; ドキュメントの同期方法をインクリメンタルに設定
-   (lsp-response-timeout . 5)
-   ;; LSPサーバーからのレスポンスのタイムアウト時間を5秒に設定
-   (lsp-prefer-flymake . 'flymake)
-   ;; 警告やエラーを表示するためにflymakeを使用
-   (lsp-enable-completion-at-point . nil))
-   ;; ポイントでの補完を無効化
+  ;;   :custom
+  ;; ((lsp-print-io . nil)
+  ;;  ;; LSP通信のデバッグ出力を無効化
+  ;;  (lsp-trace . nil)
+  ;;  ;; LSPのトレースログを無効化
+  ;;  (lsp-print-performance . nil)
+  ;;  ;; パフォーマンスログを無効化
+  ;;  (lsp-auto-guess-root . t)
+  ;;  ;; プロジェクトのルートディレクトリを自動的に推測
+  ;;  (lsp-document-sync-method . 'incremental)
+  ;;  ;; ドキュメントの同期方法をインクリメンタルに設定
+  ;;  (lsp-response-timeout . 5)
+  ;;  ;; LSPサーバーからのレスポンスのタイムアウト時間を5秒に設定
+  ;;  (lsp-prefer-flymake . 'flymake)
+  ;;  ;; 警告やエラーを表示するためにflymakeを使用
+  ;;  (lsp-enable-completion-at-point . nil))
+  ;;  ;; ポイントでの補完を無効化
   :config
   ;; キーバインドをGTAGSからLSPに再割り当て
   (define-key lsp-mode-map (kbd "M-.") #'lsp-find-definition)
