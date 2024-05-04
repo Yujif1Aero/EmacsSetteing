@@ -6,7 +6,7 @@
 (when (< emacs-major-version 23)
   (defvar user-emacs-directory "~/.emacs.d/"))
 
-(defun namn/add-to-load-path (&rest paths)
+(defun yujif1aero/add-to-load-path (&rest paths)
   (let (path)
     (dolist (path paths paths)
       (let ((default-directory
@@ -17,61 +17,51 @@
 	(if (fboundp 'normal-top-level-add-subdirs-to-load-path)
 	    (normal-top-level-add-subdirs-to-load-path))))))
 
-(namn/add-to-load-path "elisp" "conf")
+(yujif1aero/add-to-load-path "elisp" "conf")
 
 ;; Emacs自体が書き込む設定先の変更
 (setq custom-file (locate-user-emacs-file "custom.el"))
 (unless (file-exists-p custom-file)
   (write-region "" nil custom-file))
 (load custom-file)
-;; Leaf
-(prog1 "prepare leaf"
-  (prog1 "package"
-    (custom-set-variables
-     '(package-archives '(("org"   . "http://orgmode.org/elpa/")
-			  ("melpa" . "http://melpa.org/packages/")
-			  ("gnu"   . "http://elpa.gnu.org/packages/"))))
-    (package-initialize))
 
-  (prog1 "leaf"
-    (unless (package-installed-p 'leaf)
-      (unless (assoc 'leaf package-archive-contents)
-	(package-refresh-contents))
-      (condition-case err
-	  (package-install 'leaf)
-	(error
-	 (package-refresh-contents)
-	 (package-install 'leaf))))
-
-    (leaf leaf-keywords
-      :ensure t
-      :config (leaf-keywords-init)))
-
-  (prog1 "optional packages for leaf-keywords"
-    ;; optional packages if you want to use :hydra, :el-get,,,
-    (leaf hydra
-      :ensure t
-      :commands (el-get-list-packages)
-      )
-    (leaf el-get
-      :ensure t
-      :commands (el-get-list-packages)
-      :custom ((el-get-git-shallow-clone . t)))))
-
-;; Use Package
+;; Package setup
 (require 'package)
 (setq package-archives
       '(("org"   . "http://orgmode.org/elpa/")
         ("melpa" . "http://melpa.org/packages/")
         ("gnu"   . "http://elpa.gnu.org/packages/")))
 
+(unless (bound-and-true-p package--initialized)
+  (package-initialize))
 
+(unless package-archive-contents
+  (package-refresh-contents))
+
+;; Install leaf if needed
+(unless (package-installed-p 'leaf)
+  (package-install 'leaf))
+
+;; Load leaf
+(require 'leaf)
+
+;; Leaf setup
+(leaf leaf-keywords
+  :ensure t
+  :config
+  (leaf-keywords-init))
+
+;; Optional packages for leaf-keywords
+(leaf hydra :ensure t)
+(leaf el-get
+  :ensure t
+  :custom
+  '((el-get-git-shallow-clone . t)))
+
+;; Use-package setup
 (unless (package-installed-p 'use-package)
-  (package-refresh-contents)
   (package-install 'use-package))
-
 (require 'use-package)
-
 
 ;;;; パッケージの遅延読み込み方法例
 ;; ;; Use-package の設定例
