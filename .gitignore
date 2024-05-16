@@ -17,4 +17,13 @@ kkcrc
 .init*
 *.*~
 .custom.el.~undo-tree~
-eln-cache
+eln-cache*
+GPATH
+GRTAGS
+GTAGS
+shellenv.el
+.lsp-session-v1
+projects
+!.dir-locals.el
+.cache
+*.eld
