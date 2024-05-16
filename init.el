@@ -4,7 +4,7 @@
 ;;Backtrace バッファが表示されないようにするに
 (setq debug-on-error nil)
 (when (< emacs-major-version 23)
-  (defvar user-emacs-directory "~/.emacs.d/"))
+  (defvar user-emacs-directory "/.emacs.d/"))
 
 (defun yujif1aero/add-to-load-path (&rest paths)
   (let (path)
