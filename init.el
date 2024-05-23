@@ -1018,3 +1018,7 @@
 (leaf esup
   :ensure t)
 (require 'esup)
+
+
+;;インデント揃え
+(global-set-key (kbd "C-c C-r") 'indent-region)
