@@ -479,7 +479,6 @@
 ;; スクロールの加速をやめる
 ;;(setq mouse-wheel-progressive-speed nil)
 
-
 ;; bufferの最後でカーソルを動かそうとしても音をならなくする
 (defun next-line (arg)
   (interactive "p")
@@ -644,6 +643,7 @@
     (eshell/alias "m" "find-file $1")
     (eshell/alias "mc" "find-file $1"))
   (add-hook 'eshell-mode-hook 'setup-eshell-aliases))
+
 
 
 
@@ -1022,3 +1022,4 @@
 
 ;;インデント揃え
 (global-set-key (kbd "C-c C-r") 'indent-region)
+
