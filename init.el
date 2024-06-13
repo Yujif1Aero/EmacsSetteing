@@ -505,7 +505,7 @@
 (define-key global-map (kbd "C-c i")  'find-name-dired)
 
 ;; ファイル内検索（いらないメッセージは消去）
-(define-key global-map (kbd "C-c f") 'rgrep)
+(define-key global-map (kbd "C-c C-f") 'rgrep)
 ;; rgrepのheader messageを消去
 (defun delete-grep-header ()
   (save-excursion
@@ -852,16 +852,16 @@
 ;;   (global-flycheck-mode))
 
 ;; Ediffのハイライト色を設定
-(custom-set-faces
- '(ediff-current-diff-A ((t (:background "#1c1c1c" :foreground "#ffffff"))))
- '(ediff-current-diff-B ((t (:background "#1c1c1c" :foreground "#ffffff"))))
- '(ediff-current-diff-C ((t (:background "#1c1c1c" :foreground "#ffffff"))))
- '(ediff-even-diff-A ((t (:background "#262626"))))
- '(ediff-even-diff-B ((t (:background "#262626"))))
- '(ediff-even-diff-C ((t (:background "#262626"))))
- '(ediff-odd-diff-A ((t (:background "#262626"))))
- '(ediff-odd-diff-B ((t (:background "#262626"))))
- '(ediff-odd-diff-C ((t (:background "#262626")))))
+;; (custom-set-faces
+;;  '(ediff-current-diff-A ((t (:background "#1c1c1c" :foreground "#ffffff"))))
+;;  '(ediff-current-diff-B ((t (:background "#1c1c1c" :foreground "#ffffff"))))
+;;  '(ediff-current-diff-C ((t (:background "#1c1c1c" :foreground "#ffffff"))))
+;;  '(ediff-even-diff-A ((t (:background "#262626"))))
+;;  '(ediff-even-diff-B ((t (:background "#262626"))))
+;;  '(ediff-even-diff-C ((t (:background "#262626"))))
+;;  '(ediff-odd-diff-A ((t (:background "#262626"))))
+;;  '(ediff-odd-diff-B ((t (:background "#262626"))))
+;;  '(ediff-odd-diff-C ((t (:background "#262626")))))
 
 
 
