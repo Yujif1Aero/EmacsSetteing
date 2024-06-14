@@ -75,7 +75,7 @@ I will use `os52` to share clip bord between local and sever.Or I set `(el-get-b
  wget https://chromium.googlesource.com/apps/libapps/+/master/hterm/etc/osc52.el -O ~/.emacs.d/osc52.el
 
 ```
-
+貼り付けに関してはsshをしていても cntl+shift+vでできるように元に戻った（謎）
 
 
 - ref : 
