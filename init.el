@@ -218,13 +218,37 @@
 
 
 ;;for linux
-;;;;(setq select-enable-primary nil)
-(setq x-select-enable-clipboard t)
-(leaf xclip
-  :ensure t
-  :config
-  ;; xclip-mode を有効にする
-  (xclip-mode 1))
+;; (setq select-enable-primary nil)
+;; (setq x-select-enable-clipboard t)
+;; (leaf xclip
+;;   :ensure t
+;;   :config
+;;   ;; xclip-mode を有効にする
+;;   (xclip-mode 1))
+;; ;; (setq select-enable-clipboard t)
+;; ;; (setq select-enable-primary t)
+
+
+;; for linux sever ;;sync with x clipboard
+(defun shared-yank ()
+  "yank from shared kill ring file"
+  (interactive)
+  (with-temp-buffer
+    (insert-file-contents "~/.tmp/shared_kill_ring")
+    (setq shared_kill_ring (read (buffer-string))))
+  (insert-before-markers (format "%s" shared_kill_ring)))
+(global-set-key "\M-u" 'shared-yank)
+
+(defun shared-kill (beg end)
+  "kill to shared kill ring file"
+  (interactive "r")
+  (if (and mark-active transient-mark-mode)
+      (progn
+        (setq temp (buffer-substring beg end))
+        (with-temp-buffer
+          (insert (format "%s" temp))
+          (write-file "~/.tmp/shared_kill_ring")))))
+(global-set-key "\M-j" 'shared-kill)
 
 ;; ;; for windows
 ;; (cond (window-system
