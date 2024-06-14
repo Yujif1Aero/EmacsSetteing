@@ -68,7 +68,7 @@ git config --global sequence.editor emacs
 ```
 
 
-##os52.el
+## os52.el
 I will use `os52` to share clip bord between local and sever.Or I set `(el-get-bundle gist:49eabc1978fe3d6dedb3ca5674a16ece:osc52e)` in this `init.el`
 
 ```bash
