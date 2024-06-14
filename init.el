@@ -216,39 +216,80 @@
 					;(setq interprogram-cut-function nil)
 					;(setq interprogram-paste-function nil)
 
-
 ;;for linux
-;; (setq select-enable-primary nil)
+;; ;;(setq select-enable-primary nil)
 ;; (setq x-select-enable-clipboard t)
 ;; (leaf xclip
 ;;   :ensure t
 ;;   :config
 ;;   ;; xclip-mode を有効にする
 ;;   (xclip-mode 1))
-;; ;; (setq select-enable-clipboard t)
-;; ;; (setq select-enable-primary t)
 
 
-;; for linux sever ;;sync with x clipboard
-(defun shared-yank ()
-  "yank from shared kill ring file"
-  (interactive)
-  (with-temp-buffer
-    (insert-file-contents "~/.tmp/shared_kill_ring")
-    (setq shared_kill_ring (read (buffer-string))))
-  (insert-before-markers (format "%s" shared_kill_ring)))
-(global-set-key "\M-u" 'shared-yank)
+;; This is old version
+;;; Copy and Paste parameters
+;;; http://www.gnu.org/software/emacs/manual/html_node/emacs/Clipboard.html
+;; (setq interprogram-cut-function nil)
+;; (setq interprogram-paste-function nil)
+;; (setq x-select-enable-clipboard nil)
+;; (setq save-interprogram-paste-before-kill nil)
+;; (setq yank-pop-change-selection nil)
+;; (setq x-select-enable-clipboard-manager nil)
+;; (setq x-select-enable-primary t)
+;; (setq mouse-drag-copy-region t)
 
-(defun shared-kill (beg end)
-  "kill to shared kill ring file"
+;; ;; Key binding
+;; (global-set-key [f5] 'clipboard-kill-region)
+;; (global-set-key [f6] 'clipboard-kill-ring-save)
+;; (global-set-key [f7] 'clipboard-yank)
+
+
+;; for linux sever ;;sync with x clipboard(https://blog.misosi.ru/2017/01/17/osc52e-el/)
+(el-get-bundle gist:49eabc1978fe3d6dedb3ca5674a16ece:osc52e)
+(require 'osc52e)
+(osc52-set-cut-function)
+
+(custom-set-variables '(osc52-multiplexer 'tmux))
+;; (custom-set-variables '(osc52-multiplexer 'screen)) ;; screenを使っている場合はこっち
+
+;; osc52e自体はリージョンを送る関数は提供していないので、自分で定義する
+(defun osc52-send-region-to-clipboard (START END)
+  "Copy the region to the system clipboard using the OSC 52 escape sequence."
   (interactive "r")
-  (if (and mark-active transient-mark-mode)
-      (progn
-        (setq temp (buffer-substring beg end))
-        (with-temp-buffer
-          (insert (format "%s" temp))
-          (write-file "~/.tmp/shared_kill_ring")))))
-(global-set-key "\M-j" 'shared-kill)
+  (osc52-interprogram-cut-function (buffer-substring-no-properties
+                           START END)))
+
+;; 適当にバインドする
+;;(global-set-key (kbd "C-x M-w") 'osc52-send-region-to-clipboard)
+(global-set-key (kbd "C-S-c") 'osc52-send-region-to-clipboard)
+(global-set-key (kbd "C-S-v") 'osc52-paste-from-clipboard)
+
+
+
+
+
+;; for linux sever ;;sync with x clipboard(if client has no X sever )
+;; (defun shared-yank ()
+;;   "yank from shared kill ring file"
+;;   (interactive)
+;;   (with-temp-buffer
+;;     (insert-file-contents "~/.tmp/shared_kill_ring")
+;;     (setq shared_kill_ring (read (buffer-string))))
+;;   (insert-before-markers (format "%s" shared_kill_ring)))
+;; (global-set-key "\M-u" 'shared-yank)
+
+;; (defun shared-kill (beg end)
+;;   "kill to shared kill ring file"
+;;   (interactive "r")
+;;   (if (and mark-active transient-mark-mode)
+;;       (progn
+;;         (setq temp (buffer-substring beg end))
+;;         (with-temp-buffer
+;;           (insert (format "%s" temp))
+;;           (write-file "~/.tmp/shared_kill_ring")))))
+;; (global-set-key "\M-j" 'shared-kill)
+
+
 
 ;; ;; for windows
 ;; (cond (window-system
@@ -307,12 +348,6 @@
 ;;   (add-to-list 'package-archives
 ;;     '("melpa-stable" . "https://stable.melpa.org/packages/"))
 ;;   (package-initialize))
-
-
-;; xterm のマウスイベントを取得する
-(xterm-mouse-mode t)
-;; マウスホイールを取得する
-(mouse-wheel-mode t)
 
 
 
@@ -485,12 +520,36 @@
 
 
 ;;操作性の向上
+;; xterm-mouse-mode を有効にする
+(xterm-mouse-mode 1)
+;; xterm-mouse-mode をトグルする関数
+(defun toggle-xterm-mouse-mode ()
+  (interactive)
+  (if xterm-mouse-mode
+      (progn
+        (xterm-mouse-mode -1)
+        (message "xterm-mouse-mode disabled"))
+    (progn
+      (xterm-mouse-mode 1)
+      (message "xterm-mouse-mode enabled"))))
 
-;; スクロールは1行ごとに
-;;(setq mouse-wheel-scroll-amount '(1 ((shift) . 5)))
+;; キーバインドの設定（Ctrl + Alt + m にトグルを割り当て）
+(global-set-key (kbd "C-M-m") 'toggle-xterm-mouse-mode)
 
-;; スクロールの加速をやめる
-;;(setq mouse-wheel-progressive-speed nil)
+;; 他のマウス設定
+(mouse-wheel-mode 1)
+
+;; マウスホイールのスクロール設定
+(setq mouse-wheel-scroll-amount '(10 ((Alt) . 1)))  ;; 通常は3行、Shiftキーを押しながらは1行
+(setq mouse-wheel-progressive-speed nil)  ;; スクロール速度を固定
+(setq mouse-wheel-follow-mouse 't)  ;; マウスポインタの位置に従ってスクロール
+
+;; Smooth Scroll のオプション設定
+(setq scroll-step 1)
+(setq scroll-conservatively 10000)
+(setq auto-window-vscroll nil)
+;; スクロールの加速
+;;(setq mouse-wheel-progressive-speed t)
 
 ;; bufferの最後でカーソルを動かそうとしても音をならなくする
 (defun next-line (arg)
@@ -630,8 +689,8 @@
 (leaf magit
   :ensure t
   :bind ((magit-mode-map
-	  ("C-c n" . magit-section-forward)
-	  ("C-c p" . magit-section-backward))
+	  ("C-c C-n" . magit-section-forward)
+	  ("C-c C-p" . magit-section-backward))
 	 ("C-c C-g" . magit-diff-working-tree)))
 
 
