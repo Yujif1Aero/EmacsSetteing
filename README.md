@@ -67,9 +67,21 @@ git config --global core.editor emacs
 git config --global sequence.editor emacs
 ```
 
+
+##os52.el
+I will use `os52` to share clip bord between local and sever.Or I set `(el-get-bundle gist:49eabc1978fe3d6dedb3ca5674a16ece:osc52e)` in this `init.el`
+
+```bash
+ wget https://chromium.googlesource.com/apps/libapps/+/master/hterm/etc/osc52.el -O ~/.emacs.d/osc52.el
+
+```
+
+
+
 - ref : 
 1. https://qiita.com/fnobi/items/8906c8e7759751d32b6b
 1. https://github.com/xuchunyang/eshell-git-prompt
 1. https://qiita.com/namn1125/items/5cd6a9cbbf17fb85c740
 1. https://qiita.com/blue0513/items/acc962738c7f4da26656
 1. https://qiita.com/kari_tech/items/4754fac39504dccfd7be
+1. https://blog.misosi.ru/2017/01/17/osc52e-el/
