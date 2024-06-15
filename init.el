@@ -249,7 +249,7 @@
 (require 'osc52e)
 (osc52-set-cut-function)
 
-(custom-set-variables '(osc52-multiplexer nil))
+(custom-set-variables '(osc52-multiplexer 'tmux))
 ;; (custom-set-variables '(osc52-multiplexer 'screen)) ;; screenを使っている場合はこっち
 (setq osc52-max-length 1000000)
 ;; osc52e自体はリージョンを送る関数は提供していないので、自分で定義する
