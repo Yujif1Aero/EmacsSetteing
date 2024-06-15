@@ -282,7 +282,7 @@
 
 ;; 適当にバインドする
 ;;(global-set-key (kbd "C-x M-w") 'osc52-send-region-to-clipboard)
-(global-set-key (kbd "C-c C-c") 'osc52-send-region-to-clipboard)
+(global-set-key (kbd "C-c M-w") 'osc52-send-region-to-clipboard)
 
 
 
