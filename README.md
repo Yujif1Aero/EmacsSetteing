@@ -65,6 +65,16 @@ git config --global core.editor emacs
 git config --global sequence.editor emacs
 ```
 
+## GIT hub copilot
+node.js >> version 18
+```bash
+sudo apt update
+sudo apt install nodejs npm
+git clone https://github.com/zerolfx/copilot.el.git
+cd copilot.el
+npm install
+```
+
 - ref : 
 1. https://qiita.com/fnobi/items/8906c8e7759751d32b6b
 1. https://github.com/xuchunyang/eshell-git-prompt

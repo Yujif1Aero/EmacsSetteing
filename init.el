@@ -42,6 +42,20 @@
 (unless (package-installed-p 'leaf)
   (package-install 'leaf))
 
+;; straight.elのブートストラップ
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
 ;; Load leaf
 (require 'leaf)
 
@@ -869,15 +883,6 @@
 ;;(setq package-check-signature nil)
 ;;(require 'gnu-elpa-keyring-update)
 
-;; projectile
-(leaf projectile
-  :ensure t
-  :require t
-  :config
-  (progn
-    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-    (projectile-mode +1)))
-
 ;;which-key
 (leaf leaf-keywords
   :ensure t
@@ -1003,22 +1008,75 @@
   :config (treemacs-set-scope-type 'Perspectives))
 
 (use-package treemacs-tab-bar ;;treemacs-tab-bar if you use tab-bar-mode
-  :after (treemacs)
+ :after (treemacs)
   :ensure t
   :config (treemacs-set-scope-type 'Tabs))
 
 
 
-;; 起動プロファイルの収集
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (message "Emacs 起動時間: %s" (emacs-init-time))))
+;; ;; 起動プロファイルの収集
+;; (add-hook 'emacs-startup-hook
+;;           (lambda ()
+;;             (message "Emacs 起動時間: %s" (emacs-init-time))))
 
-;; プロファイル結果の出力
-(leaf esup
-  :ensure t)
-(require 'esup)
+;; ;; プロファイル結果の出力
+;; (leaf esup
+;;   :ensure t)
+;; (require 'esup)
 
 
 ;;インデント揃え
 (global-set-key (kbd "C-c C-r") 'indent-region)
+
+
+
+;; helm, projectile, helm-projectile の設定
+(leaf helm
+  :ensure t
+  :config
+  (progn
+    ;; (global-set-key (kbd "M-x") 'helm-M-x)
+    ;; (global-set-key (kbd "C-x C-f") 'helm-find-files)
+    ;; (global-set-key (kbd "C-x b") 'helm-mini)
+    ;; (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+    (helm-mode 1)))
+;;projectile
+
+;; (leaf helm-ag
+;;   :ensure t
+;;   :after helm
+;;   :custom
+;;   (helm-ag-base-command . "ag --nocolor --nogroup")
+;;   (helm-ag-insert-at-point . 'symbol)
+;;   (helm-ag-command-option . "--all-text")
+;;   (helm-ag-fuzzy-match . t))
+
+(leaf projectile
+  :ensure t
+  :require t
+  :config
+  (progn
+    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+    (projectile-mode +1)))
+
+(leaf helm-projectile
+  :ensure t
+  :after (helm projectile)
+  :config
+  (helm-projectile-on)
+  (setq projectile-completion-system 'helm)
+  :bind
+  (("C-c p h" . helm-projectile)
+   ("C-c p SPC" . helm-projectile-grep)))  ;; ここでキーをバインド
+
+
+;; copilot.elのインストールと設定
+(leaf copilot
+  :straight (copilot :type git :host github :repo "zerolfx/copilot.el" :files ("*.el"))
+  :require t
+  :config
+  (add-hook 'prog-mode-hook 'copilot-mode)
+  (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+  (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+  (define-key copilot-completion-map (kbd "C-TAB") 'copilot-accept-completion-by-word)
+  (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion-by-word))
