@@ -1073,7 +1073,7 @@
   :bind
   (("C-c p h" . helm-projectile)
    ("C-c p SPC" . helm-projectile-grep)))  ;; ここでキーをバインド
-
+ 
 
 ;; copilot.elのインストールと設定
 (leaf copilot
@@ -1087,4 +1087,5 @@
   (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion-by-word)
 
   ;; Warningを無効にする設定
+  (setq copilot-infer-indentation-offset 'disable)
   (setq copilot--disable-infer-indentation t))
