@@ -1035,11 +1035,16 @@
   :ensure t
   :config
   (progn
+        (helm-mode 1)  
     ;; (global-set-key (kbd "M-x") 'helm-M-x)
-    ;; (global-set-key (kbd "C-x C-f") 'helm-find-files)
+    (global-set-key (kbd "C-x C-f") 'helm-find-files)
     ;; (global-set-key (kbd "C-x b") 'helm-mini)
     ;; (global-set-key (kbd "M-y") 'helm-show-kill-ring)
-    (helm-mode 1)))
+  
+    (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
+    (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
+    (define-key helm-map (kbd "C-z") 'helm-select-action) ; list actions using C-z
+  ))
 ;;projectile
 
 ;; (leaf helm-ag
@@ -1079,4 +1084,7 @@
   (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
   (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
   (define-key copilot-completion-map (kbd "C-TAB") 'copilot-accept-completion-by-word)
-  (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion-by-word))
+  (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion-by-word)
+
+  ;; Warningを無効にする設定
+  (setq copilot--disable-infer-indentation t))
