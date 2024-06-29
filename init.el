@@ -429,7 +429,9 @@
   :ensure t  ; elscreen パッケージがインストールされていなければ自動的にインストールします。
   :init
   ;; elscreen を起動します。これによりタブ機能が有効になります。
+  (setq elscreen-prefix-key (kbd "C-M-z"))
   (elscreen-start)
+
   :bind
   ;; キーバインドの設定: タブの作成、次/前のタブへの移動、現在のタブの削除を行います。
   (( "C-M-t" . elscreen-create)  ; 新しいタブを作成します。
@@ -545,32 +547,6 @@
     (message "No grep buffer")))
 (global-set-key (kbd "C-c e") 'my-switch-grep-buffer)
 
-;; eshelの設定
-(leaf eshell-git-prompt
-  :ensure t
-  :config
-  (eshell-git-prompt-use-theme 'git-radar))
-
-
-
-;; eshell or term
-(leaf shell-pop
-  :ensure t
-  :require t
-  :custom
-  ;; shell-popで使用するシェルのタイプを設定します。ここではeshellを使用します。
-
-   (shell-pop-shell-type . '("eshell" "*eshell*" (lambda () (eshell))))
-  ;;   (shell-pop-shell-type . '("term" "*term*" (lambda () (term "/run/current-system/sw/bin/zsh"))))
-  ;;   (shell-pop-shell-type . '("term" "*term*" (lambda () (term "/bin/bash"))))
-
-
-  ;; 例: (shell-pop-window-size . 30) ; ウィンドウのサイズを30%に設定
-  ;;     (shell-pop-full-span . t) ; フル幅で表示
-  :bind
-  ;; 特定のキーバインド（ここでは C-t ）をshell-popのトグル関数にバインドします。
-  (("C-t" . shell-pop)))
-
 
 
 ;; ;;auto-complete -> LSPが同じ機能を持っている
@@ -651,13 +627,6 @@
 
 
 
-;; eshell からファイルを開く.
-(with-eval-after-load 'eshell
-  (defun setup-eshell-aliases ()
-    (eshell/alias "emacs" "find-file $1")
-    (eshell/alias "m" "find-file $1")
-    (eshell/alias "mc" "find-file $1"))
-  (add-hook 'eshell-mode-hook 'setup-eshell-aliases))
 
 
 
@@ -850,7 +819,7 @@
   :ensure t
   :init
   ;; (global-company-mode)  ;; グローバルにcompanyを有効化する場合はこのコメントを外す
-  :hook ((c-mode-hook c++-mode-hook python-mode-hook) . company-mode)  ;; フックを有効にする場合はこのコメントを外す
+ ;; :hook ((c-mode-hook c++-mode-hook python-mode-hook) . company-mode)  ;; フックを有効にする場合はこのコメントを外す
   :custom
   ;; (company-lsp-cache-candidates . t) ;; 候補のキャッシュを常に使用
   ;; (company-lsp-async . t)           ;; 非同期補完を有効化
@@ -1035,15 +1004,15 @@
   :ensure t
   :config
   (progn
-        (helm-mode 1)  
-    ;; (global-set-key (kbd "M-x") 'helm-M-x)
+    (helm-mode 1)  
+    (global-set-key (kbd "M-x") 'helm-M-x)
     (global-set-key (kbd "C-x C-f") 'helm-find-files)
-    ;; (global-set-key (kbd "C-x b") 'helm-mini)
+;;    (global-set-key (kbd "C-x b") 'helm-mini)
     ;; (global-set-key (kbd "M-y") 'helm-show-kill-ring)
   
-    (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
+    ;(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
     (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
-    (define-key helm-map (kbd "C-z") 'helm-select-action) ; list actions using C-z
+;;    (define-key helm-map (kbd "C-z") 'helm-select-action) ; list actions using C-z
   ))
 ;;projectile
 
@@ -1080,7 +1049,7 @@
   :straight (copilot :type git :host github :repo "zerolfx/copilot.el" :files ("*.el"))
   :require t
   :config
-  (add-hook 'prog-mode-hook 'copilot-mode)
+;;  (add-hook 'prog-mode-hook 'copilot-mode)
   (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
   (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
   (define-key copilot-completion-map (kbd "C-TAB") 'copilot-accept-completion-by-word)
@@ -1089,3 +1058,44 @@
   ;; Warningを無効にする設定
   (setq copilot-infer-indentation-offset 'disable)
   (setq copilot--disable-infer-indentation t))
+
+
+;; shell-popの設定
+(leaf shell-pop
+  :ensure t
+  :require t
+  :custom
+  (shell-pop-shell-type . '("eshell" "*eshell*" (lambda () (eshell))))
+  ;; (shell-pop-shell-type . '("term" "*term*" (lambda () (term "/run/current-system/sw/bin/zsh"))))
+  ;; (shell-pop-shell-type . '("term" "*term*" (lambda () (term "/bin/bash"))))
+  ;; 例: (shell-pop-window-size . 30) ; ウィンドウのサイズを30%に設定
+  ;;     (shell-pop-full-span . t) ; フル幅で表示
+  :bind
+  (("C-t" . shell-pop)))
+
+;; eshell-specific settings
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            (define-key eshell-mode-map (kbd "<tab>") 'completion-at-point)))
+
+;; helmをeshellで無効化する設定
+(defun my/eshell-disable-helm ()
+  "Disable helm completion in eshell."
+  (setq-local helm-mode-no-completion-in-region-in-modes '(eshell-mode)))
+
+(add-hook 'eshell-mode-hook 'my/eshell-disable-helm)
+
+;; eshell からファイルを開く.
+(with-eval-after-load 'eshell
+  (defun setup-eshell-aliases ()
+    (eshell/alias "emacs" "find-file $1")
+    (eshell/alias "m" "find-file $1")
+    (eshell/alias "mc" "find-file $1"))
+  (add-hook 'eshell-mode-hook 'setup-eshell-aliases))
+
+
+;; eshell-git-promptの設定
+(leaf eshell-git-prompt
+  :ensure t
+  :config
+  (eshell-git-prompt-use-theme 'git-radar))
