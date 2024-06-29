@@ -9,7 +9,10 @@ perl -wle \
     'do { print qq/(setenv "$_" "$ENV{$_}")/ if exists $ENV{$_} } for @ARGV' \
     PATH > ~/.emacs.d/shellenv.el
 ```
-
+```bash
+##move to project root
+alias pjroot='cd $(git rev-parse --show-toplevel)'
+```
 
 ## add PATH (pip path)
 for examples
@@ -57,6 +60,7 @@ for ubutsu
 sudo apt install ccls
 
 ```
+履歴は`~/.emacs.d/lsp-session-v1` に残る
 
 ## GIT default editor
 

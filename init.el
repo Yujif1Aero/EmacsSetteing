@@ -1099,3 +1099,25 @@
   :ensure t
   :config
   (eshell-git-prompt-use-theme 'git-radar))
+
+
+;; ;;projectile-bookmarks.eld ファイルの更新:
+;; (setq projectile-enable-caching nil)
+;; (setq projectile-known-projects-file "/dev/null")
+;; (setq projectile-cache-file "/dev/null")
+
+;; ;;straight ディレクトリの更新:
+;; (setq straight-check-for-modifications nil)
+;; (setq straight-check-for-modifications '(check-on-save find-when-checking))
+
+;; ;;auto-save-list ディレクトリの設定:
+;; (setq auto-save-default nil)
+;; (setq auto-save-list-file-prefix nil)
+
+
+
+;; (setq treemacs-persist-file "/dev/null")
+;; (setq treemacs-last-error-persist-file "/dev/null")
+
+
+;; (setq shell-file-name "/dev/null")
