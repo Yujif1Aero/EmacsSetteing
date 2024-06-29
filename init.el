@@ -1100,6 +1100,7 @@
   :config
   (eshell-git-prompt-use-theme 'git-radar))
 
+(setq enable-local-variables t)
 
 ;; ;;projectile-bookmarks.eld ファイルの更新:
 ;; (setq projectile-enable-caching nil)
