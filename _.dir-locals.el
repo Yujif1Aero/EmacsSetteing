@@ -106,7 +106,7 @@
                                (setq lsp-file-watch-ignored
                                      '("[/\\\\]\\.git$"
                                        "[/\\\\]build$"
-                                       "[/\\\\]apps/[a-x,z]*"
+                                       "[/\\\\]apps/[a-z]*"
                                        "[/\\\\]examples$"
                                        "[/\\\\]config$"
                                        "[/\\\\]doc$"
