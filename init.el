@@ -1122,3 +1122,33 @@
 
 
 ;; (setq shell-file-name "/dev/null")
+
+
+(defun my-c-comment-dwim (arg)
+  "Comment or uncomment current line or region with //ys in C and C++ modes."
+  (interactive "*P")
+  (let ((comment-start "//ys ")
+        (comment-end ""))
+    (if (use-region-p)
+        (comment-dwim arg)
+      (save-excursion
+        (beginning-of-line)
+        (if (looking-at (concat "^\\s-*" (regexp-quote comment-start)))
+            (uncomment-region (line-beginning-position) (line-end-position))
+          (progn
+            (beginning-of-line)
+            (insert comment-start)))))))
+
+(defun my-c-comment-style ()
+  (setq comment-start "//ys "
+        comment-end ""))
+
+(add-hook 'c-mode-hook 'my-c-comment-style)
+(add-hook 'c-mode-hook
+          (lambda ()
+            (local-set-key (kbd "M-;") 'my-c-comment-dwim)))
+
+(add-hook 'c++-mode-hook 'my-c-comment-style)
+(add-hook 'c++-mode-hook
+          (lambda ()
+            (local-set-key (kbd "M-;") 'my-c-comment-dwim)))
