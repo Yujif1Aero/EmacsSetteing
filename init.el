@@ -258,39 +258,39 @@
 ;; (global-set-key [f7] 'clipboard-yank)
 
 
-;; for linux sever ;;sync with x clipboard(https://blog.misosi.ru/2017/01/17/osc52e-el/)
-(el-get-bundle gist:49eabc1978fe3d6dedb3ca5674a16ece:osc52e)
-(require 'osc52e)
-(osc52-set-cut-function)
+;; ;; for linux sever ;;sync with x clipboard(https://blog.misosi.ru/2017/01/17/osc52e-el/)
+;; (el-get-bundle gist:49eabc1978fe3d6dedb3ca5674a16ece:osc52e)
+;; (require 'osc52e)
+;; (osc52-set-cut-function)
 
-(custom-set-variables '(osc52-multiplexer 'tmux))
-;; (custom-set-variables '(osc52-multiplexer 'screen)) ;; screenを使っている場合はこっち
-(setq osc52-max-length 1000000)
-;; osc52e自体はリージョンを送る関数は提供していないので、自分で定義する
-(defun osc52-send-region-to-clipboard (start end)
-  "Copy the region to the system clipboard using the OSC 52 escape sequence."
-  (interactive "r")
-  (let* ((text (buffer-substring-no-properties start end))
-         (encoded-text (base64-encode-string (encode-coding-string text 'utf-8)))
-         (osc52-escape-sequence (concat "\e]52;c;" encoded-text "\07")))
-    (if (<= (length osc52-escape-sequence) osc52-max-length)
-        (send-string-to-terminal osc52-escape-sequence)
-      (error "Selection too long to send via OSC 52"))))
+;; (custom-set-variables '(osc52-multiplexer 'tmux))
+;; ;; (custom-set-variables '(osc52-multiplexer 'screen)) ;; screenを使っている場合はこっち
+;; (setq osc52-max-length 1000000)
+;; ;; osc52e自体はリージョンを送る関数は提供していないので、自分で定義する
+;; (defun osc52-send-region-to-clipboard (start end)
+;;   "Copy the region to the system clipboard using the OSC 52 escape sequence."
+;;   (interactive "r")
+;;   (let* ((text (buffer-substring-no-properties start end))
+;;          (encoded-text (base64-encode-string (encode-coding-string text 'utf-8)))
+;;          (osc52-escape-sequence (concat "\e]52;c;" encoded-text "\07")))
+;;     (if (<= (length osc52-escape-sequence) osc52-max-length)
+;;         (send-string-to-terminal osc52-escape-sequence)
+;;       (error "Selection too long to send via OSC 52"))))
 
 
-;; (defun osc52-paste-from-clipboard ()
-;;   "Paste from clipboard using OSC52 protocol."
-;;   (interactive)
-;;   (let* ((selection (with-temp-buffer
-;;                       (clipboard-yank)
-;;                       (buffer-string))))
-;;     (if (string-empty-p selection)
-;;         (error "Clipboard is empty or not a string")
-;;       (let* ((encoded-text (base64-encode-string (encode-coding-string selection 'utf-8)))
-;;              (osc52-escape-sequence (concat "\e]52;c;" encoded-text "\07")))
-;;         (if (<= (length osc52-escape-sequence) osc52-max-length)
-;;             (send-string-to-terminal osc52-escape-sequence)
-;;           (error "Selection too long to send via OSC 52"))))))
+;;;; (defun osc52-paste-from-clipboard ()
+;;;;   "Paste from clipboard using OSC52 protocol."
+;;;;   (interactive)
+;;;;   (let* ((selection (with-temp-buffer
+;;;;                       (clipboard-yank)
+;;;;                       (buffer-string))))
+;;;;     (if (string-empty-p selection)
+;;;;         (error "Clipboard is empty or not a string")
+;;;;       (let* ((encoded-text (base64-encode-string (encode-coding-string selection 'utf-8)))
+;;;;              (osc52-escape-sequence (concat "\e]52;c;" encoded-text "\07")))
+;;;;         (if (<= (length osc52-escape-sequence) osc52-max-length)
+;;;;             (send-string-to-terminal osc52-escape-sequence)
+;;;;           (error "Selection too long to send via OSC 52"))))))
 
 
 
@@ -332,35 +332,35 @@
 ;;        ))
 
 
-;; ;; for linux(wsl) new
-;; ;; sync with x clipboard
-;; (unless window-system
-;;   (when (getenv "DISPLAY")
-;;     ;; Callback for when user cuts
-;;     (defun xsel-cut-function (text &optional push)
-;;       ;; Insert text to temp-buffer, and "send" content to xsel stdin
-;;       (with-temp-buffer
-;;         (insert text)
-;;         ;; I prefer using the "clipboard" selection (the one the
-;;         ;; typically is used by c-c/c-v) before the primary selection
-;;         ;; (that uses mouse-select/middle-button-click)
-;;         (call-process-region (point-min) (point-max) "xsel" nil 0 nil "--clipboard" "--input")))
-;;     ;; Call back for when user pastes
-;;     (defun xsel-paste-function()
-;;       ;; Find out what is current selection by xsel. If it is different
-;;       ;; from the top of the kill-ring (car kill-ring), then return
-;;       ;; it. Else, nil is returned, so whatever is in the top of the
-;;       ;; kill-ring will be used.
-;;       (let ((xsel-output (shell-command-to-string "xsel --clipboard --output")))
-;;         (unless (string= (car kill-ring) xsel-output)
-;;           xsel-output )))
-;;     ;; Attach callbacks to hooks
-;;     (setq interprogram-cut-function 'xsel-cut-function)
-;;     (setq interprogram-paste-function 'xsel-paste-function)
-;;     ;; Idea from
-;;     ;; http://shreevatsa.wordpress.com/2006/10/22/emacs-copypaste-and-x/
-;;     ;; http://www.mail-archive.com/help-gnu-emacs@gnu.org/msg03577.html
-;;     ))
+;; for linux(wsl) new
+;; sync with x clipboard
+(unless window-system
+  (when (getenv "DISPLAY")
+    ;; Callback for when user cuts
+    (defun xsel-cut-function (text &optional push)
+      ;; Insert text to temp-buffer, and "send" content to xsel stdin
+      (with-temp-buffer
+        (insert text)
+        ;; I prefer using the "clipboard" selection (the one the
+        ;; typically is used by c-c/c-v) before the primary selection
+        ;; (that uses mouse-select/middle-button-click)
+        (call-process-region (point-min) (point-max) "xsel" nil 0 nil "--clipboard" "--input")))
+    ;; Call back for when user pastes
+    (defun xsel-paste-function()
+      ;; Find out what is current selection by xsel. If it is different
+      ;; from the top of the kill-ring (car kill-ring), then return
+      ;; it. Else, nil is returned, so whatever is in the top of the
+      ;; kill-ring will be used.
+      (let ((xsel-output (shell-command-to-string "xsel --clipboard --output")))
+        (unless (string= (car kill-ring) xsel-output)
+          xsel-output )))
+    ;; Attach callbacks to hooks
+    (setq interprogram-cut-function 'xsel-cut-function)
+    (setq interprogram-paste-function 'xsel-paste-function)
+    ;; Idea from
+    ;; http://shreevatsa.wordpress.com/2006/10/22/emacs-copypaste-and-x/
+    ;; http://www.mail-archive.com/help-gnu-emacs@gnu.org/msg03577.html
+    ))
 
 
 ;;editer colour
