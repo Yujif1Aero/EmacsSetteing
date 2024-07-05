@@ -42,6 +42,20 @@
 (unless (package-installed-p 'leaf)
   (package-install 'leaf))
 
+;; straight.elのブートストラップ
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
 ;; Load leaf
 (require 'leaf)
 
@@ -485,7 +499,9 @@
   :init
   (setq elscreen-prefix-key (kbd "C-M-z"))
   ;; elscreen を起動します。これによりタブ機能が有効になります。
+  (setq elscreen-prefix-key (kbd "C-M-z"))
   (elscreen-start)
+
   :bind
   ;; キーバインドの設定: タブの作成、次/前のタブへの移動、現在のタブの削除を行います。
   (( "C-M-t" . elscreen-create)  ; 新しいタブを作成します。
@@ -598,7 +614,7 @@
 (define-key global-map (kbd "C-c i")  'find-name-dired)
 
 ;; ファイル内検索（いらないメッセージは消去）
-(define-key global-map (kbd "C-c f") 'rgrep)
+(define-key global-map (kbd "C-c C-f") 'rgrep)
 ;; rgrepのheader messageを消去
 (defun delete-grep-header ()
   (save-excursion
@@ -623,32 +639,6 @@
       (pop-to-buffer "*grep*")
     (message "No grep buffer")))
 (global-set-key (kbd "C-c e") 'my-switch-grep-buffer)
-
-;; eshelの設定
-(leaf eshell-git-prompt
-  :ensure t
-  :config
-  (eshell-git-prompt-use-theme 'git-radar))
-
-
-
-;; eshell or term
-(leaf shell-pop
-  :ensure t
-  :require t
-  :custom
-  ;; shell-popで使用するシェルのタイプを設定します。ここではeshellを使用します。
-
-   (shell-pop-shell-type . '("eshell" "*eshell*" (lambda () (eshell))))
-  ;;   (shell-pop-shell-type . '("term" "*term*" (lambda () (term "/run/current-system/sw/bin/zsh"))))
-  ;;   (shell-pop-shell-type . '("term" "*term*" (lambda () (term "/bin/bash"))))
-
-
-  ;; 例: (shell-pop-window-size . 30) ; ウィンドウのサイズを30%に設定
-  ;;     (shell-pop-full-span . t) ; フル幅で表示
-  :bind
-  ;; 特定のキーバインド（ここでは C-t ）をshell-popのトグル関数にバインドします。
-  (("C-t" . shell-pop)))
 
 
 
@@ -730,13 +720,6 @@
 
 
 
-;; eshell からファイルを開く.
-(with-eval-after-load 'eshell
-  (defun setup-eshell-aliases ()
-    (eshell/alias "emacs" "find-file $1")
-    (eshell/alias "m" "find-file $1")
-    (eshell/alias "mc" "find-file $1"))
-  (add-hook 'eshell-mode-hook 'setup-eshell-aliases))
 
 
 
@@ -930,7 +913,7 @@
   :ensure t
   :init
   ;; (global-company-mode)  ;; グローバルにcompanyを有効化する場合はこのコメントを外す
-  :hook ((c-mode-hook c++-mode-hook python-mode-hook) . company-mode)  ;; フックを有効にする場合はこのコメントを外す
+ ;; :hook ((c-mode-hook c++-mode-hook python-mode-hook) . company-mode)  ;; フックを有効にする場合はこのコメントを外す
   :custom
   ;; (company-lsp-cache-candidates . t) ;; 候補のキャッシュを常に使用
   ;; (company-lsp-async . t)           ;; 非同期補完を有効化
@@ -946,31 +929,22 @@
 ;;   (global-flycheck-mode))
 
 ;; Ediffのハイライト色を設定
-(custom-set-faces
- '(ediff-current-diff-A ((t (:background "#1c1c1c" :foreground "#ffffff"))))
- '(ediff-current-diff-B ((t (:background "#1c1c1c" :foreground "#ffffff"))))
- '(ediff-current-diff-C ((t (:background "#1c1c1c" :foreground "#ffffff"))))
- '(ediff-even-diff-A ((t (:background "#262626"))))
- '(ediff-even-diff-B ((t (:background "#262626"))))
- '(ediff-even-diff-C ((t (:background "#262626"))))
- '(ediff-odd-diff-A ((t (:background "#262626"))))
- '(ediff-odd-diff-B ((t (:background "#262626"))))
- '(ediff-odd-diff-C ((t (:background "#262626")))))
+;; (custom-set-faces
+;;  '(ediff-current-diff-A ((t (:background "#1c1c1c" :foreground "#ffffff"))))
+;;  '(ediff-current-diff-B ((t (:background "#1c1c1c" :foreground "#ffffff"))))
+;;  '(ediff-current-diff-C ((t (:background "#1c1c1c" :foreground "#ffffff"))))
+;;  '(ediff-even-diff-A ((t (:background "#262626"))))
+;;  '(ediff-even-diff-B ((t (:background "#262626"))))
+;;  '(ediff-even-diff-C ((t (:background "#262626"))))
+;;  '(ediff-odd-diff-A ((t (:background "#262626"))))
+;;  '(ediff-odd-diff-B ((t (:background "#262626"))))
+;;  '(ediff-odd-diff-C ((t (:background "#262626")))))
 
 
 
 ;; 署名検証を無効にする
 ;;(setq package-check-signature nil)
 ;;(require 'gnu-elpa-keyring-update)
-
-;; projectile
-(leaf projectile
-  :ensure t
-  :require t
-  :config
-  (progn
-    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-    (projectile-mode +1)))
 
 ;;which-key
 (leaf leaf-keywords
@@ -1097,23 +1071,180 @@
   :config (treemacs-set-scope-type 'Perspectives))
 
 (use-package treemacs-tab-bar ;;treemacs-tab-bar if you use tab-bar-mode
-  :after (treemacs)
+ :after (treemacs)
   :ensure t
   :config (treemacs-set-scope-type 'Tabs))
 
 
 
-;; 起動プロファイルの収集
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (message "Emacs 起動時間: %s" (emacs-init-time))))
+;; ;; 起動プロファイルの収集
+;; (add-hook 'emacs-startup-hook
+;;           (lambda ()
+;;             (message "Emacs 起動時間: %s" (emacs-init-time))))
 
-;; プロファイル結果の出力
-(leaf esup
-  :ensure t)
-(require 'esup)
+;; ;; プロファイル結果の出力
+;; (leaf esup
+;;   :ensure t)
+;; (require 'esup)
 
 
 ;;インデント揃え
 (global-set-key (kbd "C-c C-r") 'indent-region)
+
+
+
+
+;; helm, projectile, helm-projectile の設定
+(leaf helm
+  :ensure t
+  :config
+  (progn
+    (helm-mode 1)  
+    (global-set-key (kbd "M-x") 'helm-M-x)
+    (global-set-key (kbd "C-x C-f") 'helm-find-files)
+;;    (global-set-key (kbd "C-x b") 'helm-mini)
+    ;; (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+  
+    ;(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
+    (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
+;;    (define-key helm-map (kbd "C-z") 'helm-select-action) ; list actions using C-z
+  ))
+;;projectile
+
+;; (leaf helm-ag
+;;   :ensure t
+;;   :after helm
+;;   :custom
+;;   (helm-ag-base-command . "ag --nocolor --nogroup")
+;;   (helm-ag-insert-at-point . 'symbol)
+;;   (helm-ag-command-option . "--all-text")
+;;   (helm-ag-fuzzy-match . t))
+
+(leaf projectile
+  :ensure t
+  :require t
+  :config
+  (progn
+    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+    (projectile-mode +1)))
+
+(leaf helm-projectile
+  :ensure t
+  :after (helm projectile)
+  :config
+  (helm-projectile-on)
+  (setq projectile-completion-system 'helm)
+  :bind
+  (("C-c p h" . helm-projectile)
+   ("C-c p SPC" . helm-projectile-grep)))  ;; ここでキーをバインド
+ 
+
+;; copilot.elのインストールと設定
+(leaf copilot
+  :straight (copilot :type git :host github :repo "zerolfx/copilot.el" :files ("*.el"))
+  :require t
+  :config
+;;  (add-hook 'prog-mode-hook 'copilot-mode)
+  (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+  (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+  (define-key copilot-completion-map (kbd "C-TAB") 'copilot-accept-completion-by-word)
+  (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion-by-word)
+
+  ;; Warningを無効にする設定
+  (setq copilot-infer-indentation-offset 'disable)
+  (setq copilot--disable-infer-indentation t))
+
+
+;; shell-popの設定
+(leaf shell-pop
+  :ensure t
+  :require t
+  :custom
+  (shell-pop-shell-type . '("eshell" "*eshell*" (lambda () (eshell))))
+  ;; (shell-pop-shell-type . '("term" "*term*" (lambda () (term "/run/current-system/sw/bin/zsh"))))
+  ;; (shell-pop-shell-type . '("term" "*term*" (lambda () (term "/bin/bash"))))
+  ;; 例: (shell-pop-window-size . 30) ; ウィンドウのサイズを30%に設定
+  ;;     (shell-pop-full-span . t) ; フル幅で表示
+  :bind
+  (("C-t" . shell-pop)))
+
+;; eshell-specific settings
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            (define-key eshell-mode-map (kbd "<tab>") 'completion-at-point)))
+
+;; helmをeshellで無効化する設定
+(defun my/eshell-disable-helm ()
+  "Disable helm completion in eshell."
+  (setq-local helm-mode-no-completion-in-region-in-modes '(eshell-mode)))
+
+(add-hook 'eshell-mode-hook 'my/eshell-disable-helm)
+
+;; eshell からファイルを開く.
+(with-eval-after-load 'eshell
+  (defun setup-eshell-aliases ()
+    (eshell/alias "emacs" "find-file $1")
+    (eshell/alias "m" "find-file $1")
+    (eshell/alias "mc" "find-file $1"))
+  (add-hook 'eshell-mode-hook 'setup-eshell-aliases))
+
+
+;; eshell-git-promptの設定
+(leaf eshell-git-prompt
+  :ensure t
+  :config
+  (eshell-git-prompt-use-theme 'git-radar))
+
+(setq enable-local-variables t)
+
+;; ;;projectile-bookmarks.eld ファイルの更新:
+;; (setq projectile-enable-caching nil)
+;; (setq projectile-known-projects-file "/dev/null")
+;; (setq projectile-cache-file "/dev/null")
+
+;; ;;straight ディレクトリの更新:
+;; (setq straight-check-for-modifications nil)
+;; (setq straight-check-for-modifications '(check-on-save find-when-checking))
+
+;; ;;auto-save-list ディレクトリの設定:
+;; (setq auto-save-default nil)
+;; (setq auto-save-list-file-prefix nil)
+
+
+
+;; (setq treemacs-persist-file "/dev/null")
+;; (setq treemacs-last-error-persist-file "/dev/null")
+
+
+;; (setq shell-file-name "/dev/null")
+
+
+(defun my-c-comment-dwim (arg)
+  "Comment or uncomment current line or region with //ys in C and C++ modes."
+  (interactive "*P")
+  (let ((comment-start "//ys ")
+        (comment-end ""))
+    (if (use-region-p)
+        (comment-dwim arg)
+      (save-excursion
+        (beginning-of-line)
+        (if (looking-at (concat "^\\s-*" (regexp-quote comment-start)))
+            (uncomment-region (line-beginning-position) (line-end-position))
+          (progn
+            (beginning-of-line)
+            (insert comment-start)))))))
+
+(defun my-c-comment-style ()
+  (setq comment-start "//ys "
+        comment-end ""))
+
+(add-hook 'c-mode-hook 'my-c-comment-style)
+(add-hook 'c-mode-hook
+          (lambda ()
+            (local-set-key (kbd "M-;") 'my-c-comment-dwim)))
+
+(add-hook 'c++-mode-hook 'my-c-comment-style)
+(add-hook 'c++-mode-hook
+          (lambda ()
+            (local-set-key (kbd "M-;") 'my-c-comment-dwim)))
 

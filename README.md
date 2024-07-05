@@ -10,7 +10,10 @@ perl -wle \
     'do { print qq/(setenv "$_" "$ENV{$_}")/ if exists $ENV{$_} } for @ARGV' \
     PATH > ~/.emacs.d/shellenv.el
 ```
-
+```bash
+##move to project root
+alias pjroot='cd $(git rev-parse --show-toplevel)'
+```
 
 
 ## add PATH (pip path)
@@ -59,13 +62,16 @@ for ubutsu
 sudo apt install ccls
 
 ```
-
+project root directry として選択した履歴は`~/.emacs.d/lsp-session-v1` に残る。 もしかしたら、プロジェクトルートに`.ccls-root`　を置く必要があるかも。基本的に`M-x lsp`したあとに `i`と入力すれば、OK 
+`_.dir-locals.el`を参考にして project root directryに`.dir-locals.el`として置くこと。注意 ！！！`.dir_locals.el`名前はこれではない。バー `-`にしてね。
+project root directry に`.ccls`を置こう。中身は一行  `%compile_commands.json`のみでOK
 ## GIT default editor
 
 ```bash
 git config --global core.editor emacs
 git config --global sequence.editor emacs
 ```
+
 
 
 ## os52.el
@@ -76,6 +82,17 @@ I will use `os52` to share clip bord between local and sever.Or I set `(el-get-b
 
 ```
 貼り付けに関してはsshをしていても cntl+shift+vでできるように元に戻った（謎）
+
+
+## GIT hub copilot
+node.js >> version 18
+```bash
+sudo apt update
+sudo apt install nodejs npm
+git clone https://github.com/zerolfx/copilot.el.git
+cd copilot.el
+npm install
+```
 
 
 - ref : 
