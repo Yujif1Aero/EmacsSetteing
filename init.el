@@ -483,6 +483,7 @@
 (leaf elscreen
   :ensure t  ; elscreen パッケージがインストールされていなければ自動的にインストールします。
   :init
+  (setq elscreen-prefix-key (kbd "C-M-z"))
   ;; elscreen を起動します。これによりタブ機能が有効になります。
   (elscreen-start)
   :bind
