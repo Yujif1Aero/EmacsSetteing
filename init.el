@@ -1136,7 +1136,9 @@
     ;;       (setq default-directory project-root))))
 
     ;; ;; find-file-hook に関数を追加
-    ;; (add-hook 'find-file-hook 'set-default-directory-to-project-root)))
+    ;; (add-hook 'find-file-hook 'set-default-directory-to-project-root)
+    )
+ )
 
 (leaf helm-projectile
   :ensure t
