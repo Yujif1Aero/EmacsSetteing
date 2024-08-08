@@ -362,7 +362,6 @@
     ;; http://www.mail-archive.com/help-gnu-emacs@gnu.org/msg03577.html
     ))
 
-
 ;;editer colour
 (setq auto-mode-alist (cons '("\\.cu$" . c++-mode) auto-mode-alist))
 (setq auto-mode-alist (cons '("\\.cuh$" . c++-mode) auto-mode-alist))
@@ -695,9 +694,9 @@
 (global-set-key (kbd "C-M-]") 'next-buffer)
 
 ;; ;; ;;GIT
-(leaf git-gutter
-  :ensure t
-  :global-minor-mode global-git-gutter-mode)
+;; (leaf git-gutter
+;;   :ensure t
+;;   :global-minor-mode global-git-gutter-mode)
 (leaf magit
   :ensure t
   :bind ((magit-mode-map
