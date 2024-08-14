@@ -1127,15 +1127,15 @@
     (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
     (projectile-mode +1)
     
-    ;; プロジェクトのルートディレクトリに `default-directory` を設定する関数を追加
-    (defun set-default-directory-to-project-root ()
-      "Set `default-directory` to the root of the project."
-      (let ((project-root (projectile-project-root)))
-        (when project-root
-          (setq default-directory project-root))))
+    ;; ;; プロジェクトのルートディレクトリに `default-directory` を設定する関数を追加
+    ;; (defun set-default-directory-to-project-root ()
+    ;;   "Set `default-directory` to the root of the project."
+    ;;   (let ((project-root (projectile-project-root)))
+    ;;     (when project-root
+    ;;       (setq default-directory project-root))))
 
-    ;; ;; find-file-hook に関数を追加
-     (add-hook 'find-file-hook 'set-default-directory-to-project-root)
+    ;; ;; ;; find-file-hook に関数を追加
+    ;;  (add-hook 'find-file-hook 'set-default-directory-to-project-root)
     )
  )
 
