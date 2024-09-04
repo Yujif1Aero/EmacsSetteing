@@ -1106,7 +1106,13 @@
   
     ;(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
     (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
-;;    (define-key helm-map (kbd "C-z") 'helm-select-action) ; list actions using C-z
+    ;;    (define-key helm-map (kbd "C-z") 'helm-select-action) ; list actions using C-z
+       ;; 追加: C-x C-d で helm の dired を開く設定
+    (global-set-key (kbd "C-x C-d") 'dired)
+;;    (global-set-key (kbd "C-x C-d") 'helm-browse-project) 
+   ;; (global-set-key (kbd "C-x d") 'helm-browse-project)
+
+
   ))
 ;;projectile
 
@@ -1259,3 +1265,4 @@
           (lambda ()
             (local-set-key (kbd "M-;") 'my-c-comment-dwim)))
 
+(global-set-key (kbd "F5") 'compile)
