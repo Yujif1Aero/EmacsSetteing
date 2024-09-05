@@ -103,7 +103,8 @@
 ;;次のwindowに移動
 
 (define-key global-map (kbd "C-c o")'other-window)
-;(define-key global-map (kbd "C-i")'other-window)
+                                        ;(define-key global-map (kbd "C-i")'other-window)
+(windmove-default-keybindings)
 
 ;;コードを折りたたむ
 (leaf *truncate-lines
@@ -723,7 +724,8 @@
 
 
 
-;; gnu-global->LSPに比べると精度が良くない
+;; ;; gnu-global->LSPに比べると精度が良くない
+(setq-local imenu-create-index-function #'ggtags-build-imenu-index)
 ;; (leaf ggtags
 ;;   :ensure t  ;; gnu-global パッケージを自動でインストール
 ;;   :hook (c-mode-common-hook) ;; Hook を利用して自動的に ggtags-mode を有効に
@@ -759,6 +761,7 @@
 ;;     ;; キーバインドの設定
 ;;     (define-key ggtags-mode-map (kbd "M-.") 'my-ggtags-find-tag)
 ;;     (define-key ggtags-mode-map (kbd "M-,") 'my-ggtags-find-rtag)))
+    
 
 ;; (autoload 'gtags-mode "gtags" "" t)
 ;; (setq gtags-mode-hook
@@ -911,8 +914,8 @@
 (leaf company
   :ensure t
   :init
-  ;; (global-company-mode)  ;; グローバルにcompanyを有効化する場合はこのコメントを外す
- ;; :hook ((c-mode-hook c++-mode-hook python-mode-hook) . company-mode)  ;; フックを有効にする場合はこのコメントを外す
+  ;;(global-company-mode) ;; グローバルにcompanyを有効化する場合はこのコメントを外す
+  :hook ((c-mode-hook c++-mode-hook python-mode-hook) . company-mode)  ;; フックを有効にする場合はこのコメントを外す
   :custom
   ;; (company-lsp-cache-candidates . t) ;; 候補のキャッシュを常に使用
   ;; (company-lsp-async . t)           ;; 非同期補完を有効化
@@ -1265,4 +1268,5 @@
           (lambda ()
             (local-set-key (kbd "M-;") 'my-c-comment-dwim)))
 
-(global-set-key (kbd "F5") 'compile)
+(global-set-key (kbd "<f5>") 'compile)
+
