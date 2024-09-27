@@ -94,6 +94,11 @@ cd copilot.el
 npm install
 ```
 
+## clang-format
+```bash
+sudo apt install clang-format
+```
+
 
 - ref : 
 1. https://qiita.com/fnobi/items/8906c8e7759751d32b6b

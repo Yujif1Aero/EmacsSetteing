@@ -807,7 +807,7 @@
   ;;  ;; パフォーマンスログを無効化
   ;;  (lsp-auto-guess-root . t)
   ;;  ;; プロジェクトのルートディレクトリを自動的に推測
-  ;;  (lsp-document-sync-method . 'incremental)
+  ;;  (Lsp-document-sync-method . 'incremental)
   ;;  ;; ドキュメントの同期方法をインクリメンタルに設定
   ;;  (lsp-response-timeout . 5)
   ;;  ;; LSPサーバーからのレスポンスのタイムアウト時間を5秒に設定
@@ -1092,6 +1092,22 @@
 
 ;;インデント揃え
 (global-set-key (kbd "C-c C-r") 'indent-region)
+;; leaf を使った clang-format の設定
+(leaf clang-format
+  :ensure t
+  :bind (("C-c C-j" . clang-format-region)    ;; 選択範囲にフォーマットを適用
+     ("C-c j" . clang-format-buffer)
+         )   ;; バッファ全体にフォーマットを適用
+  :config
+  ;; (add-hook 'c-mode-hook #'(lambda ()
+  ;;                            (add-hook 'before-save-hook 'clang-format-buffer nil 'local))) ;; C言語で保存時に自動フォーマット
+  ;; (add-hook 'c++-mode-hook #'(lambda ()
+  ;;                              (add-hook 'before-save-hook 'clang-format-buffer nil 'local)));; C++で保存時に自動フォーマット
+  ) 
+
+
+
+
 
 
 
@@ -1270,3 +1286,16 @@
 
 (global-set-key (kbd "<f5>") 'compile)
 
+;; 全角スペースをハイライトする設定
+(defface my-full-width-space-face
+  '((t (:background "gray20"))) ;; 背景色を変更 (任意の色に変更可能)
+  "Face for highlighting full-width spaces.")
+
+(defun my-highlight-full-width-spaces ()
+  "Highlight full-width spaces in the buffer."
+  (font-lock-add-keywords
+   nil
+   '(("　" 0 'my-full-width-space-face append))))
+
+(add-hook 'prog-mode-hook 'my-highlight-full-width-spaces) ;; プログラムモードで有効化
+(add-hook 'text-mode-hook 'my-highlight-full-width-spaces) ;; テキストモードで有効化
