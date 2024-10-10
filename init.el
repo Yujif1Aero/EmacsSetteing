@@ -698,12 +698,18 @@
 ;; (leaf git-gutter
 ;;   :ensure t
 ;;   :global-minor-mode global-git-gutter-mode)
+
 (leaf magit
   :ensure t
   :bind ((magit-mode-map
-	  ("C-c C-n" . magit-section-forward)
-	  ("C-c C-p" . magit-section-backward))
-	 ("C-c C-g" . magit-diff-working-tree)))
+          ;; 通常のカーソル移動用に `C-n` と `C-p` を標準の移動コマンドに再バインド
+          ("C-n" . next-line)
+          ("C-p" . previous-line)
+          ;; セクション移動用に `C-c C-n` と `C-c C-p` を `magit` の移動コマンドにバインド
+          ("C-c C-n" . magit-section-forward)
+          ("C-c C-p" . magit-section-backward))
+         ;; 全体のキーバインド設定
+         ("C-c C-g" . magit-diff-working-tree)))
 
 
 ;;;ファイルの自動再読み込み（Auto Revert）
