@@ -1135,14 +1135,17 @@
   ))
 ;;projectile
 
-;; (leaf helm-ag
-;;   :ensure t
-;;   :after helm
-;;   :custom
-;;   (helm-ag-base-command . "ag --nocolor --nogroup")
-;;   (helm-ag-insert-at-point . 'symbol)
-;;   (helm-ag-command-option . "--all-text")
-;;   (helm-ag-fuzzy-match . t))
+(leaf helm-ag
+  :ensure t
+  :after helm
+  :custom
+  (helm-ag-base-command . "ag --nocolor --nogroup")
+  (helm-ag-insert-at-point . 'symbol)
+  (helm-ag-command-option . "--all-text")
+  (helm-ag-fuzzy-match . t)
+  :bind (("C-c p 1" . helm-ag)      ;; "C-c p 1" で `helm-do-ag` を実行
+         ("C-c p SPC" . helm-do-ag)) ;; "C-c p SPC" で `helm-ag-edit` を実行
+  )
 
 (leaf projectile
   :ensure t
@@ -1172,7 +1175,9 @@
   (setq projectile-completion-system 'helm)
   :bind
   (("C-c p h" . helm-projectile)
-   ("C-c p SPC" . helm-projectile-grep)))  ;; ここでキーをバインド
+  ; ("C-c p SPC" . helm-projectile-grep)
+   )
+  )  ;; ここでキーをバインド
  
 
 ;; copilot.elのインストールと設定

@@ -98,7 +98,10 @@ npm install
 ```bash
 sudo apt install clang-format
 ```
-
+## helm-ag
+```bash
+sudo apt-get install silversearcher-ag
+```
 
 - ref : 
 1. https://qiita.com/fnobi/items/8906c8e7759751d32b6b
