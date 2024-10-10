@@ -1117,21 +1117,41 @@
   :ensure t
   :config
   (progn
-    (helm-mode 1)  
+    (helm-mode 1)
+ ;;   (setq helm-ff-lynx-style-map t) ;; デフォルトのキーバインドを有効にする
+    ;; 必要に応じて `helm-map` の設定を再確認
+  ;;   (define-key helm-map (kbd "C-p") 'helm-previous-line)
+;;     (define-key helm-map (kbd "C-n") 'helm-next-line)))
+;;     (global-set-key (kbd "M-x") 'helm-M-x)
+;;     (global-set-key (kbd "C-x C-f") 'helm-find-files)
+;; ;;    (global-set-key (kbd "C-x b") 'helm-mini)
+;;     ;; (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+  
+;;     ;(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
+;;     (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
+;;     ;;    (define-key helm-map (kbd "C-z") 'helm-select-action) ; list actions using C-z
+;;        ;; 追加: C-x C-d で helm の dired を開く設定
+;;     (global-set-key (kbd "C-x C-d") 'dired)
+;; ;;    (global-set-key (kbd "C-x C-d") 'helm-browse-project) 
+;;    ;; (global-set-key (kbd "C-x d") 'helm-browse-project)
+
+ (define-key helm-map (kbd "C-p") 'helm-previous-line)   ;; C-p で前の行に移動
+    (define-key helm-map (kbd "C-n") 'helm-next-line)       ;; C-n で次の行に移動
+    (define-key helm-map (kbd "C-x o") 'other-window)       ;; C-x o で他のウィンドウに移動
+    (define-key helm-map (kbd "M-o") 'other-window)         ;; M-o で他のウィンドウに移動
+
     (global-set-key (kbd "M-x") 'helm-M-x)
     (global-set-key (kbd "C-x C-f") 'helm-find-files)
-;;    (global-set-key (kbd "C-x b") 'helm-mini)
+    ;; (global-set-key (kbd "C-x b") 'helm-mini)
     ;; (global-set-key (kbd "M-y") 'helm-show-kill-ring)
   
-    ;(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
-    (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
-    ;;    (define-key helm-map (kbd "C-z") 'helm-select-action) ; list actions using C-z
-       ;; 追加: C-x C-d で helm の dired を開く設定
+     (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
+    (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action)     ;; make TAB work in terminal
+    ;; (define-key helm-map (kbd "C-z") 'helm-select-action) ; list actions using C-z
+    ;; 追加: C-x C-d で helm の dired を開く設定
     (global-set-key (kbd "C-x C-d") 'dired)
-;;    (global-set-key (kbd "C-x C-d") 'helm-browse-project) 
-   ;; (global-set-key (kbd "C-x d") 'helm-browse-project)
-
-
+    (global-set-key (kbd "C-x C-d") 'helm-browse-project)
+    ;; (global-set-key (kbd "C-x d") 'helm-browse-project)
   ))
 ;;projectile
 
@@ -1144,7 +1164,12 @@
   (helm-ag-command-option . "--all-text")
   (helm-ag-fuzzy-match . t)
   :bind (("C-c p 1" . helm-ag)      ;; "C-c p 1" で `helm-do-ag` を実行
+         
          ("C-c p SPC" . helm-do-ag)) ;; "C-c p SPC" で `helm-ag-edit` を実行
+   :config
+  ;; `helm-ag-edit` で `RET` を押したときに対応するファイルに移動するように設定
+  (with-eval-after-load 'helm-ag
+    (define-key helm-ag-edit-map (kbd "RET") 'compile-goto-error))
   )
 
 (leaf projectile

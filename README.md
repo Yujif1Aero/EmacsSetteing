@@ -102,6 +102,11 @@ sudo apt install clang-format
 ```bash
 sudo apt-get install silversearcher-ag
 ```
+M-x helm-ag-edit を使用して通常のバッファに変換する helm-ag の検索結果を helm-ag-edit で編集可能なバッファに展開することで、通常の Emacs の C-s 検索機能を利用できるようにします。
+
+手順：
+helm-ag の検索結果が表示されている状態で C-c C-e（または M-x helm-ag-edit）を実行します。
+検索結果が通常のバッファとして表示されるので、その状態で C-s を使用して文字列を検索します。
 
 - ref : 
 1. https://qiita.com/fnobi/items/8906c8e7759751d32b6b
