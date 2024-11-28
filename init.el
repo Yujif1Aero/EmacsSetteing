@@ -1151,7 +1151,7 @@
 ;; ;;    (global-set-key (kbd "C-x C-d") 'helm-browse-project) 
 ;;    ;; (global-set-key (kbd "C-x d") 'helm-browse-project)
 
- (define-key helm-map (kbd "C-p") 'helm-previous-line)   ;; C-p で前の行に移動
+    (define-key helm-map (kbd "C-p") 'helm-previous-line)   ;; C-p で前の行に移動
     (define-key helm-map (kbd "C-n") 'helm-next-line)       ;; C-n で次の行に移動
     (define-key helm-map (kbd "C-x o") 'other-window)       ;; C-x o で他のウィンドウに移動
     (define-key helm-map (kbd "M-o") 'other-window)         ;; M-o で他のウィンドウに移動
@@ -1185,7 +1185,14 @@
    :config
   ;; `helm-ag-edit` で `RET` を押したときに対応するファイルに移動するように設定
   (with-eval-after-load 'helm-ag
-    (define-key helm-ag-edit-map (kbd "RET") 'compile-goto-error))
+    (define-key helm-ag-edit-map (kbd "RET") 'compile-goto-error)
+    (define-key helm-map (kbd "C-x o") 'other-window)  ;; ウィンドウ切り替え
+  (define-key helm-map (kbd "C-g") 'keyboard-quit)  ;; 標準の C-g 動作
+  (define-key helm-map (kbd "C-n") 'next-line)      ;; 次の行に移動
+  (define-key helm-map (kbd "C-p") 'previous-line)  ;; 前の行に移動
+  (define-key helm-map (kbd "C-v") 'scroll-up-command) ;; ページ下移動
+  (define-key helm-map (kbd "M-v") 'scroll-down-command)) ;; ページ上移)
+  
   )
 
 (leaf projectile
@@ -1219,7 +1226,6 @@
   ; ("C-c p SPC" . helm-projectile-grep)
    )
   )  ;; ここでキーをバインド
- 
 
 ;; copilot.elのインストールと設定
 (leaf copilot
