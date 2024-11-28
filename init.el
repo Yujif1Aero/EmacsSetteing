@@ -1121,13 +1121,6 @@
   ;;                              (add-hook 'before-save-hook 'clang-format-buffer nil 'local)));; C++で保存時に自動フォーマット
   ) 
 
-
-
-
-
-
-
-
 ;; helm, projectile, helm-projectile の設定
 (leaf helm
   :ensure t
@@ -1167,6 +1160,7 @@
     ;; 追加: C-x C-d で helm の dired を開く設定
     (global-set-key (kbd "C-x C-d") 'dired)
     (global-set-key (kbd "C-x C-d") 'helm-browse-project)
+    (define-key helm-map (kbd "C-g") 'keyboard-quit)  ;; 標準の C-g 動作
     ;; (global-set-key (kbd "C-x d") 'helm-browse-project)
   ))
 ;;projectile
@@ -1204,14 +1198,14 @@
     (projectile-mode +1)
     
     ;; ;; プロジェクトのルートディレクトリに `default-directory` を設定する関数を追加
-    ;; (defun set-default-directory-to-project-root ()
-    ;;   "Set `default-directory` to the root of the project."
-    ;;   (let ((project-root (projectile-project-root)))
-    ;;     (when project-root
-    ;;       (setq default-directory project-root))))
+    (defun set-default-directory-to-project-root ()
+      "Set `default-directory` to the root of the project."
+      (let ((project-root (projectile-project-root)))
+        (when project-root
+          (setq default-directory project-root))))
 
     ;; ;; ;; find-file-hook に関数を追加
-    ;;  (add-hook 'find-file-hook 'set-default-directory-to-project-root)
+     (add-hook 'find-file-hook 'set-default-directory-to-project-root)
     )
  )
 
@@ -1223,8 +1217,9 @@
   (setq projectile-completion-system 'helm)
   :bind
   (("C-c p h" . helm-projectile)
-  ; ("C-c p SPC" . helm-projectile-grep)
+  ("C-c p n" . helm-projectile-grep)
    )
+ 
   )  ;; ここでキーをバインド
 
 ;; copilot.elのインストールと設定
@@ -1351,3 +1346,15 @@
 
 (add-hook 'prog-mode-hook 'my-highlight-full-width-spaces) ;; プログラムモードで有効化
 (add-hook 'text-mode-hook 'my-highlight-full-width-spaces) ;; テキストモードで有効化
+;; 現在開いているファイルのディレクトリにカレントディレクトリを移動する関数
+(defun my/set-cwd-to-current-file ()
+  "Set the current working directory to the directory of the currently opened file."
+  (interactive)
+  (if (buffer-file-name)
+      (let ((dir (file-name-directory (buffer-file-name))))
+        (cd dir)
+        (message "Changed current directory to: %s" dir))
+    (message "Current buffer is not visiting a file")))
+
+;; ショートカットキーを設定 (例: C-c d)
+(global-set-key (kbd "C-c d") 'my/set-cwd-to-current-file)
