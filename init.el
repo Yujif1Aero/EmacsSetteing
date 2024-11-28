@@ -429,11 +429,21 @@
 ;;(add-to-list 'default-frame-alist '(font . "ricty-12"))
 
 ;; color theme
-(leaf monokai-theme
+;; (leaf monokai-theme
+;;   :ensure t
+;;   :config
+;;   (load-theme 'monokai t))              ;
+(leaf gruvbox-theme
+(load-theme 'gruvbox-dark-medium t)
   :ensure t
   :config
-  (load-theme 'monokai t))
-
+  (load-theme 'gruvbox-dark-medium t)
+  ;;(load-theme 'solarized-light t) ;; Solarized Light をロード
+  ;; 以下はオプションのカスタマイズ
+  :custom
+  ((solarized-use-variable-pitch . nil)  ;; 可変幅フォントを無効化
+   (solarized-scale-org-headlines . nil) ;; Org mode の見出しサイズ変更を無効化
+   (solarized-high-contrast-mode-line . t))) ;; モードラインを高コントラストに
 
 ;; alpha
 (if window-system
