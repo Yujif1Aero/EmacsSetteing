@@ -27,4 +27,4 @@ projects
 .cache
 *.eld
 shellenv.el
-
+secrets
