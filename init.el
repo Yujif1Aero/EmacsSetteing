@@ -2,6 +2,7 @@
 ;; package management
 ;;https://qiita.com/namn1125/items/5cd6a9cbbf17fb85c740#packageel-%E3%82%92%E7%9B%B4%E6%8E%A5%E5%88%A9%E7%94%A8%E3%81%97%E3%81%AA%E3%81%84%E7%90%86%E7%94%B1%E3%81%A8gitgithub%E3%81%AB%E3%82%88%E3%82%8B-initel-%E3%81%AE%E7%AE%A1%E7%90%86
 ;;Backtrace バッファが表示されないようにするに
+
 (setq debug-on-error nil)
 (when (< emacs-major-version 23)
   (defvar user-emacs-directory "~/.emacs.d/"))
@@ -56,6 +57,8 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+;;(setq straight-check-for-modifications nil) ;; 起動時の更新確認を無効化
+
 ;; Load leaf
 (require 'leaf)
 
@@ -77,11 +80,11 @@
   (package-install 'use-package))
 (require 'use-package)
 
-;;;; パッケージの遅延読み込み方法例
-;; ;; Use-package の設定例
-;; (use-package example-package
-;;   :ensure t
-;;   :defer t)
+;; ;;パッケージの遅延読み込み方法例
+
+;; ;; (use-package example-package
+;; ;;   :ensure t
+;; ;;   :defer t)
 
 ;; ;; leafの設定例
 ;; (leaf some-package
@@ -91,11 +94,11 @@
 
 
 
-;;;emacs seting;
+;;emacs seting;
 ;;(add-to-list 'default-frame-alist '(cursor-type . bar))
-;; 現在開いている各フレームに対してカーソル形状を適用
+;;現在開いている各フレームに対してカーソル形状を適用
 (dolist (frame (frame-list))
-  (modify-frame-parameters frame '((cursor-type . bar))))
+  (modify-frame-parameters frame '((cursor-type . box))))
 (electric-pair-mode 1)
 (setq inhibit-startup-message t)
 (setq make-backup-files nil)
@@ -570,7 +573,7 @@
 ;;操作性の向上
 ;; xterm-mouse-mode を有効にする
 (xterm-mouse-mode 1)
-;; xterm-mouse-mode をトグルする関数
+;;xterm-mouse-mode をトグルする関数       
 (defun toggle-xterm-mouse-mode ()
   (interactive)
   (if xterm-mouse-mode
@@ -581,7 +584,7 @@
       (xterm-mouse-mode 1)
       (message "xterm-mouse-mode enabled"))))
 
-;; キーバインドの設定（Ctrl + Alt + m にトグルを割り当て）
+;; ;; キーバインドの設定（Ctrl + Alt + m にトグルを割り当て）
 (global-set-key (kbd "C-M-m") 'toggle-xterm-mouse-mode)
 
 ;; 他のマウス設定
@@ -592,12 +595,12 @@
 (setq mouse-wheel-progressive-speed nil)  ;; スクロール速度を固定
 (setq mouse-wheel-follow-mouse 't)  ;; マウスポインタの位置に従ってスクロール
 
-;; Smooth Scroll のオプション設定
+;; ;; Smooth Scroll のオプション設定
 (setq scroll-step 1)
 (setq scroll-conservatively 10000)
 (setq auto-window-vscroll nil)
-;; スクロールの加速
-;;(setq mouse-wheel-progressive-speed t)
+;;スクロールの加速
+(setq mouse-wheel-progressive-speed t)
 
 ;; bufferの最後でカーソルを動かそうとしても音をならなくする
 (defun next-line (arg)
@@ -732,12 +735,6 @@
 
 ;;goto-line(default is M-g-g)
 ;;(global-set-key (kbd "C-x C-g") 'goto-line) 
-
-
-
-
-
-
 
 
 ;; ;; gnu-global->LSPに比べると精度が良くない
@@ -976,7 +973,6 @@
   )
 
 
-
 ;;treemacs 
 (use-package treemacs
   :ensure t
@@ -1160,7 +1156,7 @@
     ;; 追加: C-x C-d で helm の dired を開く設定
     (global-set-key (kbd "C-x C-d") 'dired)
     (global-set-key (kbd "C-x C-d") 'helm-browse-project)
-    (define-key helm-map (kbd "C-g") 'keyboard-quit)  ;; 標準の C-g 動作
+   ;; (define-key helm-map (kbd "C-g") 'keyboard-quit)  ;; 標準の C-g 動作
     ;; (global-set-key (kbd "C-x d") 'helm-browse-project)
   ))
 ;;projectile
@@ -1222,12 +1218,15 @@
  
   )  ;; ここでキーをバインド
 
+
+;; copilot.elのインストールと設定（最小化）
 ;; copilot.elのインストールと設定
 (leaf copilot
   :straight (copilot :type git :host github :repo "zerolfx/copilot.el" :files ("*.el"))
   :require t
   :config
-;;  (add-hook 'prog-mode-hook 'copilot-mode)
+  (add-hook 'prog-mode-hook 'copilot-mode) ;;
+  (add-hook 'text-mode-hook 'copilot-mode) ;;
   (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
   (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
   (define-key copilot-completion-map (kbd "C-TAB") 'copilot-accept-completion-by-word)
@@ -1236,7 +1235,46 @@
   ;; Warningを無効にする設定
   (setq copilot-infer-indentation-offset 'disable)
   (setq copilot--disable-infer-indentation t))
+(setq warning-suppress-types '((copilot)))
+(setq-default tab-width 4)        ;; タブ幅を4スペースに設定
+(setq-default indent-tabs-mode nil) ;; タブではなくスペースを使用
+;; 他のAIツールと連携
+;; (leaf chatgpt-shell
+;;   :ensure t
+;;   :custom
+;;   (chatgpt-shell-backend . 'chatgpt-shell-openai)
+;;   :config
+;;   (defun load-chatgpt-shell-key ()
+;;     "Load the OpenAI API key only when needed."
+;;     (unless chatgpt-shell-openai-key
+;;       (let ((key-file "~/.emacs.d/secrets/.openai-key"))
+;;         (if (file-exists-p key-file)
+;;             (setq chatgpt-shell-openai-key
+;;                   (with-temp-buffer
+;;                     (insert-file-contents key-file)
+;;                     (string-trim (buffer-string))))
+;;           (error "APIキーのファイルが見つかりません: %s" key-file)))))
+;;   ;; ChatGPT-shell起動時にAPIキーをロード
+;;   (add-hook 'chatgpt-shell-mode-hook #'load-chatgpt-shell-key))
+(leaf chatgpt-shell
+  :ensure t
+;;  :config                               
+  )
 
+(leaf diff-hl
+  :ensure t
+  :config
+  (global-diff-hl-mode)
+  ;; ターミナルの場合、行の背景色を使うように設定
+  (unless (display-graphic-p)
+    (diff-hl-margin-mode 1)))
+;; 保存時に更新
+(add-hook 'after-save-hook 'diff-hl-update)
+
+;; バッファ切り替え時に更新
+(add-hook 'focus-in-hook 'diff-hl-update)
+
+(fringe-mode '(8 . 8))
 
 ;; shell-popの設定
 (leaf shell-pop
@@ -1286,8 +1324,6 @@
 ;; (setq projectile-cache-file "/dev/null")
 
 ;; ;;straight ディレクトリの更新:
-;; (setq straight-check-for-modifications nil)
-;; (setq straight-check-for-modifications '(check-on-save find-when-checking))
 
 ;; ;;auto-save-list ディレクトリの設定:
 ;; (setq auto-save-default nil)
@@ -1316,7 +1352,6 @@
           (progn
             (beginning-of-line)
             (insert comment-start)))))))
-
 (defun my-c-comment-style ()
   (setq comment-start "//ys "
         comment-end ""))
@@ -1358,3 +1393,5 @@
 
 ;; ショートカットキーを設定 (例: C-c d)
 (global-set-key (kbd "C-c d") 'my/set-cwd-to-current-file)
+(setq select-enable-clipboard t)
+

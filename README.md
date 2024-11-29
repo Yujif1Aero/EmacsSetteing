@@ -108,6 +108,22 @@ M-x helm-ag-edit を使用して通常のバッファに変換する helm-ag の
 helm-ag の検索結果が表示されている状態で C-c C-e（または M-x helm-ag-edit）を実行します。
 検索結果が通常のバッファとして表示されるので、その状態で C-s を使用して文字列を検索します。
 
+
+## ollama
+```bash
+ollama serve
+```
+## Whitespace (ホワイトスペース)
+M-x whitespace-mode 
+M-x global-whitespace-mode
+
+## Undo-Tree (アンドゥツリー)
+M-x undo-tree-visualize
+
+## Kill Ring
+M-x helm-show-kill-ring
+C-x c M-y
+
 - ref : 
 1. https://qiita.com/fnobi/items/8906c8e7759751d32b6b
 1. https://github.com/xuchunyang/eshell-git-prompt
