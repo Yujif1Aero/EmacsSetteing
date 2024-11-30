@@ -1,6 +1,11 @@
 # emacs setting
 - write this into ~/.bashrc or shell something.Some PAHT in bash is used in eshell
-
+# emacs install
+```bash
+sudo apt install emacs28-nativecomp
+sudo apt install fcitx-mozc
+sudo apt install mozc-server mozc-utils-gui mozc-data emacs-mozc
+```
 
 ```bash
 ## create emacs env file
