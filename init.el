@@ -803,37 +803,70 @@
 
 
 ;;;; LSPモードの設定とキーバインドの調整(ref ::https://qiita.com/kari_tech/items/4754fac39504dccfd7be )
+;; (leaf lsp-mode
+;;   :ensure t
+;;   :commands lsp
+;;   :init
+;;   ;;(setq lsp-prefer-flymake nil)  ;; FlymakeではなくFlycheckを使用
+;;   (setq lsp-clients-clangd-args '("--header-insertion=never"))
+
+;;   ;;   :custom
+;;   ;; ((lsp-print-io . nil)
+;;   ;;  ;; LSP通信のデバッグ出力を無効化
+;;   ;;  (lsp-trace . nil)
+;;   ;;  ;; LSPのトレースログを無効化
+;;   ;;  (lsp-print-performance . nil)
+;;   ;;  ;; パフォーマンスログを無効化
+;;   ;;  (lsp-auto-guess-root . t)
+;;   ;;  ;; プロジェクトのルートディレクトリを自動的に推測
+;;   ;;  (Lsp-document-sync-method . 'incremental)
+;;   ;;  ;; ドキュメントの同期方法をインクリメンタルに設定
+;;   ;;  (lsp-response-timeout . 5)
+;;   ;;  ;; LSPサーバーからのレスポンスのタイムアウト時間を5秒に設定
+;;   ;;  (lsp-prefer-flymake . 'flymake)
+;;   ;;  ;; 警告やエラーを表示するためにflymakeを使用
+;;   ;;  (lsp-enable-completion-at-point . nil))
+;;   ;;  ;; ポイントでの補完を無効化
+;;   :config
+;;   ;; キーバインドをGTAGSからLSPに再割り当て
+;;   (define-key lsp-mode-map (kbd "M-.") #'lsp-find-definition)
+;;   (define-key lsp-mode-map (kbd "M-,") #'lsp-find-references)
+;;   (define-key lsp-mode-map (kbd "M-s") #'lsp-find-implementation)
+;;   (define-key lsp-mode-map (kbd "M-t") #'lsp-find-declaration)
+;;     ;; Python 用の手動起動関数を定義
+;;   (defun my/lsp-start-python ()
+;;     "Manually start LSP for Python mode."
+;;     (interactive)
+;;     (require 'lsp-pyright)
+;;     (lsp))  ;; Python ファイルで LSP を起動
+
+;;   ;; 必要に応じて他の言語用関数も追加可能
+;;   )
 (leaf lsp-mode
   :ensure t
   :commands lsp
-;;  :hook ((c-mode-hook c++-mode-hook python-mode-hook) . lsp)
   :init
-  ;;(setq lsp-prefer-flymake nil)  ;; FlymakeではなくFlycheckを使用
-  (setq lsp-clients-clangd-args '("--header-insertion=never"))
-
-  ;;   :custom
-  ;; ((lsp-print-io . nil)
-  ;;  ;; LSP通信のデバッグ出力を無効化
-  ;;  (lsp-trace . nil)
-  ;;  ;; LSPのトレースログを無効化
-  ;;  (lsp-print-performance . nil)
-  ;;  ;; パフォーマンスログを無効化
-  ;;  (lsp-auto-guess-root . t)
-  ;;  ;; プロジェクトのルートディレクトリを自動的に推測
-  ;;  (Lsp-document-sync-method . 'incremental)
-  ;;  ;; ドキュメントの同期方法をインクリメンタルに設定
-  ;;  (lsp-response-timeout . 5)
-  ;;  ;; LSPサーバーからのレスポンスのタイムアウト時間を5秒に設定
-  ;;  (lsp-prefer-flymake . 'flymake)
-  ;;  ;; 警告やエラーを表示するためにflymakeを使用
-  ;;  (lsp-enable-completion-at-point . nil))
-  ;;  ;; ポイントでの補完を無効化
+  ;; LSP 全般の設定
+  (setq lsp-clients-clangd-args nil) ;; clangd 設定を無効化
   :config
-  ;; キーバインドをGTAGSからLSPに再割り当て
+  ;; キーバインド
   (define-key lsp-mode-map (kbd "M-.") #'lsp-find-definition)
   (define-key lsp-mode-map (kbd "M-,") #'lsp-find-references)
   (define-key lsp-mode-map (kbd "M-s") #'lsp-find-implementation)
-  (define-key lsp-mode-map (kbd "M-t") #'lsp-find-declaration))
+  (define-key lsp-mode-map (kbd "M-t") #'lsp-find-declaration)
+  ;; Python 用 LSP 手動起動
+  (defun my/lsp-start-python ()
+    "Manually start LSP for Python."
+    (interactive)
+    (require 'lsp-pyright)
+    (lsp))
+  ;; Python モードで簡単に起動
+  ;; (add-hook 'python-mode-hook
+  ;;           (lambda ()
+  ;;             (local-set-key (kbd "C-c l") 'my/lsp-start-python)))
+  ;;   ;; 必要に応じて他の言語用関数も追加可能
+  )
+
 
 ;; lsp-pyright の設定
 (leaf lsp-pyright
@@ -881,7 +914,13 @@
           (lsp-ui-doc--hide-frame))
       (lsp-ui-doc-mode 1)))
   )
-  ;; ドキュメント表示の切り
+(leaf lsp-treemacs
+  :ensure t
+  :after (lsp-mode treemacs)
+  :config
+  (lsp-treemacs-sync-mode 1) ;; Treemacs で LSP シンボルを表示
+  :bind
+  (("C-c C-t" . lsp-treemacs-symbols))) ;; Treemacs シンボルビューを表示
 
 
 
@@ -928,13 +967,15 @@
   :ensure t
   :init
   ;;(global-company-mode) ;; グローバルにcompanyを有効化する場合はこのコメントを外す
-  :hook ((c-mode-hook c++-mode-hook python-mode-hook) . company-mode)  ;; フックを有効にする場合はこのコメントを外す
+;;  :hook ((c-mode-hook c++-mode-hook python-mode-hook) . company-mode) ;; フックを有効にする場合はこのコメントを外す
   :custom
   ;; (company-lsp-cache-candidates . t) ;; 候補のキャッシュを常に使用
   ;; (company-lsp-async . t)           ;; 非同期補完を有効化
   ;; (company-lsp-enable-recompletion . nil)  ;; 再補完を無効化
   (company-idle-delay . 0.0)        ;; 自動補完の遅延なし
   (company-minimum-prefix-length . 1)   ;; 1文字入力されたら補完を開始
+  :config
+  (global-company-mode 1)
   )
 
 ;; ;; flycheckの設定
@@ -1115,7 +1156,14 @@
   ;;                            (add-hook 'before-save-hook 'clang-format-buffer nil 'local))) ;; C言語で保存時に自動フォーマット
   ;; (add-hook 'c++-mode-hook #'(lambda ()
   ;;                              (add-hook 'before-save-hook 'clang-format-buffer nil 'local)));; C++で保存時に自動フォーマット
-  ) 
+  )
+(leaf blacken
+  :ensure t
+  :bind (("C-c j" . blacken-buffer)
+         ("C-c C-j" . blacken-region))  ;; 選択範囲をフォーマット
+  :custom
+  ((blacken-line-length . 88)))  ;; この書き方で正しく設定
+
 
 ;; helm, projectile, helm-projectile の設定
 (leaf helm
