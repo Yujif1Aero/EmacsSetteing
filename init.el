@@ -1169,20 +1169,28 @@
 (leaf helm
   :ensure t
   :config
-  (helm-mode 1)
-  (with-eval-after-load 'helm
-    (define-key helm-map (kbd "C-n") 'helm-next-line)
-    (define-key helm-map (kbd "C-p") 'helm-previous-line)
-    (define-key helm-map (kbd "C-v") 'helm-next-page)
-    (define-key helm-map (kbd "M-v") 'helm-previous-page)
-    (define-key helm-map (kbd "C-g") 'keyboard-quit)
-    (define-key helm-map (kbd "C-x o") 'other-window)
-    (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
-    (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action))
-  :bind (("M-x" . helm-M-x)
-         ("C-x C-f" . helm-find-files)
-         ("C-x C-d" . dired)
-         ("C-x C-d" . helm-browse-project)))
+  ;; (helm-mode 1)
+  ;; (with-eval-after-load 'helm
+  ;;   (define-key helm-map (kbd "C-n") 'helm-next-line)
+  ;;   (define-key helm-map (kbd "C-p") 'helm-previous-line)
+  ;;   (define-key helm-map (kbd "C-v") 'helm-next-page)
+  ;;   (define-key helm-map (kbd "M-v") 'helm-previous-page)
+  ;;   (define-key helm-map (kbd "C-g") 'keyboard-quit)
+  ;;   (define-key helm-map (kbd "C-x o") 'other-window)
+  ;;   (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
+  ;;   (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action))
+  ;; :bind (("M-x" . helm-M-x)
+  ;;        ("C-x C-f" . helm-find-files)
+  ;;        ("C-x C-d" . dired)
+  ;;        ("C-x C-d" . helm-browse-project))
+  (progn
+    (helm-mode 1)  
+    (global-set-key (kbd "M-x") 'helm-M-x)
+    (global-set-key (kbd "C-x C-f") 'helm-find-files)
+    (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+    (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
+  )
+  )
 
 (leaf helm-ag
   :ensure t
@@ -1229,8 +1237,7 @@
   (("C-c p h" . helm-projectile)
   ("C-c p n" . helm-projectile-grep)
    )
- 
-  )  ;; ここでキーをバインド
+  )
 
 
 ;; copilot.elのインストールと設定（最小化）
