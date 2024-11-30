@@ -2,7 +2,6 @@
 ;; package management
 ;;https://qiita.com/namn1125/items/5cd6a9cbbf17fb85c740#packageel-%E3%82%92%E7%9B%B4%E6%8E%A5%E5%88%A9%E7%94%A8%E3%81%97%E3%81%AA%E3%81%84%E7%90%86%E7%94%B1%E3%81%A8gitgithub%E3%81%AB%E3%82%88%E3%82%8B-initel-%E3%81%AE%E7%AE%A1%E7%90%86
 ;;Backtrace バッファが表示されないようにするに
-
 (setq debug-on-error nil)
 (when (< emacs-major-version 23)
   (defvar user-emacs-directory "~/.emacs.d/"))
@@ -57,8 +56,6 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-;;(setq straight-check-for-modifications nil) ;; 起動時の更新確認を無効化
-
 ;; Load leaf
 (require 'leaf)
 
@@ -80,11 +77,11 @@
   (package-install 'use-package))
 (require 'use-package)
 
-;; ;;パッケージの遅延読み込み方法例
-
-;; ;; (use-package example-package
-;; ;;   :ensure t
-;; ;;   :defer t)
+;;;; パッケージの遅延読み込み方法例
+;; ;; Use-package の設定例
+;; (use-package example-package
+;;   :ensure t
+;;   :defer t)
 
 ;; ;; leafの設定例
 ;; (leaf some-package
@@ -94,9 +91,9 @@
 
 
 
-;;emacs seting;
+;;;emacs seting;
 ;;(add-to-list 'default-frame-alist '(cursor-type . bar))
-;;現在開いている各フレームに対してカーソル形状を適用
+;; 現在開いている各フレームに対してカーソル形状を適用
 (dolist (frame (frame-list))
   (modify-frame-parameters frame '((cursor-type . box))))
 (electric-pair-mode 1)
@@ -365,6 +362,9 @@
     ;; http://shreevatsa.wordpress.com/2006/10/22/emacs-copypaste-and-x/
     ;; http://www.mail-archive.com/help-gnu-emacs@gnu.org/msg03577.html
     ))
+;;;;Emacsのクリップボードとシステムクリップボードを同期
+(setq select-enable-clipboard t)
+(setq select-enable-primary t)
 
 ;;editer colour
 (setq auto-mode-alist (cons '("\\.cu$" . c++-mode) auto-mode-alist))
@@ -591,7 +591,7 @@
 (mouse-wheel-mode 1)
 
 ;; マウスホイールのスクロール設定
-(setq mouse-wheel-scroll-amount '(10 ((Alt) . 1)))  ;; 通常は3行、Shiftキーを押しながらは1行
+(setq mouse-wheel-scroll-amount '( ((Alt) . 1)))  ;; 通常は3行、Shiftキーを押しながらは1行
 (setq mouse-wheel-progressive-speed nil)  ;; スクロール速度を固定
 (setq mouse-wheel-follow-mouse 't)  ;; マウスポインタの位置に従ってスクロール
 
@@ -1414,5 +1414,4 @@
 
 ;; ショートカットキーを設定 (例: C-c d)
 (global-set-key (kbd "C-c d") 'my/set-cwd-to-current-file)
-(setq select-enable-clipboard t)
-
+;;(setq select-enable-clipboard t)
