@@ -966,16 +966,16 @@
 (leaf company
   :ensure t
   :init
-  ;;(global-company-mode) ;; グローバルにcompanyを有効化する場合はこのコメントを外す
+  (global-company-mode) ;; グローバルにcompanyを有効化する場合はこのコメントを外す
 ;;  :hook ((c-mode-hook c++-mode-hook python-mode-hook) . company-mode) ;; フックを有効にする場合はこのコメントを外す
   :custom
   ;; (company-lsp-cache-candidates . t) ;; 候補のキャッシュを常に使用
   ;; (company-lsp-async . t)           ;; 非同期補完を有効化
   ;; (company-lsp-enable-recompletion . nil)  ;; 再補完を無効化
-  (company-idle-delay . 0.0)        ;; 自動補完の遅延なし
-  (company-minimum-prefix-length . 1)   ;; 1文字入力されたら補完を開始
+  (company-idle-delay . 0.2)        ;; 自動補完の遅延なし
+  (company-minimum-prefix-length . 2)   ;; 1文字入力されたら補完を開始
   :config
-  (global-company-mode 1)
+  (add-hook 'eshell-mode-hook (lambda () (company-mode -1))) ;; eshellでは無効化
   )
 
 ;; ;; flycheckの設定
@@ -1149,20 +1149,21 @@
 (leaf clang-format
   :ensure t
   :bind (("C-c C-j" . clang-format-region)    ;; 選択範囲にフォーマットを適用
-     ("C-c j" . clang-format-buffer)
-         )   ;; バッファ全体にフォーマットを適用
+         ("C-c j" . clang-format-buffer))    ;; バッファ全体にフォーマットを適用
   :config
-  ;; (add-hook 'c-mode-hook #'(lambda ()
-  ;;                            (add-hook 'before-save-hook 'clang-format-buffer nil 'local))) ;; C言語で保存時に自動フォーマット
-  ;; (add-hook 'c++-mode-hook #'(lambda ()
-  ;;                              (add-hook 'before-save-hook 'clang-format-buffer nil 'local)));; C++で保存時に自動フォーマット
-  )
-(leaf blacken
-  :ensure t
-  :bind (("C-c j" . blacken-buffer)
-         ("C-c C-j" . blacken-region))  ;; 選択範囲をフォーマット
-  :custom
-  ((blacken-line-length . 88)))  ;; この書き方で正しく設定
+  ;; C/C++モードにのみclang-formatを適用
+  (add-hook 'c-mode-hook #'clang-format-buffer)  ;; C言語ファイルを開いたときにclang-formatを適用
+  (add-hook 'c++-mode-hook #'clang-format-buffer)) ;; C++ファイルを開いたときにclang-formatを適用
+
+;; (leaf blacken :: なぜかC++のファイルにも適用される)
+;;   :ensure t
+;;   :bind (("C-c j" . blacken-buffer)
+;;          ("C-c C-j" . blacken-region))  ;; 選択範囲をフォーマット
+;;   :custom
+;;   ((blacken-line-length . 88))  ;; 行長設定
+;;   :config
+;;   ;; Pythonモードにのみblackenを適用
+;;   (add-hook 'python-mode-hook #'blacken-buffer)) ;; Pythonファイルを開いたときにblackenを適用
 
 
 ;; helm, projectile, helm-projectile の設定
@@ -1314,6 +1315,11 @@
 (add-hook 'eshell-mode-hook
           (lambda ()
             (define-key eshell-mode-map (kbd "<tab>") 'completion-at-point)))
+;; Eshell用にcdpjrootエイリアスを設定
+(defun eshell/cdpjroot ()
+  "Change directory to the root of the Git repository in Eshell."
+  (let ((git-root (string-trim (shell-command-to-string "git rev-parse --show-toplevel"))))
+    (eshell/cd git-root)))  ;; eshellのcdコマンドを使う
 
 ;; helmをeshellで無効化する設定
 (defun my/eshell-disable-helm ()
