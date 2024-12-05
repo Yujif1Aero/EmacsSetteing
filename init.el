@@ -365,12 +365,12 @@
       )
     )
 
-  ;; consult
-  (leaf consult
-    :straight t
-    :bind
-    (("C-s" . consult-line))
-    )
+  ;; ;; consult
+  ;; (leaf consult
+  ;;   :straight t
+  ;;   :bind
+  ;;   (("C-s" . consult-line))
+  ;;   )
 
   ;; orderless
   (leaf orderless
