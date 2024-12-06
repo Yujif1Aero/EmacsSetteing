@@ -1325,7 +1325,7 @@
 (defun my/eshell-disable-helm ()
   "Disable helm completion in eshell."
   (setq-local helm-mode-no-completion-in-region-in-modes '(eshell-mode)))
-
+(add-hook 'eshell-mode-hook 'my/eshell-disable-helm)
 ;; eshell からファイルを開く.
 (with-eval-after-load 'eshell
   (defun setup-eshell-aliases ()
