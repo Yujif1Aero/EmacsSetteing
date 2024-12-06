@@ -1339,7 +1339,9 @@
 (leaf eshell-git-prompt
   :ensure t
   :config
-  (eshell-git-prompt-use-theme 'git-radar))
+  (eshell-git-prompt-use-theme 'powerline))
+
+
 
 (setq enable-local-variables t)
 
