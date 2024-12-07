@@ -43,6 +43,11 @@
   (package-install 'leaf))
 
 ;; straight.elのブートストラップ
+;;;
+;;; straight.el
+;;;
+(setq straight-repository-branch "develop") ;; use the develop branch of straight.el
+
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
