@@ -60,7 +60,7 @@
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
-
+(setq straight-vc-git-default-clone-depth 1) ;; shallow clone
 ;; Load leaf
 (require 'leaf)
 
@@ -97,6 +97,66 @@
 
 
 ;;;emacs seting;
+;;;
+;;; leaf.el
+;;;
+
+;; (eval-and-compile
+;;   (straight-use-package 'leaf)
+;;   (straight-use-package 'leaf-keywords)
+;;   (leaf-keywords-init)
+;;   )
+
+(leaf leaf
+  :require t
+  :init
+  (leaf leaf-convert
+    :straight t
+    )
+
+  (leaf leaf-tree
+    :straight t
+    :blackout t
+    :custom
+    (imenu-list-position . 'left)
+    )
+  )
+
+;;;
+;;; Blackout
+;;;
+(leaf blackout
+  :leaf-defer nil
+  :straight t
+  :config
+  ;; shut up eldoc in modeline
+  (leaf eldoc :blackout t)
+  )
+
+;;;
+;;; Defer loading several libraries (for speeding up)
+;;;
+(leaf Libraries
+  :config
+  (leaf cl-lib
+    :leaf-defer t
+    )
+  (leaf dash
+    :straight t
+    :leaf-defer t
+    )
+  )
+
+;;;
+;;; Garbage Collector Magic Hack
+;;;
+(leaf gcmh
+  :leaf-defer nil
+  :straight t
+  :blackout t
+  :global-minor-mode gcmh-mode
+  )
+
 ;;(add-to-list 'default-frame-alist '(cursor-type . bar))
 ;; 現在開いている各フレームに対してカーソル形状を適用
 (dolist (frame (frame-list))
