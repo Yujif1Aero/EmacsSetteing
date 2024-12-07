@@ -1,6 +1,6 @@
 # emacs setting
 - write this into ~/.bashrc or shell something.Some PAHT in bash is used in eshell
-
+- on windows(powershell), `init.el` should be in `C:\Users\shimo\AppData\Roaming\.emacs.d`
 
 ```bash
 ## create emacs env file
