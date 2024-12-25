@@ -789,7 +789,8 @@
          ;; 全体のキーバインド設定
          ("C-c C-g" . magit-diff-working-tree))
     :custom
-    (magit-save-repository-buffers . nil)) ;; 自動保存を無効化
+    (magit-save-repository-buffers . nil)  ;; 自動保存を無効化
+     (magit-display-buffer-function . #'magit-display-buffer-same-window-except-diff-v1)
 )
 
 
