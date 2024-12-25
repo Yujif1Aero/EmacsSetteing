@@ -787,10 +787,15 @@
           ("C-c C-n" . magit-section-forward)
           ("C-c C-p" . magit-section-backward))
          ;; 全体のキーバインド設定
-         ("C-c C-g" . magit-diff-working-tree))
+         ("C-c g" . magit-diff-working-tree))
     :custom
     (magit-save-repository-buffers . nil)  ;; 自動保存を無効化
-     (magit-display-buffer-function . #'magit-display-buffer-same-window-except-diff-v1)
+    (magit-display-buffer-function . #'magit-display-buffer-same-window-except-diff-v1)
+     :config
+  ;; `TAB` をセクションの展開/折りたたみに設定
+  ;; (with-eval-after-load 'magit
+  ;;   (define-key magit-mode-map (kbd "TAB") 'magit-section-toggle))
+    
 )
 
 
