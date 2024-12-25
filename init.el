@@ -787,7 +787,10 @@
           ("C-c C-n" . magit-section-forward)
           ("C-c C-p" . magit-section-backward))
          ;; 全体のキーバインド設定
-         ("C-c C-g" . magit-diff-working-tree)))
+         ("C-c C-g" . magit-diff-working-tree))
+    :custom
+    (magit-save-repository-buffers . nil)) ;; 自動保存を無効化
+)
 
 
 ;;;ファイルの自動再読み込み（Auto Revert）
