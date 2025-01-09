@@ -1226,8 +1226,8 @@
          ("C-c j" . clang-format-buffer))    ;; バッファ全体にフォーマットを適用
   :config
   ;; C/C++モードにのみclang-formatを適用
-  (add-hook 'c-mode-hook #'clang-format-buffer)  ;; C言語ファイルを開いたときにclang-formatを適用
-  (add-hook 'c++-mode-hook #'clang-format-buffer)) ;; C++ファイルを開いたときにclang-formatを適用
+  ;; (add-hook 'c-mode-hook #'clang-format-buffer)  ;; C言語ファイルを開いたときにclang-formatを適用
+  ;; (add-hook 'c++-mode-hook #'clang-format-buffer)) ;; C++ファイルを開いたときにclang-formatを適用
 
 ;; (leaf blacken :: なぜかC++のファイルにも適用される)
 ;;   :ensure t
