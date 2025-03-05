@@ -56,6 +56,15 @@ sudo apt install ccls
 
 ```
 
+## github copilot ref::https://github.com/zerolfx/copilot.el.git
+1. Ensure your Emacs version is at least 27, the dependency package editorconfig (melpa) and jsonrpc (elpa, >= 1.0.14) are both installed.
+
+1. Setup copilot.el as described in the next section.
+
+1. Install the copilot server by M-x copilot-install-server.
+
+1. Login to Copilot by M-x copilot-login. You can also check the status by M-x copilot-diagnose (NotAuthorized means you don't have a valid subscription).
+
 
 
 - ref : 
