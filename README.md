@@ -89,7 +89,7 @@ I will use `os52` to share clip bord between local and sever.Or I set `(el-get-b
 貼り付けに関してはsshをしていても cntl+shift+vでできるように元に戻った（謎）
 
 
-## GIT hub copilot
+## GIT hub copilot(コマンドはやらなくていいかも)
 node.js >> version 18
 ```bash
 sudo apt update
