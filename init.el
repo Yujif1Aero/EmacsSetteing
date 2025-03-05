@@ -1744,6 +1744,86 @@
   :config (treemacs-set-scope-type 'Tabs))
 
 
+(defun my-c-comment-dwim (arg)
+  "Comment or uncomment current line or region with //ys in C and C++ modes."
+  (interactive "*P")
+  (let ((comment-start "//ys ")
+        (comment-end ""))
+    (if (use-region-p)
+        (comment-dwim arg)
+      (save-excursion
+        (beginning-of-line)
+        (if (looking-at (concat "^\\s-*" (regexp-quote comment-start)))
+            (uncomment-region (line-beginning-position) (line-end-position))
+          (progn
+            (beginning-of-line)
+            (insert comment-start)))))))
+(defun my-c-comment-style ()
+  (setq comment-start "//ys "
+        comment-end ""))
+
+(add-hook 'c-mode-hook 'my-c-comment-style)
+(add-hook 'c-mode-hook
+          (lambda ()
+            (local-set-key (kbd "M-;") 'my-c-comment-dwim)))
+
+(add-hook 'c++-mode-hook 'my-c-comment-style)
+(add-hook 'c++-mode-hook
+          (lambda ()
+            (local-set-key (kbd "M-;") 'my-c-comment-dwim)))
+
+(defun my-python-comment-dwim (arg)
+  "Comment or uncomment current line or region with #ys in Python mode."
+  (interactive "*P")
+  (let ((comment-start "#ys "))
+    (if (use-region-p)
+        (comment-dwim arg)
+      (save-excursion
+        (beginning-of-line)
+        (if (looking-at (concat "^\\s-*" (regexp-quote comment-start)))
+            (uncomment-region (line-beginning-position) (line-end-position))
+          (progn
+            (beginning-of-line)
+            (insert comment-start)))))))
+
+(defun my-python-comment-style ()
+  (setq comment-start "#ys "
+        comment-end ""))
+
+(add-hook 'python-mode-hook 'my-python-comment-style)
+(add-hook 'python-mode-hook
+          (lambda ()
+            (local-set-key (kbd "M-;") 'my-python-comment-dwim)))
+
+
+(global-set-key (kbd "<f5>") 'compile)
+
+;; 全角スペースをハイライトする設定
+(defface my-full-width-space-face
+  '((t (:background "gray20"))) ;; 背景色を変更 (任意の色に変更可能)
+  "Face for highlighting full-width spaces.")
+
+(defun my-highlight-full-width-spaces ()
+  "Highlight full-width spaces in the buffer."
+  (font-lock-add-keywords
+   nil
+   '(("　" 0 'my-full-width-space-face append))))
+
+(add-hook 'prog-mode-hook 'my-highlight-full-width-spaces) ;; プログラムモードで有効化
+(add-hook 'text-mode-hook 'my-highlight-full-width-spaces) ;; テキストモードで有効化
+;; 現在開いているファイルのディレクトリにカレントディレクトリを移動する関数
+(defun my/set-cwd-to-current-file ()
+  "Set the current working directory to the directory of the currently opened file."
+  (interactive)
+  (if (buffer-file-name)
+      (let ((dir (file-name-directory (buffer-file-name))))
+        (cd dir)
+        (message "Changed current directory to: %s" dir))
+    (message "Current buffer is not visiting a file")))
+
+;; ショートカットキーを設定 (例: C-c d)
+(global-set-key (kbd "C-c d") 'my/set-cwd-to-current-file)
+;;(setq select-enable-clipboard t)
 
 ;; 起動プロファイルの収集
 (add-hook 'emacs-startup-hook
