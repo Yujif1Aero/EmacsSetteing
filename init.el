@@ -1835,3 +1835,6 @@
   :ensure t)
 (require 'esup)
 
+
+;; C-z で Emacs をサスペンドする
+(global-set-key (kbd "C-z") 'suspend-emacs)
