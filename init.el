@@ -160,7 +160,7 @@
 ;;(add-to-list 'default-frame-alist '(cursor-type . bar))
 ;; 現在開いている各フレームに対してカーソル形状を適用
 (dolist (frame (frame-list))
-  (modify-frame-parameters frame '((cursor-type . bar))))
+  (modify-frame-parameters frame '((cursor-type . box))))
 (electric-pair-mode 1)
 (setq inhibit-startup-message t)
 (setq make-backup-files nil)
@@ -311,7 +311,7 @@
 ;;for linux
 					;(setq select-enable-primary nil)
 
-(setq x-select-enable-clipboard t)
+
 (leaf xclip
   :ensure t
   :config
@@ -1139,8 +1139,8 @@
 ;; leaf を使った clang-format の設定
 (leaf clang-format
   :ensure t
-  :bind (("C-c C-j" . clang-format-region)    ;; 選択範囲にフォーマットを適用
-         ("C-c j" . clang-format-buffer))    ;; バッファ全体にフォーマットを適用
+  :bind (("C-c C-_" . clang-format-region)    ;; 選択範囲にフォーマットを適用
+         ("C-c /" . clang-format-buffer))    ;; バッファ全体にフォーマットを適用
   :config
   ;; C/C++モードにのみclang-formatを適用
   ;; (add-hook 'c-mode-hook #'clang-format-buffer)  ;; C言語ファイルを開いたときにclang-formatを適用
@@ -1215,7 +1215,13 @@
           (setq default-directory project-root))))
 
     ;; ;; ;; find-file-hook に関数を追加
-     (add-hook 'find-file-hook 'set-default-directory-to-project-root)
+    (defun my-safe-set-project-root ()
+      (when (buffer-file-name) ;; diredバッファは buffer-file-name が nil
+        (set-default-directory-to-project-root)))
+
+    (remove-hook 'find-file-hook 'set-default-directory-to-project-root)
+    (add-hook 'find-file-hook 'my-safe-set-project-root)
+    
     )
  )
 
@@ -1253,13 +1259,15 @@
 ;; (setq-default tab-width 4)        ;; タブ幅を4スペースに設定
 ;; (setq-default indent-tabs-mode nil) ;; タブではなくスペースを使用
 
-;; (leaf diff-hl
-;;   :ensure t
-;;   :config
-;;   (global-diff-hl-mode)
-;;   ;; ターミナルの場合、行の背景色を使うように設定
-;;   (unless (display-graphic-p)
-;;     (diff-hl-margin-mode 1)))
+(leaf diff-hl
+  :ensure t
+  :config
+  (global-diff-hl-mode)
+  (remove-hook 'dired-mode-hook 'diff-hl-dired-mode)
+  ;; ターミナルの場合、行の背景色を使うように設定
+  (unless (display-graphic-p)
+    (diff-hl-margin-mode 1)))
+
 ;; 保存時に更新
 (add-hook 'after-save-hook 'diff-hl-update)
 
@@ -1349,9 +1357,9 @@
 (global-set-key (kbd "C-M-]") 'next-buffer)
 
 ;; ;; ;;GIT
-(leaf git-gutter
-  :ensure t
-  :global-minor-mode global-git-gutter-mode)
+;; (leaf git-gutter
+;;   :ensure t
+;;   :global-minor-mode global-git-gutter-mode)
 (leaf magit
   :ensure t
   :bind ((magit-mode-map
@@ -1364,7 +1372,9 @@
 (leaf autorevert
   :config
 
-    (global-auto-revert-mode 1))
+  ;;    (global-auto-revert-mode 1))
+  (add-hook 'dired-mode-hook (lambda () (auto-revert-mode -1)))
+  )
 
 
 ;;goto-line
@@ -1838,3 +1848,4 @@
 
 ;; C-z で Emacs をサスペンドする
 (global-set-key (kbd "C-z") 'suspend-emacs)
+
