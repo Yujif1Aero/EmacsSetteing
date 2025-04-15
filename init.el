@@ -1234,20 +1234,20 @@
 
 ;; copilot.elのインストールと設定（最小化）
 ;; copilot.elのインストールと設定
-(leaf copilot                           
+(leaf copilot
  :straight (copilot :type git :host github :repo "zerolfx/copilot.el" :files ("*.el"))
  :require t
  :config
- (add-hook 'prog-mode-hook 'copilot-mode) ;;
- (add-hook 'text-mode-hook 'copilot-mode) ;;
+;; (add-hook 'prog-mode-hook 'copilot-mode) ;;
+;; (add-hook 'text-mode-hook 'copilot-mode) ;;
  (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
  (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
  (define-key copilot-completion-map (kbd "C-TAB") 'copilot-accept-completion-by-word)
  (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion-by-word)
 
- ;; Warningを無効にする設定
- (setq copilot-infer-indentation-offset 'disable)
- (setq copilot--disable-infer-indentation t))
+;; Warningを無効にする設定
+(setq copilot-infer-indentation-offset 'disable)
+(setq copilot--disable-infer-indentation t))
 (setq warning-suppress-types '((copilot)))
 
 ;; (setq-default tab-width 4)        ;; タブ幅を4スペースに設定
