@@ -964,7 +964,7 @@
   ;; (company-lsp-async . t)           ;; 非同期補完を有効化
   ;; (company-lsp-enable-recompletion . nil)  ;; 再補完を無効化
   (company-idle-delay . 0.2)        ;; 自動補完の遅延なし
-  (company-minimum-prefix-length . 2)   ;; 1文字入力されたら補完を開始
+  (company-minimum-prefix-length . 5)   ;; 1文字入力されたら補完を開始
   :config
   (add-hook 'eshell-mode-hook (lambda () (company-mode -1))) ;; eshellでは無効化
   )
