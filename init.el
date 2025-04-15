@@ -449,7 +449,7 @@
 ;; alpha
 (if window-system
     (progn
-      (set-frame-parameter nil 'alpha 95)))
+      (set-frame-parameter nil 'alpha 100)))
 
 ;; ;; 非アクティブウィンドウの背景色を設定
 ;; (leaf hiwin
