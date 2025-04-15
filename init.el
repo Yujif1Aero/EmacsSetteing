@@ -1222,8 +1222,8 @@
 ;; leaf を使った clang-format の設定
 (leaf clang-format
   :ensure t
-  :bind (("C-c C-j" . clang-format-region)    ;; 選択範囲にフォーマットを適用
-         ("C-c j" . clang-format-buffer))    ;; バッファ全体にフォーマットを適用
+  :bind (("C-c C-_" . clang-format-region)    ;; 選択範囲にフォーマットを適用
+         ("C-c /" . clang-format-buffer))    ;; バッファ全体にフォーマットを適用
   :config
   ;; C/C++モードにのみclang-formatを適用
   ;; (add-hook 'c-mode-hook #'clang-format-buffer)  ;; C言語ファイルを開いたときにclang-formatを適用
