@@ -400,33 +400,51 @@
 
 ;; for linux(wsl) new
 ;; sync with x clipboard
-(unless window-system
-  (when (getenv "DISPLAY")
-    ;; Callback for when user cuts
-    (defun xsel-cut-function (text &optional push)
-      ;; Insert text to temp-buffer, and "send" content to xsel stdin
-      (with-temp-buffer
-        (insert text)
-        ;; I prefer using the "clipboard" selection (the one the
-        ;; typically is used by c-c/c-v) before the primary selection
-        ;; (that uses mouse-select/middle-button-click)
-        (call-process-region (point-min) (point-max) "xsel" nil 0 nil "--clipboard" "--input")))
-    ;; Call back for when user pastes
-    (defun xsel-paste-function()
-      ;; Find out what is current selection by xsel. If it is different
-      ;; from the top of the kill-ring (car kill-ring), then return
-      ;; it. Else, nil is returned, so whatever is in the top of the
-      ;; kill-ring will be used.
-      (let ((xsel-output (shell-command-to-string "xsel --clipboard --output")))
-        (unless (string= (car kill-ring) xsel-output)
-          xsel-output )))
-    ;; Attach callbacks to hooks
-    (setq interprogram-cut-function 'xsel-cut-function)
-    (setq interprogram-paste-function 'xsel-paste-function)
-    ;; Idea from
-    ;; http://shreevatsa.wordpress.com/2006/10/22/emacs-copypaste-and-x/
-    ;; http://www.mail-archive.com/help-gnu-emacs@gnu.org/msg03577.html
-    ))
+;; (defun my/copy-to-clipboard-and-kill-ring (start end)
+;;   "Copy region to kill ring and X clipboard (Windows clipboard via WSLg)."
+;;   (interactive "r")
+;;   (when (use-region-p)
+;;     ;; Emacs の kill-ring にコピー
+;;     (kill-ring-save start end)
+;;     ;; 文字列を取得
+;;     (let ((text (buffer-substring-no-properties start end)))
+;;       ;; WSLg経由でX11クリップボードに送る
+;;       (let ((process-connection-type nil))  ;; pipeで実行（xclipはこれが安全）
+;;         (let ((proc (start-process "xclip" nil "xclip" "-selection" "clipboard")))
+;;           (process-send-string proc text)
+;;           (process-send-eof proc))))))
+
+;; (global-set-key (kbd "M-w") #'my/copy-to-clipboard-and-kill-ring)
+;; (defun wsl-copy (start end)
+;;   "Copy selected text to Windows clipboard using clip.exe"
+;;   (interactive "r")
+;;   (let ((text (buffer-substring-no-properties start end)))
+;;     (kill-ring-save start end) ;; ← これで kill-ring にも保存
+;;     (let ((process-connection-type nil))
+;;       (let ((proc (start-process "clip.exe" nil "clip.exe")))
+;;         (process-send-string proc text)
+;;         (process-send-eof proc)))))
+;; (global-set-key (kbd "M-w") 'wsl-copy)
+(defun smart-copy-to-windows-clipboard (start end)
+  "Copy region to both kill ring and Windows clipboard, adjusting for GUI or TUI."
+  (interactive "r")
+  (when (use-region-p)
+    (kill-ring-save start end)
+    (let ((text (buffer-substring-no-properties start end)))
+      (cond
+       ;; GUI (WSLg) → use xclip
+       ((display-graphic-p)
+        (let ((process-connection-type nil))
+          (let ((proc (start-process "xclip" nil "xclip" "-selection" "clipboard")))
+            (process-send-string proc text)
+            (process-send-eof proc))))
+       ;; TUI (`emacs -nw`) → use clip.exe
+       (t
+        (let ((process-connection-type nil))
+          (let ((proc (start-process "clip.exe" nil "clip.exe")))
+            (process-send-string proc text)
+            (process-send-eof proc))))))))
+(global-set-key (kbd "M-w") #'smart-copy-to-windows-clipboard)
 ;;;;Emacsのクリップボードとシステムクリップボードを同期
 (setq select-enable-clipboard t)
 (setq select-enable-primary t)
@@ -1321,8 +1339,8 @@
   :straight (copilot :type git :host github :repo "zerolfx/copilot.el" :files ("*.el"))
   :require t
   :config
-;;  (add-hook 'prog-mode-hook 'copilot-mode) ;;
-;;  (add-hook 'text-mode-hook 'copilot-mode) ;;
+  (add-hook 'prog-mode-hook 'copilot-mode) ;;
+  (add-hook 'text-mode-hook 'copilot-mode) ;;
   (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
   (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
   (define-key copilot-completion-map (kbd "C-TAB") 'copilot-accept-completion-by-word)
