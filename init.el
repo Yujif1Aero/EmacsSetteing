@@ -515,7 +515,12 @@
   (( "C-M-t" . elscreen-create)  ; 新しいタブを作成します。
    ("C-M-l" . elscreen-next)    ; 次のタブに移動します。
    ("C-M-r" . elscreen-previous)  ; 前のタブに移動します。
-   ( "C-M-c" . elscreen-kill))  ; 現在のタブを閉じます。
+  ("C-M-c" . my/elscreen-kill-with-confirmation)))
+  (defun my/elscreen-kill-with-confirmation ()
+  "Confirm before killing the current elscreen tab."
+  (interactive)
+  (when (yes-or-no-p "Do you want to close this tab?"
+    (elscreen-kill)))
 
   :config
   ;; タブ表示のカスタマイズ
