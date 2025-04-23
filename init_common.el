@@ -10,12 +10,12 @@
   (let (path)
     (dolist (path paths paths)
       (let ((default-directory
-	     (expand-file-name (concat user-emacs-directory path))))
-	(unless (file-exists-p default-directory)
-	  (make-directory default-directory))
-	(add-to-list 'load-path default-directory)
-	(if (fboundp 'normal-top-level-add-subdirs-to-load-path)
-	    (normal-top-level-add-subdirs-to-load-path))))))
+             (expand-file-name (concat user-emacs-directory path))))
+        (unless (file-exists-p default-directory)
+          (make-directory default-directory))
+        (add-to-list 'load-path default-directory)
+        (if (fboundp 'normal-top-level-add-subdirs-to-load-path)
+            (normal-top-level-add-subdirs-to-load-path))))))
 
 (yujif1aero/add-to-load-path "elisp" "conf")
 
@@ -95,7 +95,8 @@
     :custom
     (imenu-list-position . 'left)
     )
-)
+  )
+;;;;;;;;;;;;;;;package の設定終わり;;;;;;;;;;;;;;;;;;;
 
 ;;;
 ;;; Blackout
@@ -130,7 +131,7 @@
   :straight t
   :blackout t
   :global-minor-mode gcmh-mode
-)
+  )
 
 ;;(add-to-list 'default-frame-alist '(cursor-type . bar))
 ;; 現在開いている各フレームに対してカーソル形状を適用
@@ -143,7 +144,7 @@
 ;;次のwindowに移動
 
 (define-key global-map (kbd "C-c o")'other-window)
-;(define-key global-map (kbd "C-i")'other-window)
+                                        ;(define-key global-map (kbd "C-i")'other-window)
 
 
 ;;コードを折りたたむ
@@ -159,7 +160,7 @@
 (setq-default line-spacing 0)
 
 
-; in the current buffer,
+                                        ; in the current buffer,
 (hl-line-mode) ; enable or disable highlight cursor line
 (hl-line-mode t) ; enable highlight cursor line
 (hl-line-mode nil) ; disable highlight cursor line
@@ -170,7 +171,7 @@
 
 
 
-;;(show-paren-mode 1)
+
 (show-paren-mode t)
 (setq its-hira-period "．")
 (setq its-hira-comma "，")
@@ -181,7 +182,7 @@
       (format-replace-strings l)
       ))
   )
-					;
+
 (defun query-replace-strings (a)
   (dolist (i a)
     (goto-char b)
@@ -195,8 +196,8 @@
       (query-replace-strings l)
       ))
   )
-                                        ;
-(show-paren-mode 1)
+
+(show-paren-mode 1) ;;bracket highlight
 
 ;;日本語の設定
 ;;https://utsuboiwa.blogspot.com/2014/07/sunnyside-emacs.html
@@ -217,7 +218,7 @@
   :if (executable-find "mozc_emacs_helper")
   :config
   (setq default-input-method "japanese-mozc"
-	mozc-candidate-style 'overlay)
+        mozc-candidate-style 'overlay)
   :bind (("C-\\" . mozc-mode)))
 
 
@@ -226,7 +227,7 @@
 (defconst zenpunct-kutoten-kv '(("．" . "。") ("，" . "、")))
 (defconst zenpunct-hanpunct-kv '(("．" . ". ") ("，" . ", ") ("。" . "｡ ") ("、" . "､ ")))
 (defconst hanpunct-zenpunct-kv '((". " . "．") (", " . "，") ("｡ " . "。") ("､ " . "、")))
-					;
+
 (defun replace-kutoten-zenpunct-region (b e)
   (interactive "r")
   (replace-kv-region kutoten-zenpunct-kv))
@@ -239,7 +240,7 @@
 (defun replace-hanpunct-zenpunct-region (b e)
   (interactive "r")
   (replace-kv-region hanpunct-zenpunct-kv))
-					;
+
 (defun query-replace-kutoten-zenpunct-region (b e)
   (interactive "r")
   (query-replace-kv-region kutoten-zenpunct-kv))
@@ -252,12 +253,12 @@
 (defun query-replace-hanpunct-zenpunct-region (b e)
   (interactive "r")
   (query-replace-kv-region hanpunct-zenpunct-kv))
-					;
+
 (global-set-key "\C-x\C-m/" 'replace-kutoten-zenpunct-region)
 (global-set-key "\C-x\C-m?" 'replace-zenpunct-kutoten-region)
 (global-set-key "\C-x\C-m." 'replace-zenpunct-hanpunct-region)
 (global-set-key "\C-x\C-m," 'replace-hanpunct-zenpunct-region)
-					;
+
 (global-set-key "\C-x\C-m\M-/" 'query-replace-kutoten-zenpunct-region)
 (global-set-key "\C-x\C-m\M-?" 'query-replace-zenpunct-kutoten-region)
 (global-set-key "\C-x\C-m\M-." 'query-replace-zenpunct-hanpunct-region)
@@ -274,13 +275,13 @@
 (require 'flymake)
 (defun flymake-get-make-cmdline (source base-dir)
   (list "make"
-(list "-s" "-C"
-      base-dir
-      (concat "CHK_SOURCES=" source)
-      "SYNTAX_CHECK_MODE=1")))
+        (list "-s" "-C"
+              base-dir
+              (concat "CHK_SOURCES=" source)
+              "SYNTAX_CHECK_MODE=1")))
 
 
-;redo
+                                        ;redo
 (leaf undo-tree
   :ensure t
   :leaf-defer nil
@@ -290,7 +291,7 @@
 (setq undo-limit 600000)
 (setq undo-strong-limit 900000)
 
-;tab 可視化
+                                        ;tab 可視化
 (leaf whitespace
   :ensure t
   :custom
@@ -309,10 +310,10 @@
 (setq-default tab-width 4)
 (global-set-key (kbd "TAB") 'tab-to-tab-stop)
 
-;見た目:https://qiita.com/blue0513/items/ff8b5822701aeb2e9aae
+                                        ;見た目:https://qiita.com/blue0513/items/ff8b5822701aeb2e9aae
 
 (leaf gruvbox-theme
-(load-theme 'gruvbox-dark-medium t)
+  (load-theme 'gruvbox-dark-medium t)
   :ensure t
   :config
   (load-theme 'gruvbox-dark-medium t)
@@ -326,7 +327,13 @@
 ;; alpha
 (if window-system
     (progn
-      (set-frame-parameter nil 'alpha 95)))
+      (set-frame-parameter nil 'alpha 100)))
+;; ;; 非アクティブウィンドウの背景色を設定
+;; (leaf hiwin
+;;   :ensure t
+;;   :config
+;;   (hiwin-activate))
+;; (set-face-background 'hiwin-face "gray30")
 
 ;; line numberの表示
 (leaf display-line-numbers
@@ -364,9 +371,6 @@
                                 ")"))
                 (cdr ls))))
 
-;;;;;;;;;;;;;;;package の設定終わり;;;;;;;;;;;;;;;;;;;
-
-
 ;; elscreen の設定
 (leaf elscreen
   :ensure t  ; elscreen パッケージがインストールされていなければ自動的にインストールします。
@@ -382,51 +386,51 @@
    ("C-M-l" . elscreen-next)    ; 次のタブに移動します。
    ("C-M-r" . elscreen-previous)  ; 前のタブに移動します。
    ("C-M-c" . my/elscreen-kill-with-confirmation)))
-   (defun my/elscreen-kill-with-confirmation ()
-   "Confirm before killing the current elscreen tab."
-   (interactive)
-   (when (yes-or-no-p "Do you want to close this tab?"
-                         (elscreen-kill)))
+(defun my/elscreen-kill-with-confirmation ()
+  "Confirm before killing the current elscreen tab."
+  (interactive)
+  (when (yes-or-no-p "Do you want to close this tab?"
+                     (elscreen-kill)))
 
   :config
   ;; タブ表示のカスタマイズ
   ;; タブの[X]ボタンと[<->]ボタンを非表示にします。
   (setq elscreen-tab-display-kill-screen nil
-	elscreen-tab-display-control nil)
+        elscreen-tab-display-control nil)
   ;; タブの見た目（背景色、前景色）を設定します。
   (set-face-attribute 'elscreen-tab-background-face nil
-		      :background "grey10"
-		      :foreground "grey90")
+                      :background "grey10"
+                      :foreground "grey90")
   (set-face-attribute 'elscreen-tab-control-face nil
-		      :background "grey20"
-		      :foreground "grey90")
+                      :background "grey20"
+                      :foreground "grey90")
   (set-face-attribute 'elscreen-tab-current-screen-face nil
-		      :background "grey20"
-		      :foreground "grey90")
+                      :background "grey20"
+                      :foreground "grey90")
   (set-face-attribute 'elscreen-tab-other-screen-face nil
-		      :background "grey30"
-		      :foreground "grey60")
+                      :background "grey30"
+                      :foreground "grey60")
   ;; タブに表示する内容（バッファ名やモード名）をカスタマイズします。
   (setq elscreen-buffer-to-nickname-alist
-	'(("^dired-mode$" .
-	   (lambda ()
-	     (format "Dired(%s)" dired-directory)))
-	  ("^Info-mode$" .
-	   (lambda ()
-	     (format "Info(%s)" (file-name-nondirectory Info-current-file))))
-	  ("^mew-draft-mode$" .
-	   (lambda ()
-	     (format "Mew(%s)" (buffer-name (current-buffer)))))
-	  ("^mew-" . "Mew")
-	  ("^irchat-" . "IRChat")
-	  ("^liece-" . "Liece")
-	  ("^lookup-" . "Lookup"))
-	elscreen-mode-to-nickname-alist
-	'(("[Ss]hell" . "shell")
-	  ("compilation" . "compile")
-	  ("-telnet" . "telnet")
-	  ("dict" . "OnlineDict")
-	  ("*WL:Message*" . "Wanderlust"))))
+        '(("^dired-mode$" .
+           (lambda ()
+             (format "Dired(%s)" dired-directory)))
+          ("^Info-mode$" .
+           (lambda ()
+             (format "Info(%s)" (file-name-nondirectory Info-current-file))))
+          ("^mew-draft-mode$" .
+           (lambda ()
+             (format "Mew(%s)" (buffer-name (current-buffer)))))
+          ("^mew-" . "Mew")
+          ("^irchat-" . "IRChat")
+          ("^liece-" . "Liece")
+          ("^lookup-" . "Lookup"))
+        elscreen-mode-to-nickname-alist
+        '(("[Ss]hell" . "shell")
+          ("compilation" . "compile")
+          ("-telnet" . "telnet")
+          ("dict" . "OnlineDict")
+          ("*WL:Message*" . "Wanderlust"))))
 
 
 
@@ -462,13 +466,6 @@
 ;;スクロールの加速
 (setq mouse-wheel-progressive-speed t)
 
-;; bufferの最後でカーソルを動かそうとしても音をならなくする
-(defun next-line (arg)
-  (interactive "p")
-  (condition-case nil
-      (line-move arg)
-    (end-of-buffer)))
-
 ;; エラー音をならなくする
 (setq ring-bell-function 'ignore)
 
@@ -481,7 +478,7 @@
 
 ;;grep improvement
 ;; 大文字・小文字を区別しない
-(setq case-fold-search t)
+;; (setq case-fold-search t)
 
 ;; ファイル名検索
 (define-key global-map (kbd "C-c i")  'find-name-dired)
@@ -500,9 +497,9 @@
 ;; rgrep時などに，新規にwindowを立ち上げる
 (setq display-buffer-alist
       '(("\\*Help\\*" display-buffer-pop-up-window)
-	("\\*compilation\\*" display-buffer-pop-up-window)
-	("\\*interpretation\\*" display-buffer-pop-up-window)
-	("\\*grep\\*" display-buffer-pop-up-window)))
+	    ("\\*compilation\\*" display-buffer-pop-up-window)
+	    ("\\*interpretation\\*" display-buffer-pop-up-window)
+	    ("\\*grep\\*" display-buffer-pop-up-window)))
 
 ;; "grepバッファに切り替える"
 (defun my-switch-grep-buffer()
@@ -517,24 +514,24 @@
 (leaf recentf
   :config
   (setq recentf-save-file "~/.emacs.d/.recentf"
-	recentf-max-saved-items 1000
-	recentf-exclude '(".recentf")
-	recentf-auto-cleanup 'never)
+        recentf-max-saved-items 1000
+        recentf-exclude '(".recentf")
+        recentf-auto-cleanup 'never)
   (recentf-mode 1)
   (run-with-idle-timer 30 t
-		       (lambda ()
-			 (let ((message-log-max nil))
-			   (with-temp-message ""
-			     (recentf-save-list)))))
+                       (lambda ()
+                         (let ((message-log-max nil))
+                           (with-temp-message ""
+                             (recentf-save-list)))))
   :bind (("C-c h" . recentf-open-files)))
 
 
 ;; 直前のバッファに戻る
-					;(global-set-key (kbd "M-[") 'switch-to-prev-buffer)
+;; (global-set-key (kbd "M-[") 'switch-to-prev-buffer)
 (global-set-key (kbd "C-M-[") 'previous-buffer)
 
 ;; 次のバッファに進む
-					;(global-set-key (kbd "M-]") 'switch-to-next-buffer)
+;; (global-set-key (kbd "M-]") 'switch-to-next-buffer)
 (global-set-key (kbd "C-M-]") 'next-buffer)
 
 (leaf magit
@@ -548,23 +545,21 @@
           ("C-c C-p" . magit-section-backward))
          ;; 全体のキーバインド設定
          ("C-c g" . magit-diff-working-tree))
-    :custom
-    (magit-save-repository-buffers . nil)  ;; 自動保存を無効化
-    (magit-display-buffer-function . #'magit-display-buffer-same-window-except-diff-v1)
-     :config
-)
+  :custom
+  (magit-save-repository-buffers . nil)  ;; 自動保存を無効化
+  (magit-display-buffer-function . #'magit-display-buffer-same-window-except-diff-v1)
+  :config
+  )
 
 
 ;;;ファイルの自動再読み込み（Auto Revert）
 (leaf autorevert
   :config
-
-
-    (global-auto-revert-mode 1))
+  (global-auto-revert-mode 1))
 
 
 ;; ;; gnu-global->LSPに比べると精度が良くない
-(setq-local imenu-create-index-function #'ggtags-build-imenu-index)
+;; (setq-local imenu-create-index-function #'ggtags-build-imenu-index)
 ;; (leaf ggtags
 ;;   :ensure t  ;; gnu-global パッケージを自動でインストール
 ;;   :hook (c-mode-common-hook) ;; Hook を利用して自動的に ggtags-mode を有効に
@@ -588,7 +583,7 @@
 ;;         (if tag
 ;;             (ggtags-find-tag tag)
 ;;           (message "No tag found at point!"))))
-    
+
 ;;     (defun my-ggtags-find-rtag ()
 ;;       "Find the reference tag at point using `ggtags-find-rtag'."
 ;;       (interactive)
@@ -596,11 +591,11 @@
 ;;         (if tag
 ;;             (ggtags-find-rtag tag)
 ;;           (message "No reference tag found at point!"))))
-    
+
 ;;     ;; キーバインドの設定
 ;;     (define-key ggtags-mode-map (kbd "M-.") 'my-ggtags-find-tag)
 ;;     (define-key ggtags-mode-map (kbd "M-,") 'my-ggtags-find-rtag)))
-    
+
 
 ;; (autoload 'gtags-mode "gtags" "" t)
 ;; (setq gtags-mode-hook
@@ -698,10 +693,10 @@
 (leaf lsp-pyright
   :ensure t
   :after lsp-mode
- ;; :hook (python-mode-hook . (lambda ()
- ;;                             (require 'lsp-pyright)
- ;;                             (lsp)))  ;; Pythonファイルで自動的にlspを起動
-)
+  ;; :hook (python-mode-hook . (lambda ()
+  ;;                             (require 'lsp-pyright)
+  ;;                             (lsp)))  ;; Pythonファイルで自動的にlspを起動
+  )
 ;; LSP UIの追加設定
 
 (leaf lsp-ui
@@ -730,7 +725,7 @@
    (lsp-ui-sideline-show-diagnostics . nil)
    ;; 診断をサイドラインに表示しない
    (lsp-ui-sideline-show-code-actions . nil))
-   ;; コードアクションをサイドラインに表示しない
+  ;; コードアクションをサイドラインに表示しない
   :preface
   (defun ladicle/toggle-lsp-ui-doc ()
     (interactive)
@@ -785,7 +780,7 @@
 ;; ;;   :config
 ;; ;;   ;; オプション設定（必要に応じて）
 ;;    ;;   (setq eglot-keep-workspace-alive nil)  ;; Emacs終了時にLSPサーバを自動的にシャットダウン
-;;    ) 
+;;    )
 
 
 ;;companyの設定
@@ -793,7 +788,7 @@
   :ensure t
   :init
   (global-company-mode) ;; グローバルにcompanyを有効化する場合はこのコメントを外す
-;;  :hook ((c-mode-hook c++-mode-hook python-mode-hook) . company-mode) ;; フックを有効にする場合はこのコメントを外す
+  ;;  :hook ((c-mode-hook c++-mode-hook python-mode-hook) . company-mode) ;; フックを有効にする場合はこのコメントを外す
   :custom
   ;; (company-lsp-cache-candidates . t) ;; 候補のキャッシュを常に使用
   ;; (company-lsp-async . t)           ;; 非同期補完を有効化
@@ -836,7 +831,7 @@
     :ensure t
     :config
     (which-key-mode)
-   (which-key-setup-side-window-right))
+    (which-key-setup-side-window-right))
   )
 
 
@@ -952,7 +947,7 @@
   :config (treemacs-set-scope-type 'Perspectives))
 
 (use-package treemacs-tab-bar ;;treemacs-tab-bar if you use tab-bar-mode
- :after (treemacs)
+  :after (treemacs)
   :ensure t
   :config (treemacs-set-scope-type 'Tabs))
 
@@ -980,7 +975,7 @@
   ;; C/C++モードにのみclang-formatを適用
   ;; (add-hook 'c-mode-hook #'clang-format-buffer)  ;; C言語ファイルを開いたときにclang-formatを適用
   ;; (add-hook 'c++-mode-hook #'clang-format-buffer) ;; C++ファイルを開いたときにclang-formatを適用
-)
+  )
 ;; (leaf blacken :: なぜかC++のファイルにも適用される)
 ;;   :ensure t
 ;;   :bind (("C-c j" . blacken-buffer)
@@ -1016,7 +1011,7 @@
     (global-set-key (kbd "C-x C-f") 'helm-find-files)
     (global-set-key (kbd "M-y") 'helm-show-kill-ring)
     (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
-  )
+    )
   )
 
 (leaf helm-ag
@@ -1049,9 +1044,9 @@
           (setq default-directory project-root))))
 
     ;; ;; ;; find-file-hook に関数を追加
-     (add-hook 'find-file-hook 'set-default-directory-to-project-root)
+    (add-hook 'find-file-hook 'set-default-directory-to-project-root)
     )
- )
+  )
 
 (leaf helm-projectile
   :ensure t
@@ -1061,7 +1056,7 @@
   (setq projectile-completion-system 'helm)
   :bind
   (("C-c p h" . helm-projectile)
-  ("C-c p n" . helm-projectile-grep)
+   ("C-c p n" . helm-projectile-grep)
    )
   )
 
@@ -1079,9 +1074,9 @@
   (define-key copilot-completion-map (kbd "C-TAB") 'copilot-accept-completion-by-word)
   (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion-by-word)
 
-;; Warningを無効にする設定
-(setq copilot-infer-indentation-offset 'disable)
-(setq copilot--disable-infer-indentation t))
+  ;; Warningを無効にする設定
+  (setq copilot-infer-indentation-offset 'disable)
+  (setq copilot--disable-infer-indentation t))
 (setq warning-suppress-types '((copilot)))
 
 
@@ -1195,6 +1190,29 @@
             (local-set-key (kbd "M-;") 'my-c-comment-dwim)))
 
 (global-set-key (kbd "<f5>") 'compile)
+
+(defun my-python-comment-dwim (arg)
+  "Comment or uncomment current line or region with #ys in Python mode."
+  (interactive "*P")
+  (let ((comment-start "#ys "))
+    (if (use-region-p)
+        (comment-dwim arg)
+      (save-excursion
+        (beginning-of-line)
+        (if (looking-at (concat "^\\s-*" (regexp-quote comment-start)))
+            (uncomment-region (line-beginning-position) (line-end-position))
+          (progn
+            (beginning-of-line)
+            (insert comment-start)))))))
+
+(defun my-python-comment-style ()
+  (setq comment-start "#ys "
+        comment-end ""))
+
+(add-hook 'python-mode-hook 'my-python-comment-style)
+(add-hook 'python-mode-hook
+          (lambda ()
+            (local-set-key (kbd "M-;") 'my-python-comment-dwim)))
 
 ;; 全角スペースをハイライトする設定
 (defface my-full-width-space-face

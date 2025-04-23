@@ -16,5 +16,5 @@
   (load (expand-file-name "init_WSL2.el" user-emacs-directory)))
 
  ((eq system-type 'gnu/linux)
-  (message "Loading NixOS-specific settings...")
-  (load (expand-file-name "init_nixOS.el" user-emacs-directory))))
+  (message "Loading linux-specific settings...")
+  (load (expand-file-name "init_linux.el" user-emacs-directory))))
