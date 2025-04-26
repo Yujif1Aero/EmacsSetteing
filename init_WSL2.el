@@ -61,3 +61,6 @@
 
   (eshell-git-prompt-use-theme 'powerline))
 
+;;;magit
+(setenv "GIT_EDITOR" "notepad.exe")
+(setq magit-git-global-arguments '("-c" "core.editor=notepad.exe"))
