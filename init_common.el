@@ -215,11 +215,12 @@
 
 
 (leaf mozc
+  :ensure t
   :if (executable-find "mozc_emacs_helper")
   :config
   (setq default-input-method "japanese-mozc"
-        mozc-candidate-style 'overlay)
-  :bind (("C-\\" . mozc-mode)))
+        mozc-candidate-style 'overlay))
+
 
 
 
