@@ -1,5 +1,5 @@
 (leaf xclip
-  :ensure t
+  :straight t
   :config
   ;; xclip-mode を有効にする
   (xclip-mode 1))
@@ -8,7 +8,7 @@
 (setq select-enable-primary t)
 
 (leaf eshell-git-prompt
-  :ensure t
+  :straight t
   :config
   (eshell-git-prompt-use-theme 'git-radar))
 

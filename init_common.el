@@ -26,21 +26,21 @@
 (load custom-file)
 
 ;; Package setup
-(require 'package)
-(setq package-archives
-      '(("org"   . "http://orgmode.org/elpa/")
-        ("melpa" . "http://melpa.org/packages/")
-        ("gnu"   . "http://elpa.gnu.org/packages/")))
+;; (require 'package)
+;; (setq package-archives
+;;       '(("org"   . "http://orgmode.org/elpa/")
+;;         ("melpa" . "http://melpa.org/packages/")
+;;         ("gnu"   . "http://elpa.gnu.org/packages/")))
 
-(unless (bound-and-true-p package--initialized)
-  (package-initialize))
+;; (unless (bound-and-true-p package--initialized)
+;;   (package-initialize))
 
-(unless package-archive-contents
-  (package-refresh-contents))
+;; (unless package-archive-contents
+;;   (package-refresh-contents))
 
-;; Install leaf if needed
-(unless (package-installed-p 'leaf)
-  (package-install 'leaf))
+;; ;; Install leaf if needed
+;; (unless (package-installed-p 'leaf)
+;;   (package-install 'leaf))
 
 ;; straight.elのブートストラップ
 ;;;
@@ -66,14 +66,14 @@
 
 ;; Leaf setup
 (leaf leaf-keywords
-  :ensure t
+  :straight t
   :config
   (leaf-keywords-init))
 
 ;; Optional packages for leaf-keywords
-(leaf hydra :ensure t)
+(leaf hydra :straight t)
 (leaf el-get
-  :ensure t
+  :straight t
   :custom
   '((el-get-git-shallow-clone . t)))
 
@@ -215,7 +215,7 @@
 
 
 (leaf mozc
-  :ensure t
+  :straight t
   :if (executable-find "mozc_emacs_helper")
   :config
   (setq default-input-method "japanese-mozc"
@@ -269,7 +269,7 @@
 (setq auto-mode-alist (cons '("\\.cu$" . c++-mode) auto-mode-alist))
 (setq auto-mode-alist (cons '("\\.cuh$" . c++-mode) auto-mode-alist))
 (leaf nix-mode
-  :ensure t
+  :straight t
   :mode "\\.nix\\'")
 
 
@@ -284,7 +284,7 @@
 
                                         ;redo
 (leaf undo-tree
-  :ensure t
+  :straight t
   :leaf-defer nil
   :bind (("M-/" . undo-tree-redo))
   :custom ((global-undo-tree-mode . t)))
@@ -294,17 +294,15 @@
 
                                         ;tab 可視化
 (leaf whitespace
-  :ensure t
+  :straight t
   :custom
-  ((whitespace-style . '(face
-                         trailing
-                         tabs
-                         ;; spaces
-                         ;; empty
-                         space-mark
-                         tab-mark))
-   (whitespace-display-mappings . '((tab-mark ?\t [?\u00BB ?\t] [?\\ ?\t])))
-   (global-whitespace-mode . t)))
+  ((whitespace-style
+    . '(face trailing tabs space-mark tab-mark))
+   ;; TAB を「»␉」の並びで表示（187=»、9=TAB）
+   (whitespace-display-mappings
+    . '((tab-mark 9 [187 9] [92 9]))))
+  :config
+  (global-whitespace-mode 1))
 
 ;;tabをスペース4つに
 (setq-default indent-tabs-mode nil)
@@ -315,7 +313,7 @@
 
 (leaf gruvbox-theme
   (load-theme 'gruvbox-dark-medium t)
-  :ensure t
+  :straight t
   :config
   (load-theme 'gruvbox-dark-medium t)
   ;;(load-theme 'solarized-light t) ;; Solarized Light をロード
@@ -331,7 +329,7 @@
       (set-frame-parameter nil 'alpha 100)))
 ;; ;; 非アクティブウィンドウの背景色を設定
 ;; (leaf hiwin
-;;   :ensure t
+;;   :straight t
 ;;   :config
 ;;   (hiwin-activate))
 ;; (set-face-background 'hiwin-face "gray30")
@@ -374,7 +372,7 @@
 
 ;; elscreen の設定
 (leaf elscreen
-  :ensure t  ; elscreen パッケージがインストールされていなければ自動的にインストールします。
+  :straight t  ; elscreen パッケージがインストールされていなければ自動的にインストールします。
   :init
   (setq elscreen-prefix-key (kbd "C-M-z"))
   ;; elscreen を起動します。これによりタブ機能が有効になります。
@@ -437,45 +435,45 @@
 
 ;;操作性の向上
 ;; xterm-mouse-mode を有効にする
-(xterm-mouse-mode 1)
-;;xterm-mouse-mode をトグルする関数
-(defun toggle-xterm-mouse-mode ()
-  (interactive)
-  (if xterm-mouse-mode
-      (progn
-        (xterm-mouse-mode -1)
-        (message "xterm-mouse-mode disabled"))
-    (progn
-      (xterm-mouse-mode 1)
-      (message "xterm-mouse-mode enabled"))))
+;; (xterm-mouse-mode 1)
+;; ;;xterm-mouse-mode をトグルする関数
+;; (defun toggle-xterm-mouse-mode ()
+;;   (interactive)
+;;   (if xterm-mouse-mode
+;;       (progn
+;;         (xterm-mouse-mode -1)
+;;         (message "xterm-mouse-mode disabled"))
+;;     (progn
+;;       (xterm-mouse-mode 1)
+;;       (message "xterm-mouse-mode enabled"))))
 
-;; ;; キーバインドの設定（Ctrl + Alt + m にトグルを割り当て）
-(global-set-key (kbd "C-M-m") 'toggle-xterm-mouse-mode)
+;; ;; ;; キーバインドの設定（Ctrl + Alt + m にトグルを割り当て）
+;; (global-set-key (kbd "C-M-m") 'toggle-xterm-mouse-mode)
 
-;; 他のマウス設定
-(mouse-wheel-mode 1)
+;; ;; 他のマウス設定
+;; (mouse-wheel-mode 1)
 
-;; マウスホイールのスクロール設定
-(setq mouse-wheel-scroll-amount '( ((Alt) . 1)))  ;; 通常は3行、Shiftキーを押しながらは1行
-(setq mouse-wheel-progressive-speed nil)  ;; スクロール速度を固定
-(setq mouse-wheel-follow-mouse 't)  ;; マウスポインタの位置に従ってスクロール
+;; ;; マウスホイールのスクロール設定
+;; (setq mouse-wheel-scroll-amount '( ((Alt) . 1)))  ;; 通常は3行、Shiftキーを押しながらは1行
+;; (setq mouse-wheel-progressive-speed nil)  ;; スクロール速度を固定
+;; (setq mouse-wheel-follow-mouse 't)  ;; マウスポインタの位置に従ってスクロール
 
-;; ;; Smooth Scroll のオプション設定
-(setq scroll-step 1)
-(setq scroll-conservatively 10000)
-(setq auto-window-vscroll nil)
-;;スクロールの加速
-(setq mouse-wheel-progressive-speed t)
+;; ;; ;; Smooth Scroll のオプション設定
+;; (setq scroll-step 1)
+;; (setq scroll-conservatively 10000)
+;; (setq auto-window-vscroll nil)
+;; ;;スクロールの加速
+;; (setq mouse-wheel-progressive-speed t)
 
 ;; エラー音をならなくする
 (setq ring-bell-function 'ignore)
 
 
 ;; active window move
-(global-set-key (kbd "<C-left>")  'windmove-left)
-(global-set-key (kbd "<C-down>")  'windmove-down)
-(global-set-key (kbd "<C-up>")    'windmove-up)
-(global-set-key (kbd "<C-right>") 'windmove-right)
+(global-set-key (kbd "C-<left>")  'windmove-left)
+(global-set-key (kbd "C-<down>")  'windmove-down)
+(global-set-key (kbd "C-<up>")    'windmove-up)
+(global-set-key (kbd "C-<right>") 'windmove-right)
 
 ;;grep improvement
 ;; 大文字・小文字を区別しない
@@ -536,7 +534,7 @@
 (global-set-key (kbd "C-M-]") 'next-buffer)
 
 (leaf magit
-  :ensure t
+  :straight t
   :bind ((magit-mode-map
           ;; 通常のカーソル移動用に `C-n` と `C-p` を標準の移動コマンドに再バインド
           ("C-n" . next-line)
@@ -562,7 +560,7 @@
 ;; ;; gnu-global->LSPに比べると精度が良くない
 ;; (setq-local imenu-create-index-function #'ggtags-build-imenu-index)
 ;; (leaf ggtags
-;;   :ensure t  ;; gnu-global パッケージを自動でインストール
+;;   :straight t  ;; gnu-global パッケージを自動でインストール
 ;;   :hook (c-mode-common-hook) ;; Hook を利用して自動的に ggtags-mode を有効に
 ;;   :init
 ;;   ;; gtags-mode がロードされた後で設定を行う
@@ -571,7 +569,7 @@
 ;;     (define-key ggtags-mode-map (kbd "M-.") 'ggtags-find-tag)
 ;;     (define-key ggtags-mode-map (kbd "M-,") 'ggtags-find-rtag)))
 ;; (leaf ggtags
-;;   :ensure t  ;; gnu-global パッケージを自動でインストール
+;;   :straight t  ;; gnu-global パッケージを自動でインストール
 ;;   :hook (c-mode-common-hook) ;; Hook を利用して自動的に ggtags-mode を有効に
 ;;   :init
 ;;   ;; gtags-mode がロードされた後で設定を行う
@@ -614,7 +612,7 @@
 
 ;;ccls を導入
 (leaf ccls
-  :ensure t
+  :straight t
   :after lsp-mode
   :init
   (setq ccls-executable "/usr/bin/ccls")  ;; cclsの実行可能ファイルのパスを適切に設定
@@ -626,7 +624,7 @@
 
 ;;;; LSPモードの設定とキーバインドの調整(ref ::https://qiita.com/kari_tech/items/4754fac39504dccfd7be )
 ;; (leaf lsp-mode
-;;   :ensure t
+;;   :straight t
 ;;   :commands lsp
 ;;   :init
 ;;   ;;(setq lsp-prefer-flymake nil)  ;; FlymakeではなくFlycheckを使用
@@ -665,7 +663,7 @@
 ;;   ;; 必要に応じて他の言語用関数も追加可能
 ;;   )
 (leaf lsp-mode
-  :ensure t
+  :straight t
   :commands lsp
   :init
   ;; LSP 全般の設定
@@ -692,7 +690,7 @@
 
 ;; lsp-pyright の設定
 (leaf lsp-pyright
-  :ensure t
+  :straight t
   :after lsp-mode
   ;; :hook (python-mode-hook . (lambda ()
   ;;                             (require 'lsp-pyright)
@@ -701,7 +699,7 @@
 ;; LSP UIの追加設定
 
 (leaf lsp-ui
-  :ensure t
+  :straight t
   :custom
   ((lsp-ui-doc-enable . t)
    ;; LSP UI ドキュメントの表示を有効化
@@ -737,7 +735,7 @@
       (lsp-ui-doc-mode 1)))
   )
 (leaf lsp-treemacs
-  :ensure t
+  :straight t
   :after (lsp-mode treemacs)
   :config
   (lsp-treemacs-sync-mode 1) ;; Treemacs で LSP シンボルを表示
@@ -748,7 +746,7 @@
 
 ;; ;;eglot(https://github.com/joaotavora/eglot)(https://rn.nyaomin.info/entry/2024/01/16/224657)LSPの簡略版だがうまくつかえない
 ;; (leaf eglot
-;;       :ensure t
+;;       :straight t
 ;;       :config
 ;;       (add-to-list 'eglot-server-programs '((c-mode c++-mode python-mode js-mode js-ts-mode typescript-mode typescript-ts-mode) . (eglot-deno "deno" "lsp")))
 ;;       (defclass eglot-deno (eglot-lsp-server) () :documentation "A custom class for deno lsp.")
@@ -773,7 +771,7 @@
 
 ;;eglot(https://github.com/joaotavora/eglot)
 ;;  (leaf eglot
-;;    :ensure t
+;;    :straight t
 ;; ;;   :hook (
 ;; ;;          (c-mode-hook . eglot-ensure)
 ;; ;;          (c++-mode-hook . eglot-ensure)
@@ -786,7 +784,7 @@
 
 ;;companyの設定
 (leaf company
-  :ensure t
+  :straight t
   :init
   (global-company-mode) ;; グローバルにcompanyを有効化する場合はこのコメントを外す
   ;;  :hook ((c-mode-hook c++-mode-hook python-mode-hook) . company-mode) ;; フックを有効にする場合はこのコメントを外す
@@ -802,7 +800,7 @@
 
 ;; ;; flycheckの設定
 ;; (leaf flycheck
-;;   :ensure t
+;;   :straight t
 ;;   :init
 ;;   (global-flycheck-mode))
 
@@ -826,10 +824,10 @@
 
 ;;which-key
 (leaf leaf-keywords
-  :ensure t
+  :straight t
   :config
   (leaf which-key
-    :ensure t
+    :straight t
     :config
     (which-key-mode)
     (which-key-setup-side-window-right))
@@ -838,7 +836,7 @@
 
 ;;treemacs 
 (use-package treemacs
-  :ensure t
+  :straight t
   :defer t
   :init
   (with-eval-after-load 'winum
@@ -928,28 +926,28 @@
 
 (use-package treemacs-evil
   :after (treemacs evil)
-  :ensure t)
+  :straight t)
 
 (use-package treemacs-projectile
   :after (treemacs projectile)
-  :ensure t)
+  :straight t)
 
 (use-package treemacs-icons-dired
   :hook (dired-mode . treemacs-icons-dired-enable-once)
-  :ensure t)
+  :straight t)
 
 (use-package treemacs-magit
   :after (treemacs magit)
-  :ensure t)
+  :straight t)
 
 (use-package treemacs-persp ;;treemacs-perspective if you use perspective.el vs. persp-mode
   :after (treemacs persp-mode) ;;or perspective vs. persp-mode
-  :ensure t
+  :straight t
   :config (treemacs-set-scope-type 'Perspectives))
 
 (use-package treemacs-tab-bar ;;treemacs-tab-bar if you use tab-bar-mode
   :after (treemacs)
-  :ensure t
+  :straight t
   :config (treemacs-set-scope-type 'Tabs))
 
 
@@ -961,7 +959,7 @@
 
 ;; ;; プロファイル結果の出力
 ;; (leaf esup
-;;   :ensure t)
+;;   :straight t)
 ;; (require 'esup)
 
 
@@ -969,7 +967,7 @@
 (global-set-key (kbd "C-c C-r") 'indent-region)
 ;; leaf を使った clang-format の設定
 (leaf clang-format
-  :ensure t
+  :straight t
   :bind (("C-c C-_" . clang-format-region)    ;; 選択範囲にフォーマットを適用
          ("C-c /" . clang-format-buffer))    ;; バッファ全体にフォーマットを適用
   :config
@@ -978,7 +976,7 @@
   ;; (add-hook 'c++-mode-hook #'clang-format-buffer) ;; C++ファイルを開いたときにclang-formatを適用
   )
 ;; (leaf blacken :: なぜかC++のファイルにも適用される)
-;;   :ensure t
+;;   :straight t
 ;;   :bind (("C-c j" . blacken-buffer)
 ;;          ("C-c C-j" . blacken-region))  ;; 選択範囲をフォーマット
 ;;   :custom
@@ -990,7 +988,7 @@
 
 ;; helm, projectile, helm-projectile の設定
 (leaf helm
-  :ensure t
+  :straight t
   :config
   ;; (helm-mode 1)
   ;; (with-eval-after-load 'helm
@@ -1016,7 +1014,7 @@
   )
 
 (leaf helm-ag
-  :ensure t
+  :straight t
   :after helm
   :custom
   (helm-ag-base-command . "ag --nocolor --nogroup")
@@ -1031,7 +1029,7 @@
 
 
 (leaf projectile
-  :ensure t
+  :straight t
   :require t
   :config
   (progn
@@ -1050,7 +1048,7 @@
   )
 
 (leaf helm-projectile
-  :ensure t
+  :straight t
   :after (helm projectile)
   :config
   (helm-projectile-on)
@@ -1085,7 +1083,7 @@
 (setq-default indent-tabs-mode nil) ;; タブではなくスペースを使用
 ;; 他のAIツールと連携
 ;; (leaf chatgpt-shell
-;;   :ensure t
+;;   :straight t
 ;;   :custom
 ;;   (chatgpt-shell-backend . 'chatgpt-shell-openai)
 ;;   :config
@@ -1102,12 +1100,12 @@
 ;;   ;; ChatGPT-shell起動時にAPIキーをロード
 ;;   (add-hook 'chatgpt-shell-mode-hook #'load-chatgpt-shell-key))
 ;; (leaf chatgpt-shell
-;;   :ensure t
+;;   :straight t
 ;; ;;  :config
 ;;   )
 
 (leaf diff-hl
-  :ensure t
+  :straight t
   :config
   (global-diff-hl-mode)
   ;; ターミナルの場合、行の背景色を使うように設定
@@ -1123,7 +1121,7 @@
 
 ;; shell-popの設定
 (leaf shell-pop
-  :ensure t
+  :straight t
   :require t
   :custom
   (shell-pop-shell-type . '("eshell" "*eshell*" (lambda () (eshell))))

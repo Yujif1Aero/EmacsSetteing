@@ -131,6 +131,14 @@ M-x undo-tree-visualize
 M-x helm-show-kill-ring
 C-x c M-y
 
+
+## nvm で LTS を入れる例
+curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+. ~/.nvm/nvm.sh
+nvm install --lts
+node -v   # 20 以上を確認
+npm i -g @github/copilot-language-server
+
 - ref : 
 1. https://qiita.com/fnobi/items/8906c8e7759751d32b6b
 1. https://github.com/xuchunyang/eshell-git-prompt
