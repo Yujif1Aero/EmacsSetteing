@@ -496,7 +496,9 @@
 ;; rgrep時などに，新規にwindowを立ち上げる
 (setq display-buffer-alist
       '(("\\*Help\\*" display-buffer-pop-up-window)
-	    ("\\*compilation\\*" display-buffer-pop-up-window)
+          ;; compilation は既存ウィンドウを使う
+        ("\\*compilation\\*" display-buffer-reuse-window)
+	  ;;  ("\\*compilation\\*" display-buffer-pop-up-window) 
 	    ("\\*interpretation\\*" display-buffer-pop-up-window)
 	    ("\\*grep\\*" display-buffer-pop-up-window)))
 
