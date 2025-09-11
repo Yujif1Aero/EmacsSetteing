@@ -13,7 +13,9 @@
 (cond
  ((running-in-wsl-p)
   (message "Loading WSL2-specific settings...")
-  (load (expand-file-name "init_WSL2.el" user-emacs-directory)))
+  (load (expand-file-name "init_WSL2.el" user-emacs-directory))
+  ;;(load (expand-file-name "tex.el" user-emacs-directory))
+  )
 
  ((eq system-type 'gnu/linux)
   (message "Loading linux-specific settings...")
