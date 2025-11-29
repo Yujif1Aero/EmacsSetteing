@@ -46,17 +46,17 @@ compiledb make
 M-x eglot
 if you do not have `compile_commands.json` , for example put clangd in C++/C. CHECK sever list in refernce git URL. 
 ref : https://github.com/joaotavora/eglot
-```      
+```
 
 ## additional instaling for LSP ( もしかしたら，メタプログラミングに不向き？)
 
-for ubutsu
+
  1. python code
 ```bash
  npm install -g pyright
 
 ```
- 1. c/c++ code 
+ 1. c/c++ code
 ```bash
  sudo apt install clangd
 ```
@@ -121,7 +121,7 @@ helm-do-agでファイル内文字列の検索をしないファイルはやデ�
 ollama serve
 ```
 ## Whitespace (ホワイトスペース)
-M-x whitespace-mode 
+M-x whitespace-mode
 M-x global-whitespace-mode
 
 ## Undo-Tree (アンドゥツリー)
@@ -131,7 +131,19 @@ M-x undo-tree-visualize
 M-x helm-show-kill-ring
 C-x c M-y
 
-- ref : 
+## wsl environment setting
+git infomation show slow when workspace is in not wsl system but in windows system.
+Adapt below commands:
+```bash
+$cat >/tmp/git <<'GIT'#!/bin/sh GIT_WINDOWS="/mnt/c/Program Files/Git/cmd/git.exe"
+ GIT_LINUX="/usr/bin/git"
+case "$(pwd -P)" in
+  /mnt/?/*) exec "$GIT_WINDOWS" "$@" | sed "s#\([A-E]\):#/mnt/\L\1#" ;;
+  *) exec "$GIT_LINUX" "$@" ;;
+ esacGIT
+$sudo install /tmp/git /usr/local/bin
+```
+- ref :
 1. https://qiita.com/fnobi/items/8906c8e7759751d32b6b
 1. https://github.com/xuchunyang/eshell-git-prompt
 1. https://qiita.com/namn1125/items/5cd6a9cbbf17fb85c740
