@@ -1,12 +1,5 @@
 # emacs setting
 - write this into ~/.bashrc or shell something.Some PAHT in bash is used in eshell
-# emacs install
-```bash
-sudo apt install emacs28-nativecomp
-sudo apt install fcitx-mozc
-sudo apt install mozc-server mozc-utils-gui mozc-data emacs-mozc
-```
-
 ```bash
 ## create emacs env file
 
@@ -19,6 +12,16 @@ perl -wle \
 ##move to project root
 alias pjroot='cd $(git rev-parse --show-toplevel)'
 ```
+
+# emacs install
+```bash
+sudo add-apt-repository ppa:kelleyk/emacs
+sudo apt update
+sudo apt install emacs28-nativecomp
+sudo apt install fcitx-mozc
+sudo apt install mozc-server mozc-utils-gui mozc-data emacs-mozc
+```
+
 
 
 ## add PATH (pip path)
@@ -94,9 +97,14 @@ node.js >> version 18
 ```bash
 sudo apt update
 sudo apt install nodejs npm
-~~git clone https://github.com/zerolfx/copilot.el.git~~
-~~cd copilot.el~~
-~~npm install~~
+curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+nvm --version
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+nvm --version
+
+nvm install 22
 npm install -g @github/copilot-language-server
 ```
 
@@ -107,7 +115,11 @@ sudo apt install clang-format
 ## helm-ag
 ```bash
 sudo apt-get install silversearcher-ag
+git clone https://github.com/emacsorphanage/helm-ag.git
 ```
+M-x package-refresh-contents RET
+M-x package-install RET helm-ag RET
+
 M-x helm-ag-edit を使用して通常のバッファに変換する helm-ag の検索結果を helm-ag-edit で編集可能なバッファに展開することで、通常の Emacs の C-s 検索機能を利用できるようにします。
 
 手順：
