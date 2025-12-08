@@ -3,7 +3,6 @@
 ```bash
 ## create emacs env file
 
-
 perl -wle \
     'do { print qq/(setenv "$_" "$ENV{$_}")/ if exists $ENV{$_} } for @ARGV' \
     PATH > ~/.emacs.d/shellenv.el
@@ -12,6 +11,8 @@ perl -wle \
 ##move to project root
 alias pjroot='cd $(git rev-parse --show-toplevel)'
 ```
+
+- initial launch please uncomment : ensure t in leaf 
 
 # emacs install
 ```bash
