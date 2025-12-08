@@ -26,22 +26,22 @@
 (load custom-file)
 
 ;; Package setup
-(require 'package)
-(setq package-archives
-      '(("org"   . "http://orgmode.org/elpa/")
-        ("melpa" . "http://melpa.org/packages/")
-        ("gnu"   . "http://elpa.gnu.org/packages/")))
+;; (require 'package)
+;; (setq package-archives
+;;       '(("org"   . "http://orgmode.org/elpa/")
+;;         ("melpa" . "http://melpa.org/packages/")
+;;         ("gnu"   . "http://elpa.gnu.org/packages/")))
 
-(unless (bound-and-true-p package--initialized)
-  (package-initialize))
+;; (unless (bound-and-true-p package--initialized)
+;;   (package-initialize))
 
-(unless package-archive-contents
-  (package-refresh-contents))
+;; (unless package-archive-contents
+;;   (package-refresh-contents))
 
-;; Install leaf if needed
-(unless (package-installed-p 'leaf)
-  (package-install 'leaf))
-
+;; ;; Install leaf if needed
+;; (unless (package-installed-p 'leaf)
+;;   (package-install 'leaf))
+(setq straight-enable-use-package-integration nil)
 ;; straight.elのブートストラップ
 ;;;
 ;;; straight.el
@@ -61,12 +61,12 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 (setq straight-vc-git-default-clone-depth 1) ;; shallow clone
-;; Load leaf
-(require 'leaf)
+;; ここからが変更ポイント
+(straight-use-package 'leaf)
+(straight-use-package 'leaf-keywords)
 
-;; Leaf setup
+(require 'leaf)
 (leaf leaf-keywords
-  :ensure t
   :config
   (leaf-keywords-init))
 
@@ -77,10 +77,10 @@
   :custom
   '((el-get-git-shallow-clone . t)))
 
-;; Use-package setup
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
-(require 'use-package)
+;; ;; Use-package setup
+;; (unless (package-installed-p 'use-package)
+;;   (package-install 'use-package))
+;; (require 'use-package)
 
 (leaf leaf
   :require t
