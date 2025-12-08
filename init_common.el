@@ -2,6 +2,8 @@
 ;; package management
 ;;https://qiita.com/namn1125/items/5cd6a9cbbf17fb85c740#packageel-%E3%82%92%E7%9B%B4%E6%8E%A5%E5%88%A9%E7%94%A8%E3%81%97%E3%81%AA%E3%81%84%E7%90%86%E7%94%B1%E3%81%A8gitgithub%E3%81%AB%E3%82%88%E3%82%8B-initel-%E3%81%AE%E7%AE%A1%E7%90%86
 ;;Backtrace バッファが表示されないようにするに
+
+
 (setq debug-on-error nil)
 (when (< emacs-major-version 23)
   (defvar user-emacs-directory "~/.emacs.d/"))
@@ -61,6 +63,18 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 (setq straight-vc-git-default-clone-depth 1) ;; shallow clone
+;; (require 'package)
+;; (setq package-archives
+;;       '(("melpa" . "https://melpa.org/packages/")
+;;         ("gnu"   . "https://elpa.gnu.org/packages/")
+;;         ("org"   . "https://orgmode.org/elpa/")))
+
+;; (unless (bound-and-true-p package--initialized)
+;;   (package-initialize))
+
+;; (unless package-archive-contents
+;;   (package-refresh-contents))
+
 ;; ここからが変更ポイント
 (straight-use-package 'leaf)
 (straight-use-package 'leaf-keywords)
@@ -71,9 +85,13 @@
   (leaf-keywords-init))
 
 ;; Optional packages for leaf-keywords
-(leaf hydra :ensure t)
+(leaf hydra
+  ;;  :ensure t
+  :straight t
+  )
 (leaf el-get
-  :ensure t
+  ;;:ensure t
+  :straight t
   :custom
   '((el-get-git-shallow-clone . t)))
 
@@ -215,7 +233,7 @@
 
 
 (leaf mozc
-  :ensure t
+  ;;:ensure t
   :if (executable-find "mozc_emacs_helper")
   :config
   (setq default-input-method "japanese-mozc"
@@ -269,7 +287,8 @@
 (setq auto-mode-alist (cons '("\\.cu$" . c++-mode) auto-mode-alist))
 (setq auto-mode-alist (cons '("\\.cuh$" . c++-mode) auto-mode-alist))
 (leaf nix-mode
-  :ensure t
+  ;;:ensure t
+    :straight t
   :mode "\\.nix\\'")
 
 
@@ -284,7 +303,8 @@
 
                                         ;redo
 (leaf undo-tree
-  :ensure t
+  ;;:ensure t
+  :straight t
   :leaf-defer nil
   :bind (("M-/" . undo-tree-redo))
   :custom ((global-undo-tree-mode . t)))
@@ -294,7 +314,8 @@
 
                                         ;tab 可視化
 (leaf whitespace
-  :ensure t
+  ;;:ensure t
+  :straight t
   :custom
   ((whitespace-style . '(face
                          trailing
@@ -315,7 +336,8 @@
 
 (leaf gruvbox-theme
   (load-theme 'gruvbox-dark-medium t)
-  :ensure t
+  :straight t
+  ;;:ensure t
   :config
   (load-theme 'gruvbox-dark-medium t)
   ;;(load-theme 'solarized-light t) ;; Solarized Light をロード
@@ -331,7 +353,7 @@
       (set-frame-parameter nil 'alpha 100)))
 ;; ;; 非アクティブウィンドウの背景色を設定
 ;; (leaf hiwin
-;;   :ensure t
+;; ;;  :ensure t
 ;;   :config
 ;;   (hiwin-activate))
 ;; (set-face-background 'hiwin-face "gray30")
@@ -374,7 +396,8 @@
 
 ;; elscreen の設定
 (leaf elscreen
-  :ensure t  ; elscreen パッケージがインストールされていなければ自動的にインストールします。
+  :straight t
+  ;;:ensure t  ; elscreen パッケージがインストールされていなければ自動的にインストールします。
   :init
   (setq elscreen-prefix-key (kbd "C-M-z"))
   ;; elscreen を起動します。これによりタブ機能が有効になります。
@@ -536,7 +559,7 @@
 (global-set-key (kbd "C-M-]") 'next-buffer)
 
 (leaf magit
-  :ensure t
+;;  :ensure t
   :bind ((magit-mode-map
           ;; 通常のカーソル移動用に `C-n` と `C-p` を標準の移動コマンドに再バインド
           ("C-n" . next-line)
@@ -562,7 +585,7 @@
 ;; ;; gnu-global->LSPに比べると精度が良くない
 ;; (setq-local imenu-create-index-function #'ggtags-build-imenu-index)
 ;; (leaf ggtags
-;;   :ensure t  ;; gnu-global パッケージを自動でインストール
+;; ;;  :ensure t  ;; gnu-global パッケージを自動でインストール
 ;;   :hook (c-mode-common-hook) ;; Hook を利用して自動的に ggtags-mode を有効に
 ;;   :init
 ;;   ;; gtags-mode がロードされた後で設定を行う
@@ -571,7 +594,7 @@
 ;;     (define-key ggtags-mode-map (kbd "M-.") 'ggtags-find-tag)
 ;;     (define-key ggtags-mode-map (kbd "M-,") 'ggtags-find-rtag)))
 ;; (leaf ggtags
-;;   :ensure t  ;; gnu-global パッケージを自動でインストール
+;; ;;  :ensure t  ;; gnu-global パッケージを自動でインストール
 ;;   :hook (c-mode-common-hook) ;; Hook を利用して自動的に ggtags-mode を有効に
 ;;   :init
 ;;   ;; gtags-mode がロードされた後で設定を行う
@@ -614,7 +637,8 @@
 
 ;;ccls を導入
 (leaf ccls
-  :ensure t
+  ;;  :ensure t
+  :straight t
   :after lsp-mode
   :init
   (setq ccls-executable "/usr/bin/ccls")  ;; cclsの実行可能ファイルのパスを適切に設定
@@ -626,7 +650,7 @@
 
 ;;;; LSPモードの設定とキーバインドの調整(ref ::https://qiita.com/kari_tech/items/4754fac39504dccfd7be )
 ;; (leaf lsp-mode
-;;   :ensure t
+;; ;;  :ensure t
 ;;   :commands lsp
 ;;   :init
 ;;   ;;(setq lsp-prefer-flymake nil)  ;; FlymakeではなくFlycheckを使用
@@ -665,7 +689,8 @@
 ;;   ;; 必要に応じて他の言語用関数も追加可能
 ;;   )
 (leaf lsp-mode
-  :ensure t
+  ;;  :ensure t
+  :straight t
   :commands lsp
   :init
   ;; LSP 全般の設定
@@ -692,7 +717,8 @@
 
 ;; lsp-pyright の設定
 (leaf lsp-pyright
-  :ensure t
+  ;;  :ensure t
+  :straight t
   :after lsp-mode
   ;; :hook (python-mode-hook . (lambda ()
   ;;                             (require 'lsp-pyright)
@@ -701,7 +727,8 @@
 ;; LSP UIの追加設定
 
 (leaf lsp-ui
-  :ensure t
+  ;;  :ensure t
+  :straight t
   :custom
   ((lsp-ui-doc-enable . t)
    ;; LSP UI ドキュメントの表示を有効化
@@ -737,7 +764,8 @@
       (lsp-ui-doc-mode 1)))
   )
 (leaf lsp-treemacs
-  :ensure t
+  ;;  :ensure t
+  :straight t
   :after (lsp-mode treemacs)
   :config
   (lsp-treemacs-sync-mode 1) ;; Treemacs で LSP シンボルを表示
@@ -748,7 +776,7 @@
 
 ;; ;;eglot(https://github.com/joaotavora/eglot)(https://rn.nyaomin.info/entry/2024/01/16/224657)LSPの簡略版だがうまくつかえない
 ;; (leaf eglot
-;;       :ensure t
+;;     ;;  :ensure t
 ;;       :config
 ;;       (add-to-list 'eglot-server-programs '((c-mode c++-mode python-mode js-mode js-ts-mode typescript-mode typescript-ts-mode) . (eglot-deno "deno" "lsp")))
 ;;       (defclass eglot-deno (eglot-lsp-server) () :documentation "A custom class for deno lsp.")
@@ -773,7 +801,7 @@
 
 ;;eglot(https://github.com/joaotavora/eglot)
 ;;  (leaf eglot
-;;    :ensure t
+;;  ;;  :ensure t
 ;; ;;   :hook (
 ;; ;;          (c-mode-hook . eglot-ensure)
 ;; ;;          (c++-mode-hook . eglot-ensure)
@@ -786,7 +814,8 @@
 
 ;;companyの設定
 (leaf company
-  :ensure t
+  ;;  :ensure t
+  :straight t
   :init
   (global-company-mode) ;; グローバルにcompanyを有効化する場合はこのコメントを外す
   ;;  :hook ((c-mode-hook c++-mode-hook python-mode-hook) . company-mode) ;; フックを有効にする場合はこのコメントを外す
@@ -802,7 +831,7 @@
 
 ;; ;; flycheckの設定
 ;; (leaf flycheck
-;;   :ensure t
+;; ;;  :ensure t
 ;;   :init
 ;;   (global-flycheck-mode))
 
@@ -826,10 +855,12 @@
 
 ;;which-key
 (leaf leaf-keywords
-  :ensure t
+  :straight t
+;;  :ensure t
   :config
   (leaf which-key
-    :ensure t
+    :straight t
+;;    :ensure t
     :config
     (which-key-mode)
     (which-key-setup-side-window-right))
@@ -837,119 +868,129 @@
 
 
 ;;treemacs 
-(use-package treemacs
-  :ensure t
-  :defer t
-  :init
-  (with-eval-after-load 'winum
-    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
-  :config
-  (progn
-    (setq treemacs-collapse-dirs                   (if treemacs-python-executable 3 0)
-          treemacs-deferred-git-apply-delay        0.5
-          treemacs-directory-name-transformer      #'identity
-          treemacs-display-in-side-window          t
-          treemacs-eldoc-display                   'simple
-          treemacs-file-event-delay                2000
-          treemacs-file-extension-regex            treemacs-last-period-regex-value
-          treemacs-file-follow-delay               0.2
-          treemacs-file-name-transformer           #'identity
-          treemacs-follow-after-init               t
-          treemacs-expand-after-init               t
-          treemacs-find-workspace-method           'find-for-file-or-pick-first
-          treemacs-git-command-pipe                ""
-          treemacs-goto-tag-strategy               'refetch-index
-          treemacs-header-scroll-indicators        '(nil . "^^^^^^")
-          treemacs-hide-dot-git-directory          t
-          treemacs-indentation                     2
-          treemacs-indentation-string              " "
-          treemacs-is-never-other-window           nil
-          treemacs-max-git-entries                 5000
-          treemacs-missing-project-action          'ask
-          treemacs-move-forward-on-expand          nil
-          treemacs-no-png-images                   nil
-          treemacs-no-delete-other-windows         t
-          treemacs-project-follow-cleanup          nil
-          treemacs-persist-file                    (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
-          treemacs-position                        'left
-          treemacs-read-string-input               'from-child-frame
-          treemacs-recenter-distance               0.1
-          treemacs-recenter-after-file-follow      nil
-          treemacs-recenter-after-tag-follow       nil
-          treemacs-recenter-after-project-jump     'always
-          treemacs-recenter-after-project-expand   'on-distance
-          treemacs-litter-directories              '("/node_modules" "/.venv" "/.cask")
-          treemacs-project-follow-into-home        nil
-          treemacs-show-cursor                     nil
-          treemacs-show-hidden-files               t
-          treemacs-silent-filewatch                nil
-          treemacs-silent-refresh                  nil
-          treemacs-sorting                         'alphabetic-asc
-          treemacs-select-when-already-in-treemacs 'move-back
-          treemacs-space-between-root-nodes        t
-          treemacs-tag-follow-cleanup              t
-          treemacs-tag-follow-delay                1.5
-          treemacs-text-scale                      nil
-          treemacs-user-mode-line-format           nil
-          treemacs-user-header-line-format         nil
-          treemacs-wide-toggle-width               70
-          treemacs-width                           35
-          treemacs-width-increment                 1
-          treemacs-width-is-initially-locked       t
-          treemacs-workspace-switch-cleanup        nil)
+;; (leaf treemacs
+;; ;;  :ensure t
+;;   :leaf-defer t
+;;   :init
+;;   (with-eval-after-load 'winum
+;;     (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+;;   :config
+;;   (progn
+;;     (setq treemacs-collapse-dirs                   (if treemacs-python-executable 3 0)
+;;           treemacs-deferred-git-apply-delay        0.5
+;;           treemacs-directory-name-transformer      #'identity
+;;           treemacs-display-in-side-window          t
+;;           treemacs-eldoc-display                   'simple
+;;           treemacs-file-event-delay                2000
+;;           treemacs-file-extension-regex            treemacs-last-period-regex-value
+;;           treemacs-file-follow-delay               0.2
+;;           treemacs-file-name-transformer           #'identity
+;;           treemacs-follow-after-init               t
+;;           treemacs-expand-after-init               t
+;;           treemacs-find-workspace-method           'find-for-file-or-pick-first
+;;           treemacs-git-command-pipe                ""
+;;           treemacs-goto-tag-strategy               'refetch-index
+;;           treemacs-header-scroll-indicators        '(nil . "^^^^^^")
+;;           treemacs-hide-dot-git-directory          t
+;;           treemacs-indentation                     2
+;;           treemacs-indentation-string              " "
+;;           treemacs-is-never-other-window           nil
+;;           treemacs-max-git-entries                 5000
+;;           treemacs-missing-project-action          'ask
+;;           treemacs-move-forward-on-expand          nil
+;;           treemacs-no-png-images                   nil
+;;           treemacs-no-delete-other-windows         t
+;;           treemacs-project-follow-cleanup          nil
+;;           treemacs-persist-file                    (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
+;;           treemacs-position                        'left
+;;           treemacs-read-string-input               'from-child-frame
+;;           treemacs-recenter-distance               0.1
+;;           treemacs-recenter-after-file-follow      nil
+;;           treemacs-recenter-after-tag-follow       nil
+;;           treemacs-recenter-after-project-jump     'always
+;;           treemacs-recenter-after-project-expand   'on-distance
+;;           treemacs-litter-directories              '("/node_modules" "/.venv" "/.cask")
+;;           treemacs-project-follow-into-home        nil
+;;           treemacs-show-cursor                     nil
+;;           treemacs-show-hidden-files               t
+;;           treemacs-silent-filewatch                nil
+;;           treemacs-silent-refresh                  nil
+;;           treemacs-sorting                         'alphabetic-asc
+;;           treemacs-select-when-already-in-treemacs 'move-back
+;;           treemacs-space-between-root-nodes        t
+;;           treemacs-tag-follow-cleanup              t
+;;           treemacs-tag-follow-delay                1.5
+;;           treemacs-text-scale                      nil
+;;           treemacs-user-mode-line-format           nil
+;;           treemacs-user-header-line-format         nil
+;;           treemacs-wide-toggle-width               70
+;;           treemacs-width                           35
+;;           treemacs-width-increment                 1
+;;           treemacs-width-is-initially-locked       t
+;;           treemacs-workspace-switch-cleanup        nil)
 
-    ;; The default width and height of the icons is 22 pixels. If you are
-    ;; using a Hi-DPI display, uncomment this to double the icon size.
-    ;;(treemacs-resize-icons 44)
+;;     ;; The default width and height of the icons is 22 pixels. If you are
+;;     ;; using a Hi-DPI display, uncomment this to double the icon size.
+;;     ;;(treemacs-resize-icons 44)
 
-    (treemacs-follow-mode t)
-    (treemacs-filewatch-mode t)
-    (treemacs-fringe-indicator-mode 'always)
-    (when treemacs-python-executable
-      (treemacs-git-commit-diff-mode t))
+;;     (treemacs-follow-mode t)
+;;     (treemacs-filewatch-mode t)
+;;     (treemacs-fringe-indicator-mode 'always)
+;;     (when treemacs-python-executable
+;;       (treemacs-git-commit-diff-mode t))
 
-    (pcase (cons (not (null (executable-find "git")))
-                 (not (null treemacs-python-executable)))
-      (`(t . t)
-       (treemacs-git-mode 'deferred))
-      (`(t . _)
-       (treemacs-git-mode 'simple)))
+;;     (pcase (cons (not (null (executable-find "git")))
+;;                  (not (null treemacs-python-executable)))
+;;       (`(t . t)
+;;        (treemacs-git-mode 'deferred))
+;;       (`(t . _)
+;;        (treemacs-git-mode 'simple)))
 
-    (treemacs-hide-gitignored-files-mode nil))
-  :bind
-  (:map global-map
-        ("M-0"       . treemacs-select-window)
-        ("C-x t 1"   . treemacs-delete-other-windows)
-        ("C-x t t"   . treemacs)
-        ("C-x t d"   . treemacs-select-directory)
-        ("C-x t B"   . treemacs-bookmark)
-        ("C-x t C-t" . treemacs-find-file)
-        ("C-x t M-t" . treemacs-find-tag)))
+;;     (treemacs-hide-gitignored-files-mode nil))
+;;   :bind
+;;   (:map global-map
+;;         ("M-0"       . treemacs-select-window)
+;;         ("C-x t 1"   . treemacs-delete-other-windows)
+;;         ("C-x t t"   . treemacs)
+;;         ("C-x t d"   . treemacs-select-directory)
+;;         ("C-x t B"   . treemacs-bookmark)
+;;         ("C-x t C-t" . treemacs-find-file)
+;;         ("C-x t M-t" . treemacs-find-tag)))
 
-(use-package treemacs-evil
+(leaf treemacs-evil
   :after (treemacs evil)
-  :ensure t)
+  ;; :ensure t
+  :straight t
+  )
 
-(use-package treemacs-projectile
+(leaf treemacs-projectile
   :after (treemacs projectile)
-  :ensure t)
+  :straight t
+;;  :ensure t
+  )
 
-(use-package treemacs-icons-dired
+(leaf treemacs-icons-dired
   :hook (dired-mode . treemacs-icons-dired-enable-once)
-  :ensure t)
+  ;; :ensure t
+  :straight t
+  )
 
-(use-package treemacs-magit
+(leaf treemacs-magit
   :after (treemacs magit)
-  :ensure t)
+  ;;  :ensure t
+  :straight t
+  )
 
-(use-package treemacs-persp ;;treemacs-perspective if you use perspective.el vs. persp-mode
+(leaf treemacs-persp ;;treemacs-perspective if you use perspective.el vs. persp-mode
   :after (treemacs persp-mode) ;;or perspective vs. persp-mode
-  :ensure t
+  ;;  :ensure t
+  :straight t
   :config (treemacs-set-scope-type 'Perspectives))
 
-(use-package treemacs-tab-bar ;;treemacs-tab-bar if you use tab-bar-mode
+(leaf treemacs-tab-bar ;;treemacs-tab-bar if you use tab-bar-mode
   :after (treemacs)
-  :ensure t
+  ;;  :ensure t
+  :straight t
   :config (treemacs-set-scope-type 'Tabs))
 
 
@@ -961,7 +1002,7 @@
 
 ;; ;; プロファイル結果の出力
 ;; (leaf esup
-;;   :ensure t)
+;; ;;  :ensure t)
 ;; (require 'esup)
 
 
@@ -969,7 +1010,8 @@
 (global-set-key (kbd "C-c C-r") 'indent-region)
 ;; leaf を使った clang-format の設定
 (leaf clang-format
-  :ensure t
+  ;;  :ensure t
+  :straight t
   :bind (("C-c C-_" . clang-format-region)    ;; 選択範囲にフォーマットを適用
          ("C-c /" . clang-format-buffer))    ;; バッファ全体にフォーマットを適用
   :config
@@ -978,7 +1020,7 @@
   ;; (add-hook 'c++-mode-hook #'clang-format-buffer) ;; C++ファイルを開いたときにclang-formatを適用
   )
 ;; (leaf blacken :: なぜかC++のファイルにも適用される)
-;;   :ensure t
+;; ;;  :ensure t
 ;;   :bind (("C-c j" . blacken-buffer)
 ;;          ("C-c C-j" . blacken-region))  ;; 選択範囲をフォーマット
 ;;   :custom
@@ -990,7 +1032,8 @@
 
 ;; helm, projectile, helm-projectile の設定
 (leaf helm
-  :ensure t
+  :straight t
+;;  :ensure t
   :config
   ;; (helm-mode 1)
   ;; (with-eval-after-load 'helm
@@ -1016,7 +1059,9 @@
   )
 
 (leaf helm-ag
-  :ensure t
+  :load-path "~/.emacs.d/helm-ag"
+  ;; :ensure t
+  :straight t
   :after helm
   :custom
   (helm-ag-base-command . "ag --nocolor --nogroup")
@@ -1031,7 +1076,8 @@
 
 
 (leaf projectile
-  :ensure t
+;;  :ensure t
+  :straight t
   :require t
   :config
   (progn
@@ -1050,7 +1096,8 @@
   )
 
 (leaf helm-projectile
-  :ensure t
+  ;;  :ensure t
+  :straight t
   :after (helm projectile)
   :config
   (helm-projectile-on)
@@ -1085,7 +1132,7 @@
 (setq-default indent-tabs-mode nil) ;; タブではなくスペースを使用
 ;; 他のAIツールと連携
 ;; (leaf chatgpt-shell
-;;   :ensure t
+;; ;;  :ensure t
 ;;   :custom
 ;;   (chatgpt-shell-backend . 'chatgpt-shell-openai)
 ;;   :config
@@ -1102,12 +1149,13 @@
 ;;   ;; ChatGPT-shell起動時にAPIキーをロード
 ;;   (add-hook 'chatgpt-shell-mode-hook #'load-chatgpt-shell-key))
 ;; (leaf chatgpt-shell
-;;   :ensure t
+;; ;;  :ensure t
 ;; ;;  :config
 ;;   )
 
 (leaf diff-hl
-  :ensure t
+  :straight t
+;;  :ensure t
   :config
   (global-diff-hl-mode)
   ;; ターミナルの場合、行の背景色を使うように設定
@@ -1123,7 +1171,8 @@
 
 ;; shell-popの設定
 (leaf shell-pop
-  :ensure t
+;;  :ensure t
+  :straight t
   :require t
   :custom
   (shell-pop-shell-type . '("eshell" "*eshell*" (lambda () (eshell))))
