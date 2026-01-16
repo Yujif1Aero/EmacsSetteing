@@ -11,9 +11,9 @@ perl -wle \
 ##move to project root
 alias pjroot='cd $(git rev-parse --show-toplevel)'
 ```
-
-- initial launch please uncomment : ensure t in leaf 
-
+[](
+- initial launch please uncomment : ensure t in leaf
+)
 # emacs install
 ```bash
 sudo add-apt-repository ppa:kelleyk/emacs
@@ -48,7 +48,7 @@ compiledb make
 
 ```
 M-x eglot
-if you do not have `compile_commands.json` , for example put clangd in C++/C. CHECK sever list in refernce git URL. 
+if you do not have `compile_commands.json` , for example put clangd in C++/C. CHECK sever list in refernce git URL.
 ref : https://github.com/joaotavora/eglot
 ```
 
@@ -71,7 +71,7 @@ ref : https://github.com/joaotavora/eglot
 sudo apt install ccls
 
 ```
-project root directry として選択した履歴は`~/.emacs.d/lsp-session-v1` に残る。 もしかしたら、プロジェクトルートに`.ccls-root`　を置く必要があるかも。基本的に`M-x lsp`したあとに `i`と入力すれば、OK 
+project root directry として選択した履歴は`~/.emacs.d/lsp-session-v1` に残る。 もしかしたら、プロジェクトルートに`.ccls-root`を置く必要があるかも。基本的に`M-x lsp`したあとに `i`と入力すれば、OK
 `_.dir-locals.el`を参考にして project root directryに`.dir-locals.el`として置くこと。注意 ！！！`.dir_locals.el`名前はこれではない。バー `-`にしてね。
 project root directry に`.ccls`を置こう。中身は一行  `%compile_commands.json`のみでOK
 ## GIT default editor
@@ -108,7 +108,8 @@ nvm --version
 nvm install 22
 npm install -g @github/copilot-language-server
 ```
-
+for windows user please refer to below URL
+https://nodejs.org/ja/download
 ## clang-format
 ```bash
 sudo apt install clang-format
