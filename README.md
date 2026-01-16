@@ -165,7 +165,7 @@ Adapt below commands:
 ```bash
 cat >/tmp/git <<'GIT'
 #!/bin/sh
-GIT_WINDOWS="/mnt/c/Program Files/Git/cmd/git.exe"
+GIT_WINDOWS="/mnt/c/Program Files/Git/cmd/git.exe(PATH to your git.exe in windows system)"
 GIT_LINUX="/usr/bin/git"
 
 case "$(pwd -P)" in
