@@ -1,20 +1,27 @@
 ;;; init.el --- Unified Emacs config with OS-specific parts -*- lexical-binding: t -*-
 
-;; 共通設定の読み込み
+;; 1.
 (load (expand-file-name "init_common.el" user-emacs-directory))
 
-;; OS 判定関数（WSL用）
+;; 2. OS
 (defun running-in-wsl-p ()
-  "WSL 上で Emacs が動作しているかを判定する"
+  "WSL  Emacs "
   (and (eq system-type 'gnu/linux)
        (string-match "Microsoft" (shell-command-to-string "uname -r"))))
 
-;; OSごとの設定読み込み
+;; 3. OS
 (cond
+ ;; WSL2 (Ubuntu on Windows)
  ((running-in-wsl-p)
   (message "Loading WSL2-specific settings...")
   (load (expand-file-name "init_WSL2.el" user-emacs-directory)))
 
+ ;; Windows (Native)
+ ((eq system-type 'windows-nt)
+  (message "Loading Windows-specific settings...")
+  (load (expand-file-name "init_windows.el" user-emacs-directory)))
+
+ ;;  Linux
  ((eq system-type 'gnu/linux)
   (message "Loading linux-specific settings...")
-  (load (expand-file-name "init_linux.el" user-emacs-directory))))
+    (load (expand-file-name "init_linux.el" user-emacs-directory))))
