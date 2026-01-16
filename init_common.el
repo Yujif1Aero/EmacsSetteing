@@ -1,3 +1,4 @@
+;;; -*- coding: utf-8 -*-
 ;;;;
 ;; package management
 ;;https://qiita.com/namn1125/items/5cd6a9cbbf17fb85c740#packageel-%E3%82%92%E7%9B%B4%E6%8E%A5%E5%88%A9%E7%94%A8%E3%81%97%E3%81%AA%E3%81%84%E7%90%86%E7%94%B1%E3%81%A8gitgithub%E3%81%AB%E3%82%88%E3%82%8B-initel-%E3%81%AE%E7%AE%A1%E7%90%86
@@ -219,7 +220,7 @@
 
 ;;日本語の設定
 ;;https://utsuboiwa.blogspot.com/2014/07/sunnyside-emacs.html
-
+(set-language-environment "Japanese")
 (prefer-coding-system 'utf-8)
 (set-default-coding-systems 'utf-8)
 (set-terminal-coding-system 'utf-8)
@@ -229,7 +230,7 @@
 (set-buffer-file-coding-system 'utf-8)
 (set-clipboard-coding-system 'utf-8)
 
-(set-language-environment "Japanese")
+
 
 
 (leaf mozc
@@ -559,22 +560,30 @@
 (global-set-key (kbd "C-M-]") 'next-buffer)
 
 (leaf magit
-;;  :ensure t
+  :straight t
   :bind ((magit-mode-map
-          ;; 通常のカーソル移動用に `C-n` と `C-p` を標準の移動コマンドに再バインド
           ("C-n" . next-line)
           ("C-p" . previous-line)
-          ;; セクション移動用に `C-c C-n` と `C-c C-p` を `magit` の移動コマンドにバインド
           ("C-c C-n" . magit-section-forward)
           ("C-c C-p" . magit-section-backward))
-         ;; 全体のキーバインド設定
          ("C-c g" . magit-diff-working-tree))
   :custom
-  (magit-save-repository-buffers . nil)  ;; 自動保存を無効化
+  (magit-save-repository-buffers . nil)
   (magit-display-buffer-function . #'magit-display-buffer-same-window-except-diff-v1)
+  
+  ;; --- 高速化のための追加設定 ---
+  (magit-refresh-status-buffer . nil)      ; 自動更新をオフ（必要な時だけ 'g' で更新）
+  (magit-diff-highlight-indentation . nil) ; インデントのハイライトをオフ
+  (magit-diff-highlight-trailing . nil)    ; 行末空白の強調をオフ
+  (magit-commit-show-diffstat . nil)       ; コミット時の統計表示をオフ
+  
   :config
-  )
-
+  ;; Git側の動作を最適化する引数
+  (setq magit-git-global-arguments 
+        '("-c" "core.preloadIndex=true" 
+          "-c" "core.fscache=true" 
+          "-c" "gc.auto=0"))
+)
 
 ;;;ファイルの自動再読み込み（Auto Revert）
 (leaf autorevert
@@ -1109,25 +1118,44 @@
   )
 
 
-;; copilot.elのインストールと設定（最小化）
-;; copilot.elのインストールと設定
+;; ;; copilot.elのインストールと設定
+;; (leaf copilot
+;;   :if (executable-find "node")
+;;   :straight (copilot :type git :host github :repo "zerolfx/copilot.el" :files ("*.el"))
+;;   :require t
+;;   :config
+;;   (add-hook 'prog-mode-hook 'copilot-mode)
+;;   (add-hook 'text-mode-hook 'copilot-mode)
+;;   (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+;;   (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+;;   (define-key copilot-completion-map (kbd "C-TAB") 'copilot-accept-completion-by-word)
+;;   (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion-by-word)
+
+;;   ;; Warning
+;;   (setq copilot-infer-indentation-offset 'disable)
+;;   (setq copilot--disable-infer-indentation t))
+
+;; (setq warning-suppress-types '((copilot)))
+;; --- Copilotの設定（手動起動に変更） ---
 (leaf copilot
   :if (executable-find "node")
   :straight (copilot :type git :host github :repo "zerolfx/copilot.el" :files ("*.el"))
-  :require t
+  ;; :require t  <-- これを削除（起動時のロードを避ける）
+  :commands (copilot-mode) ;; 実行された時に初めてロードする
+  :bind (("C-c M-f" . copilot-mode)) ;; C-c Alt-f で Copilot をオン/オフする例
   :config
-  (add-hook 'prog-mode-hook 'copilot-mode)
-  (add-hook 'text-mode-hook 'copilot-mode)
+  ;; --- 以下の add-hook をコメントアウトして自動起動を停止 ---
+  ;; (add-hook 'prog-mode-hook 'copilot-mode)
+  ;; (add-hook 'text-mode-hook 'copilot-mode)
+
   (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
   (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
   (define-key copilot-completion-map (kbd "C-TAB") 'copilot-accept-completion-by-word)
   (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion-by-word)
 
-  ;; Warning
+  ;; Warning 抑制
   (setq copilot-infer-indentation-offset 'disable)
   (setq copilot--disable-infer-indentation t))
-
-(setq warning-suppress-types '((copilot)))
 
 (setq-default tab-width 4)        ;; タブ幅を4スペースに設定
 (setq-default indent-tabs-mode nil) ;; タブではなくスペースを使用
@@ -1291,3 +1319,4 @@
 ;; ショートカットキーを設定 (例: C-c d)
 (global-set-key (kbd "C-c d") 'my/set-cwd-to-current-file)
 ;;(setq select-enable-clipboard t)
+(setq native-comp-async-report-warnings-errors 'silent)

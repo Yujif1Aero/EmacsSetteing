@@ -7,7 +7,7 @@
   ;; xclip-mode を有効にする
   (xclip-mode 1))
 
-(setq select-enable-clipboard t)
+;;(setq select-enable-clipboard t)
 (setq select-enable-primary t)
 
 (leaf eshell-git-prompt

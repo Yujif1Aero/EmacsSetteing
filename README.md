@@ -7,25 +7,33 @@ perl -wle \
     'do { print qq/(setenv "$_" "$ENV{$_}")/ if exists $ENV{$_} } for @ARGV' \
     PATH > ~/.emacs.d/shellenv.el
 ```
+Put this file in https://github.com/git/git/blob/master/contrib/completion/git-prompt.sh
+to  /usr/local/etc/bash_completion.d for git in prompt.
+```bash
+mkdir /usr/local/etc/bash_completion.d
+cd /usr/local/etc/bash_completion.d
+sudo apt install hub
+
+```
+
 ```bash
 ##move to project root
 alias pjroot='cd $(git rev-parse --show-toplevel)'
 ```
-[](
-- initial launch please uncomment : ensure t in leaf
-)
+
 # emacs install
 ```bash
-sudo add-apt-repository ppa:kelleyk/emacs
+#sudo add-apt-repository ppa:kelleyk/emacs
 sudo apt update
-sudo apt install emacs28-nativecomp
+#sudo apt install emacs28-nativecomp
+sudo apt install emacs 
 sudo apt install fcitx-mozc
 sudo apt install mozc-server mozc-utils-gui mozc-data emacs-mozc
 ```
 
 
 
-## add PATH (pip path)
+## add PATH (pip path)  今はpipの代わりにuvを使う予定なのでやる必要はないかな
 for examples
 ```bash
 export PATH=$PATH:/home/yuji_morgen1/.local/bin
@@ -110,6 +118,12 @@ npm install -g @github/copilot-language-server
 ```
 for windows user please refer to below URL
 https://nodejs.org/ja/download
+
+emacs action is
+```
+M-x copilot-reinstall-server
+M-x copilot-login
+```
 ## clang-format
 ```bash
 sudo apt install clang-format
@@ -149,14 +163,31 @@ C-x c M-y
 git infomation show slow when workspace is in not wsl system but in windows system.
 Adapt below commands:
 ```bash
-$cat >/tmp/git <<'GIT'#!/bin/sh GIT_WINDOWS="/mnt/c/Program Files/Git/cmd/git.exe"
- GIT_LINUX="/usr/bin/git"
+cat >/tmp/git <<'GIT'
+#!/bin/sh
+GIT_WINDOWS="/mnt/c/Program Files/Git/cmd/git.exe"
+GIT_LINUX="/usr/bin/git"
+
 case "$(pwd -P)" in
   /mnt/?/*) exec "$GIT_WINDOWS" "$@" | sed "s#\([A-E]\):#/mnt/\L\1#" ;;
   *) exec "$GIT_LINUX" "$@" ;;
- esacGIT
+esac
+GIT
 $sudo install /tmp/git /usr/local/bin
 ```
+
+## python
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+source $HOME/.cargo/env
+```
+
+## Other compiler
+```
+sudo apt update && sudo apt install -y texlive-full
+sudo apt install -y build-essential gfortran-13 libopenmpi-dev
+```
+
 - ref :
 1. https://qiita.com/fnobi/items/8906c8e7759751d32b6b
 1. https://github.com/xuchunyang/eshell-git-prompt
