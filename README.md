@@ -176,6 +176,14 @@ GIT
 $sudo install /tmp/git /usr/local/bin
 ```
 
+Put below .wslgconfig into C:\Users\<あなたのユーザー名>\.wslgconfig
+
+```bash
+[system-distro-env]
+WESTON_RDP_DISABLE_HI_DPI_SCALING=true
+
+```
+
 ## python
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh

@@ -1321,3 +1321,13 @@
 (global-set-key (kbd "C-c d") 'my/set-cwd-to-current-file)
 ;;(setq select-enable-clipboard t)
 (setq native-comp-async-report-warnings-errors 'silent)
+(leaf markdown-mode
+  :straight t
+  :mode ("\\.md\\'" . markdown-mode)
+  :custom
+  ((markdown-header-scaling . t))
+  :config
+  ;; Gruvboxで見やすい色にするための調整
+  (set-face-attribute 'markdown-header-face-1 nil :foreground "#fb4934" :height 1.3 :weight 'bold)
+  (set-face-attribute 'markdown-header-face-2 nil :foreground "#b8bb26" :height 1.2 :weight 'bold)
+  (set-face-attribute 'markdown-code-face nil :background "#3c3836"))
