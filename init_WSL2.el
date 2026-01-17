@@ -57,4 +57,20 @@
 (setq select-enable-clipboard t)
 (setq select-enable-primary t)
 
+
+;; 1. ピクセル単位でサイズ調整を許可（左右スナップ時の黒い隙間を完全に解消）
+(setq frame-resize-pixelwise t)
+
+;; 2. 起動時に最初から最大化して表示領域を確保する
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+;; 3. GUI起動時の見た目調整（文字サイズを大きくして「安っぽさ」を解消）
+(when (display-graphic-p)
+  (set-face-attribute 'default nil :height 140) ;; 高解像度なら 140-150 がおすすめ
+  (set-scroll-bar-mode nil) ;; GUIの古いスクロールバーを消す
+  (set-fringe-mode 8))    ;; 左右に適切な余白を作る
 (message "init_WSL2.el has been loaded successfully.")
+;; 逆引きジャンプを受け取るためのサーバーを起動
+(require 'server)
+(unless (server-running-p)
+  (server-start))

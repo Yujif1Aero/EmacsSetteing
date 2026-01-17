@@ -77,6 +77,7 @@
 ;;   (package-refresh-contents))
 
 ;; ここからが変更ポイント
+(straight-use-package 'cond-let) ;
 (straight-use-package 'leaf)
 (straight-use-package 'leaf-keywords)
 

@@ -18,7 +18,7 @@
  ((running-in-wsl-p)
   (message "Target Environment: WSL2")
   (load (expand-file-name "init_WSL2.el" user-emacs-directory)))
-  ;;(load (expand-file-name "tex.el" user-emacs-directory))
+  
 
  ;; Windows (Native)
  ((eq system-type 'windows-nt)
@@ -30,9 +30,13 @@
   (message "Target Environment: Standard Linux")
   (load (expand-file-name "init_linux.el" user-emacs-directory))))
 
+
+
+(load (expand-file-name "tex.el" user-emacs-directory))
 ;; 4. 【重要】起動プロセスの最後にキーバインドを強制適用する
 ;; 他のパッケージが後から M-w を上書きするのを防ぐため、
 ;; emacs-startup-hook（全ロード完了後に実行されるフック）を使用します。
+
 (add-hook 'emacs-startup-hook
           (lambda ()
             (if (fboundp 'smart-copy-to-windows-clipboard)
