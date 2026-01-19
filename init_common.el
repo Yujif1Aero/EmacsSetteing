@@ -1320,3 +1320,31 @@
 (global-set-key (kbd "C-c d") 'my/set-cwd-to-current-file)
 ;;(setq select-enable-clipboard t)
 (setq native-comp-async-report-warnings-errors 'silent)
+
+
+;; --- クリップボード連携の強制設定 ---
+(setq select-enable-clipboard t)    ; Emacs内のコピペを有効にする
+(setq select-enable-primary t)
+
+;; --- OSC 52 設定（マルチバイト・日本語対応版） ---
+(defun my/copy-to-clipboard (text)
+  "OSC 52 を使ってテキストを端末のクリップボードに送る。日本語等のマルチバイト文字にも対応。"
+  (condition-case nil
+      (let* ((encoded-text (encode-coding-string text 'utf-8)) ;; ここでバイト列に変換するのが重要
+             (b64-text (base64-encode-string encoded-text t))
+             (osc52-string (format "\e]52;c;%s\a" b64-text)))
+        (send-string-to-terminal osc52-string))
+    (error nil)))
+
+(defun my/osc52-copy-handler (text)
+  "キルリングに保存されたテキストを外部へ送るハンドラ"
+  (my/copy-to-clipboard text)
+  nil) ;; nilを返さないとEmacs内部のコピペが壊れる場合があります
+
+;; SSH接続中（GUIでない場合）に有効化
+(unless (display-graphic-p)
+  (setq interprogram-cut-function 'my/osc52-copy-handler))
+
+;; 不要な古い設定の掃除
+;; (もし init_common.el や init_linux.el に 'smart-copy-to-windows-clipboard' 
+;; という記述があれば、その行は削除してください)
