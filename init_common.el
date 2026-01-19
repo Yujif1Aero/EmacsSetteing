@@ -492,6 +492,25 @@
 ;;スクロールの加速
 (setq mouse-wheel-progressive-speed t)
 
+;; --- マウスホイールによる拡大縮小の共通設定 ---
+;; PDFビューア (pdf-tools) での拡大縮小
+(with-eval-after-load 'pdf-view
+  (define-key pdf-view-mode-map (kbd "<C-wheel-up>") 'pdf-view-enlarge)
+  (define-key pdf-view-mode-map (kbd "<C-wheel-down>") 'pdf-view-shrink)
+  ;; --- キーボードによる拡大縮小の共通設定 ---
+  ;; C-x C-+ / C-x C-= (拡大)
+  (define-key pdf-view-mode-map (kbd "C-x C-+") 'pdf-view-enlarge)
+  (define-key pdf-view-mode-map (kbd "C-x C-=") 'pdf-view-enlarge)
+  ;; C-x C-- (縮小)
+  (define-key pdf-view-mode-map (kbd "C-x C--") 'pdf-view-shrink)
+  ;; C-x C-0 (リセット)
+  (define-key pdf-view-mode-map (kbd "C-x C-0") 'pdf-view-scale-reset)
+  )
+
+
+;; ついでに、テキストエディタ全般でのフォントサイズ拡大縮小も共通化
+(global-set-key (kbd "<C-wheel-up>") 'text-scale-increase)
+(global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
 ;; エラー音をならなくする
 (setq ring-bell-function 'ignore)
 
