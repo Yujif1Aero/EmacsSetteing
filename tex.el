@@ -333,10 +333,29 @@
 (leaf pdf-tools
   :straight t
   :config
+  ;; 通信安定化
   (setq pdf-info-process-timeout 30)
   (setq pdf-info-restart-process-p t)
+  
   (pdf-tools-install)
   (setq-default pdf-view-display-size 'fit-width)
+  
+  ;; --- 【変更】拡大縮小を有効にする ---
+  ;; .wslgconfig の設定が済んでいれば t にして大丈夫です
+  (setq pdf-view-use-scaling t) 
+
+  ;; --- 【追加】マウスホイールでの拡大縮小設定 ---
+  (with-eval-after-load 'pdf-view
+    ;; Ctrl + ホイール上下で拡大縮小
+    (define-key pdf-view-mode-map (kbd "<C-wheel-up>") 'pdf-view-enlarge)
+    (define-key pdf-view-mode-map (kbd "<C-wheel-down>") 'pdf-view-shrink)
+    ;; また、通常のホイールでも拡大縮小したい場合は以下も追加
+    ;; (define-key pdf-view-mode-map [wheel-up] 'pdf-view-enlarge)
+    ;; (define-key pdf-view-mode-map [wheel-down] 'pdf-view-shrink)
+    )
+
+  ;; 行番号表示の競合回避
   (add-hook 'pdf-view-mode-hook (lambda () (display-line-numbers-mode -1)))
   (add-hook 'pdf-view-mode-hook #'pdf-sync-minor-mode)
+  
   (setq pdf-view-midnight-colors '("#ebdbb2" . "#282828")))
