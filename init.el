@@ -19,13 +19,15 @@
 (cond
  ((running-in-wsl-p)
   (message "Target Environment: WSL2")
-  (load (expand-file-name "init_WSL2.el" user-emacs-directory)))
+  (load (expand-file-name "init_WSL2.el" user-emacs-directory))
+  (load (expand-file-name "tex.el" user-emacs-directory)))
  ((eq system-type 'windows-nt)
   (load (expand-file-name "init_windows.el" user-emacs-directory)))
  (t
-  (load (expand-file-name "init_linux.el" user-emacs-directory))))
+  (load (expand-file-name "init_linux.el" user-emacs-directory))
+  (load (expand-file-name "tex.el" user-emacs-directory))))
 
-(load (expand-file-name "tex.el" user-emacs-directory))
+
 
 ;; 起動完了後にGC閾値を通常に戻す
 (add-hook 'emacs-startup-hook
