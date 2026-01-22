@@ -73,13 +73,13 @@
 ;; ;;;          (dvi-file (concat file-base ".dvi"))
 ;; ;;;          (pdf-file (concat file-base ".pdf"))
 ;; ;;;          (work-directory (file-name-directory current-file)))
-;; ;;;    
+;; ;;;
 ;; ;;;     ;; 1. upLaTeX実行
 ;; ;;;     (message "upLaTeX実行中...")
 ;; ;;;     (let ((default-directory work-directory))
 ;; ;;;       (shell-command (concat "uplatex -kanji=utf8 -guess-input-enc -synctex=1 "
 ;; ;;;                             (shell-quote-argument tex-file))))
-;; ;;;    
+;; ;;;
 ;; ;;;     ;; 2. 非同期でdvipdfmx実行とView（変数をキャプチャ）
 ;; ;;;     (run-with-timer 3 nil
 ;; ;;;                     `(lambda ()
@@ -234,7 +234,7 @@
 ;;    ((and (fboundp 'running-in-wsl-p) (running-in-wsl-p))
 ;;     (with-eval-after-load 'tex
 ;;       (add-to-list 'TeX-view-program-list
-;;                    '("SumatraPDF" 
+;;                    '("SumatraPDF"
 ;;                      "powershell.exe -NoProfile -Command SumatraPDF.exe -reuse-instance -forward-search %b %n (wslpath -w %o)"))
 ;;       (setq TeX-view-program-selection '((output-pdf "SumatraPDF"))))
 ;;     ;; Emacsサーバー起動（逆引き用）
@@ -250,11 +250,11 @@
 ;;       (pdf-tools-install)
 ;;       (setq-default pdf-view-display-size 'fit-width)
 ;;       (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward))
-    
+
 ;;     (with-eval-after-load 'tex
 ;;       (add-to-list 'TeX-view-program-list '("pdf-tools" "TeX-pdfview-sync-view"))
 ;;       (setq TeX-view-program-selection '((output-pdf "pdf-tools"))))
-    
+
 ;;     ;; 保存時に自動コンパイルしたい場合は以下を有効に
 ;;     ;; (add-hook 'LaTeX-mode-hook 'TeX-PDF-mode)
 ;;     ))
@@ -287,10 +287,10 @@
   :config
   ;; --- TikZ/PGFPlots 色付けの究極強化 ---
   (add-to-list 'auto-mode-alist '("\\.tikz\\'" . LaTeX-mode))
-  
+
   (defun my/latex-tikz-font-lock-setup ()
     "TikZとPGFPlotsのコードをOverleaf以上に鮮やかにします。"
-    (font-lock-add-keywords 
+    (font-lock-add-keywords
      nil
      '(;; 1. コマンド (draw, node, addplot, coordinatesなど)
        ("\\\\\\(draw\\|node\\|fill\\|filldraw\\|path\\|coordinate\\|clip\\|shade\\|foreach\\|addplot\\|addlegendentry\\|useasboundingbox\\)\\>" 1 font-lock-keyword-face)
@@ -320,7 +320,7 @@
             (lambda (file)
               (let ((pdf-buffer (find-buffer-visiting file)))
                 (when (and pdf-buffer (buffer-live-p pdf-buffer))
-                  (run-with-timer 1.2 nil 
+                  (run-with-timer 1.2 nil
                                   (lambda (buf) (when (buffer-live-p buf) (with-current-buffer buf (ignore-errors (pdf-view-revert-buffer)))))
                                   pdf-buffer)))))
   :hook
@@ -336,13 +336,13 @@
   ;; 通信安定化
   (setq pdf-info-process-timeout 30)
   (setq pdf-info-restart-process-p t)
-  
+
   (pdf-tools-install)
   (setq-default pdf-view-display-size 'fit-width)
-  
+
   ;; --- 【変更】拡大縮小を有効にする ---
   ;; .wslgconfig の設定が済んでいれば t にして大丈夫です
-  (setq pdf-view-use-scaling t) 
+  (setq pdf-view-use-scaling t)
 
   ;; --- 【追加】マウスホイールでの拡大縮小設定 ---
   (with-eval-after-load 'pdf-view
@@ -357,5 +357,94 @@
   ;; 行番号表示の競合回避
   (add-hook 'pdf-view-mode-hook (lambda () (display-line-numbers-mode -1)))
   (add-hook 'pdf-view-mode-hook #'pdf-sync-minor-mode)
-  
+
   (setq pdf-view-midnight-colors '("#ebdbb2" . "#282828")))
+;;; --- latexindent: 手動整形コマンド（TeX / TikZ 用） -------------------------
+
+(defgroup my-latexindent nil
+  "Run latexindent on current buffer/region."
+  :group 'tex)
+
+(defcustom my/latexindent-command
+  (or (executable-find "latexindent")
+      (executable-find "latexindent.pl")
+      (executable-find "latexindent.exe"))
+  "latexindent command name/path."
+  :type 'string)
+
+(defun my/latexindent--null-device ()
+  (if (eq system-type 'windows-nt) "NUL" "/dev/null"))
+
+(defun my/latexindent--local-settings-arg ()
+  "同じフォルダに localSettings.yaml があればそれを使う。無ければ nil。"
+  (let* ((dir (or (and buffer-file-name (file-name-directory buffer-file-name))
+                  default-directory))
+         (yaml (expand-file-name "localSettings.yaml" dir)))
+    (when (file-exists-p yaml)
+      (concat "-l=" yaml))))
+
+(defun my/latexindent--cmd ()
+  "latexindent 実行コマンド文字列（STDIN 用に最後は '-'）。"
+  (unless my/latexindent-command
+    (user-error "latexindent が見つかりません。TeX Live/MiKTeX などを確認して `latexindent -v` を試してみてください"))
+  ;; -g /dev/null で indent.log を作らない（作れなければログ無しで動く）:contentReference[oaicite:3]{index=3}
+  (let* ((local (my/latexindent--local-settings-arg))
+         (parts (delq nil
+                      (list my/latexindent-command
+                            "-g" (my/latexindent--null-device)
+                            ;; localSettings.yaml があれば使う（STDIN でもOK。最後は '-' が必要）:contentReference[oaicite:4]{index=4}
+                            local
+                            "-"))))
+    (mapconcat #'identity parts " ")))
+
+(defun my/latexindent-region (beg end)
+  "選択範囲を latexindent に通して置き換え、タブ→スペース & 行末空白も掃除する。"
+  (interactive
+   (if (use-region-p)
+       (list (region-beginning) (region-end))
+     (list (point-min) (point-max))))
+  (let* ((mbeg (copy-marker beg))
+         (mend (copy-marker end t))
+         (errbuf (get-buffer-create "*latexindent errors*"))
+         (cmd (my/latexindent--cmd))
+         (p (point))
+         (w (window-start)))
+    (with-current-buffer errbuf (erase-buffer))
+    ;; latexindent 実行（あなたの既存実装に合わせて shell-command-on-region を使う例）
+    (shell-command-on-region mbeg mend cmd (current-buffer) t errbuf t)
+
+    ;; --- ここが追加：タブ→スペース、行末空白削除 ---
+    (let ((b (marker-position mbeg))
+          (e (marker-position mend)))
+      ;; タブをスペースに（tab-width 分のスペースになる）
+      (let ((indent-tabs-mode nil))   ; 念のため
+        (untabify b e))
+      ;; コメント行も含めて行末空白を消す
+      (delete-trailing-whitespace b e))
+
+    (goto-char (min p (point-max)))
+    (set-window-start (selected-window) w)
+    (set-marker mbeg nil)
+    (set-marker mend nil)))
+
+(defun my/latexindent-buffer ()
+  "バッファ全体を latexindent に通す。"
+  (interactive)
+  (my/latexindent-region (point-min) (point-max)))
+
+;; TeX / LaTeX / TikZ で同じショートカットにする（あなたの C-c /, C-c C-_ に合わせる）
+(with-eval-after-load 'tex
+  (add-hook 'TeX-mode-hook
+            (lambda ()
+              (local-set-key (kbd "C-c /")   #'my/latexindent-buffer)
+              (local-set-key (kbd "C-c C-_") #'my/latexindent-region))))
+
+;; --- latex-mode (Emacs標準) 側でもキーを上書きする ---
+(with-eval-after-load 'tex-mode
+  (define-key latex-mode-map (kbd "C-c /")   #'my/latexindent-buffer)
+  (define-key latex-mode-map (kbd "C-c C-_") #'my/latexindent-region)
+  ;; 環境によって C-_ が入りにくい保険
+  (define-key latex-mode-map (kbd "C-c C-/") #'my/latexindent-region))
+
+;; （任意） .tikz を LaTeX-mode にしたいなら。既にやってるなら不要。
+(add-to-list 'auto-mode-alist '("\\.tikz\\'" . LaTeX-mode))

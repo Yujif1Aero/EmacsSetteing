@@ -163,3 +163,36 @@
 ;; 好きなキーに割り当て（例：C-c ] / C-c [）
 (global-set-key (kbd "C-c ]") #'my/indent-shift-right)
 (global-set-key (kbd "C-c [") #'my/indent-shift-left)
+
+
+;;; ============================================================
+;;; Emacs Lisp (.el) 用：手動整形 (C-c / , C-c C-_)
+;;; ============================================================
+
+(defun my/elisp-format-region (beg end)
+  "Emacs Lisp の選択範囲を整形する（インデント + 行末空白削除）。"
+  (interactive "r")
+  (save-excursion
+    (indent-region beg end)
+    (delete-trailing-whitespace beg end)))
+
+(defun my/elisp-format-buffer ()
+  "Emacs Lisp のバッファ全体を整形する（インデント + 行末空白削除）。"
+  (interactive)
+  (my/elisp-format-region (point-min) (point-max)))
+
+(add-hook 'emacs-lisp-mode-hook
+          (lambda ()
+            ;; バッファ全体
+            (local-set-key (kbd "C-c /") #'my/elisp-format-buffer)
+
+            ;; 範囲（C-_ が環境によって入りにくい時があるので C-/ も保険で同じに）
+            (local-set-key (kbd "C-c C-_") #'my/elisp-format-region)
+            (local-set-key (kbd "C-c C-/") #'my/elisp-format-region)))
+
+;; （任意）*scratch* などでも同じキーで整形したいなら
+(add-hook 'lisp-interaction-mode-hook
+          (lambda ()
+            (local-set-key (kbd "C-c /") #'my/elisp-format-buffer)
+            (local-set-key (kbd "C-c C-_") #'my/elisp-format-region)
+            (local-set-key (kbd "C-c C-/") #'my/elisp-format-region)))
