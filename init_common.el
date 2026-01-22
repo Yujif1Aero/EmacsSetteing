@@ -149,3 +149,17 @@
 (global-set-key (kbd "C-c C-d") 'my/set-cwd-to-current-file)
 
 (leaf markdown-mode :straight t :mode ("\\.md\\'" . markdown-mode))
+
+
+;; 選択範囲を tab幅ぶん右/左にずらす
+(defun my/indent-shift-right (beg end)
+  (interactive "r")
+  (indent-rigidly beg end tab-width))
+
+(defun my/indent-shift-left (beg end)
+  (interactive "r")
+  (indent-rigidly beg end (- tab-width)))
+
+;; 好きなキーに割り当て（例：C-c ] / C-c [）
+(global-set-key (kbd "C-c ]") #'my/indent-shift-right)
+(global-set-key (kbd "C-c [") #'my/indent-shift-left)
