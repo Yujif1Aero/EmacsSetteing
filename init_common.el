@@ -143,7 +143,28 @@
 (leaf lsp-mode :straight t :commands lsp :config (define-key lsp-mode-map (kbd "M-.") #'lsp-find-definition))
 (leaf company :straight t :init (global-company-mode) :custom (company-idle-delay . 0.2))
 (leaf which-key :straight t :config (which-key-mode) (which-key-setup-side-window-right))
-(leaf helm :straight t :config (helm-mode 1) (global-set-key (kbd "M-x") 'helm-M-x) (global-set-key (kbd "C-x C-f") 'helm-find-files))
+(leaf helm
+  :straight t
+  :config
+  (helm-mode 1)
+  (global-set-key (kbd "M-x") 'helm-M-x)
+  (global-set-key (kbd "C-x C-f") 'helm-find-files)
+
+  (with-eval-after-load 'helm-files
+    ;; TABキーの挙動を「アクションメニュー」から「補完・展開」に変更
+    ;; これにより、ディレクトリなら中に入り、名前がユニークなら補完されます
+    (define-key helm-find-files-map (kbd "TAB") 'helm-execute-persistent-action)
+    (define-key helm-read-file-map (kbd "TAB") 'helm-execute-persistent-action)
+    
+    ;; ターミナル環境（C-i と TAB が同じ扱い）への対策
+    (define-key helm-find-files-map (kbd "C-i") 'helm-execute-persistent-action)
+    
+    ;; 元々TABにあった「アクションメニュー」を C-z に割り当て
+    (define-key helm-map (kbd "C-z") 'helm-select-action)
+    (define-key helm-find-files-map (kbd "C-z") 'helm-select-action))
+
+  ;; ファイル名の補完時に「.」や「..」を表示させない（Diredに近く、視認性を上げる設定）
+  (setq helm-ff-skip-boring-files t))
 (leaf projectile :straight t :config (projectile-mode +1) (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
 (leaf helm-projectile :straight t :after (helm projectile) :config (helm-projectile-on))
 
