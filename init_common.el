@@ -118,6 +118,21 @@
 ;; 操作性・windmove (Ctrl+矢印)
 (xterm-mouse-mode 1)
 (mouse-wheel-mode 1)
+
+;; マウスホイールのスクロール設定
+(setq mouse-wheel-scroll-amount '(10 ((shift) . 1) ((control) . nil))) ;; 通常1行、Shiftで1行、Ctrlでページ単位
+(setq mouse-wheel-progressive-speed nil) ;; スクロール速度を固定（加速しない）
+(setq mouse-wheel-follow-mouse 't)      ;; マウスポインタの位置のウィンドウをスクロール
+
+;; スムーズスクロールの設定
+(setq scroll-step 1)
+(setq scroll-conservatively 10000)
+(setq auto-window-vscroll nil)
+
+;; 画面端まで行っても1行ずつスクロールさせる（お好みで）
+(setq scroll-margin 0)
+;;スクロールの加速
+(setq mouse-wheel-progressive-speed t)
 (global-set-key (kbd "<C-left>")  'windmove-left)
 (global-set-key (kbd "<C-down>")  'windmove-down)
 (global-set-key (kbd "<C-up>")    'windmove-up)
