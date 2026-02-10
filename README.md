@@ -188,6 +188,7 @@ WESTON_RDP_DISABLE_HI_DPI_SCALING=true
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 source $HOME/.cargo/env
+uv tool install black
 ```
 
 ## Other compiler

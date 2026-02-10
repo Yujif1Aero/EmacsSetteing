@@ -232,3 +232,19 @@
             (local-set-key (kbd "C-c /") #'my/elisp-format-buffer)
             (local-set-key (kbd "C-c C-_") #'my/elisp-format-region)
             (local-set-key (kbd "C-c C-/") #'my/elisp-format-region)))
+
+
+
+;;; ============================================================
+;;; Python用：Blackによる自動整形 (C-c /)
+;;; ============================================================
+(leaf python-black
+  :straight t
+  :after python
+  :config
+  (add-hook 'python-mode-hook
+            (lambda ()
+              ;; バッファ全体を整形 (C-c /)
+              (local-set-key (kbd "C-c /") #'python-black-buffer)
+              ;; 選択範囲を整形 (C-c C-_)
+              (local-set-key (kbd "C-c C-_") #'python-black-region))))
