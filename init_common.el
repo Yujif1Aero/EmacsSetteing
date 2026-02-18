@@ -23,6 +23,7 @@
 (defun yujif1aero/add-to-load-path (&rest paths)
   (let (path)
     (dolist (path paths paths)
+      
       (let ((default-directory
              (expand-file-name (concat user-emacs-directory path))))
         (unless (file-exists-p default-directory)
@@ -139,8 +140,69 @@
 (global-set-key (kbd "<C-right>") 'windmove-right)
 
 ;; 検索・開発 (Magit, LSP, Company, Helm, Projectile等)
-(leaf magit :straight t :custom (magit-refresh-status-buffer . nil))
-(leaf lsp-mode :straight t :commands lsp :config (define-key lsp-mode-map (kbd "M-.") #'lsp-find-definition))
+(leaf magit
+  :straight t
+  :bind ((magit-mode-map
+          ("C-n" . next-line)
+          ("C-p" . previous-line)
+          ("C-c C-n" . magit-section-forward)
+          ("C-c C-p" . magit-section-backward))
+         ("C-c g" . magit-diff-working-tree))
+  :custom
+  (magit-save-repository-buffers . nil)
+  (magit-display-buffer-function . #'magit-display-buffer-same-window-except-diff-v1)
+  
+  ;; --- 高速化のための追加設定 ---
+  (magit-refresh-status-buffer . nil)      ; 自動更新をオフ（必要な時だけ 'g' で更新）
+  (magit-diff-highlight-indentation . nil) ; インデントのハイライトをオフ
+  (magit-diff-highlight-trailing . nil)    ; 行末空白の強調をオフ
+  (magit-commit-show-diffstat . nil)       ; コミット時の統計表示をオフ
+  
+  :config
+  ;; Git側の動作を最適化する引数
+  (setq magit-git-global-arguments 
+        '("-c" "core.preloadIndex=true" 
+          "-c" "core.fscache=true" 
+          "-c" "gc.auto=0"))
+  )
+;;ccls を導入
+(leaf ccls
+  ;;  :ensure t
+  :straight t
+  :after lsp-mode
+  :init
+  (setq ccls-executable "/usr/bin/ccls")  ;; cclsの実行可能ファイルのパスを適切に設定
+  :config
+  (setq lsp-enable-snippet nil
+        lsp-enable-semantic-highlighting t
+        lsp-ccls-enable t))
+
+(leaf lsp-mode
+  ;;  :ensure t
+  :straight t
+  :commands lsp
+  :init
+  ;; LSP 全般の設定
+  (setq lsp-clients-clangd-args nil) ;; clangd 設定を無効化
+  :config
+  ;; キーバインド
+  (define-key lsp-mode-map (kbd "M-.") #'lsp-find-definition)
+  (define-key lsp-mode-map (kbd "M-,") #'lsp-find-references)
+  (define-key lsp-mode-map (kbd "M-s") #'lsp-find-implementation)
+  (define-key lsp-mode-map (kbd "M-t") #'lsp-find-declaration)
+  ;; Python 用 LSP 手動起動
+  (defun my/lsp-start-python ()
+    "Manually start LSP for Python."
+    (interactive)
+    (require 'lsp-pyright)
+    (lsp))
+  ;; Python モードで簡単に起動
+  ;; (add-hook 'python-mode-hook
+  ;;           (lambda ()
+  ;;             (local-set-key (kbd "C-c l") 'my/lsp-start-python)))
+  ;;   ;; 必要に応じて他の言語用関数も追加可能
+  )
+
 (leaf company :straight t :init (global-company-mode) :custom (company-idle-delay . 0.2))
 (leaf which-key :straight t :config (which-key-mode) (which-key-setup-side-window-right))
 (leaf helm
@@ -165,13 +227,153 @@
 
   ;; ファイル名の補完時に「.」や「..」を表示させない（Diredに近く、視認性を上げる設定）
   (setq helm-ff-skip-boring-files t))
-(leaf projectile :straight t :config (projectile-mode +1) (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
-(leaf helm-projectile :straight t :after (helm projectile) :config (helm-projectile-on))
+(leaf treemacs-evil
+  :after (treemacs evil)
+  ;; :ensure t
+  :straight t
+  )
+
+(leaf treemacs-projectile
+  :after (treemacs projectile)
+  :straight t
+;;  :ensure t
+  )
+
+(leaf treemacs-icons-dired
+  :hook (dired-mode . treemacs-icons-dired-enable-once)
+  ;; :ensure t
+  :straight t
+  )
+
+(leaf treemacs-magit
+  :after (treemacs magit)
+  ;;  :ensure t
+  :straight t
+  )
+
+(leaf treemacs-persp ;;treemacs-perspective if you use perspective.el vs. persp-mode
+  :after (treemacs persp-mode) ;;or perspective vs. persp-mode
+  ;;  :ensure t
+  :straight t
+  :config (treemacs-set-scope-type 'Perspectives))
+
+(leaf treemacs-tab-bar ;;treemacs-tab-bar if you use tab-bar-mode
+  :after (treemacs)
+  ;;  :ensure t
+  :straight t
+  :config (treemacs-set-scope-type 'Tabs))
+
+
+;;インデント揃え
+(global-set-key (kbd "C-c C-r") 'indent-region)
+(leaf helm-ag
+  :load-path "~/.emacs.d/helm-ag"
+  ;; :ensure t
+  :straight t
+  :after helm
+  :custom
+  (helm-ag-base-command . "ag --nocolor --nogroup")
+  (helm-ag-insert-at-point . 'symbol)
+  (helm-ag-command-option . "--all-text")
+  (helm-ag-fuzzy-match . t)
+  :bind (("C-c p 1" . helm-ag)
+         ("C-c p SPC" . helm-do-ag))
+  :config
+  (with-eval-after-load 'helm-ag
+    (define-key helm-ag-edit-map (kbd "RET") 'compile-goto-error)))
+
+
+(leaf projectile
+;;  :ensure t
+  :straight t
+  :require t
+  :config
+  (progn
+    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+    (projectile-mode +1)
+    ;; ;; プロジェクトのルートディレクトリに `default-directory` を設定する関数を追加
+    (defun set-default-directory-to-project-root ()
+      "Set `default-directory` to the root of the project."
+      (let ((project-root (projectile-project-root)))
+        (when project-root
+          (setq default-directory project-root))))
+
+    ;; ;; ;; find-file-hook に関数を追加
+    (add-hook 'find-file-hook 'set-default-directory-to-project-root)
+    )
+  )
+
+(leaf helm-projectile
+  ;;  :ensure t
+  :straight t
+  :after (helm projectile)
+  :config
+  (helm-projectile-on)
+  (setq projectile-completion-system 'helm)
+  :bind
+  (("C-c p h" . helm-projectile)
+   ("C-c p n" . helm-projectile-grep)
+   )
+  )
+
+(leaf diff-hl
+  :straight t
+;;  :ensure t
+  :config
+  (global-diff-hl-mode)
+  ;; ターミナルの場合、行の背景色を使うように設定
+  (unless (display-graphic-p)
+    (diff-hl-margin-mode 1)))
+;; 保存時に更新
+(add-hook 'after-save-hook 'diff-hl-update)
+
+;; バッファ切り替え時に更新
+(add-hook 'focus-in-hook 'diff-hl-update)
+
+(fringe-mode '(8 . 8))
+
+;; shell-popの設定
+(leaf shell-pop
+;;  :ensure t
+  :straight t
+  :require t
+  :custom
+  (shell-pop-shell-type . '("eshell" "*eshell*" (lambda () (eshell))))
+  ;; (shell-pop-shell-type . '("term" "*term*" (lambda () (term "/run/current-system/sw/bin/zsh"))))
+  ;; (shell-pop-shell-type . '("term" "*term*" (lambda () (term "/bin/bash"))))
+  ;; 例: (shell-pop-window-size . 30) ; ウィンドウのサイズを30%に設定
+  ;;     (shell-pop-full-span . t) ; フル幅で表示
+  :bind
+  (("C-t" . shell-pop)))
+
+;; eshell-specific settings
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            (define-key eshell-mode-map (kbd "<tab>") 'completion-at-point)))
+;; Eshell用にcdpjrootエイリアスを設定
+(defun eshell/cdpjroot ()
+  "Change directory to the root of the Git repository in Eshell."
+  (let ((git-root (string-trim (shell-command-to-string "git rev-parse --show-toplevel"))))
+    (eshell/cd git-root)))  ;; eshellのcdコマンドを使う
+
+;; helmをeshellで無効化する設定
+(defun my/eshell-disable-helm ()
+  "Disable helm completion in eshell."
+  (setq-local helm-mode-no-completion-in-region-in-modes '(eshell-mode)))
+(add-hook 'eshell-mode-hook 'my/eshell-disable-helm)
+;; eshell からファイルを開く.
+(with-eval-after-load 'eshell
+  (defun setup-eshell-aliases ()
+    (eshell/alias "emacs" "find-file $1")
+    (eshell/alias "m" "find-file $1")
+    (eshell/alias "mc" "find-file $1"))
+  (add-hook 'eshell-mode-hook 'setup-eshell-aliases))
+
+(setq enable-local-variables t)
 
 ;; AI・ツール連携
 (leaf copilot :if (executable-find "node") :straight (copilot :type git :host github :repo "zerolfx/copilot.el" :files ("*.el"))
   :commands (copilot-mode) :bind (("C-c M-f" . copilot-mode)))
-(leaf shell-pop :straight t :bind (("C-t" . shell-pop)))
 (leaf clang-format :straight t :bind (("C-c C-_" . clang-format-region) ("C-c /" . clang-format-buffer)))
 
 ;; --- 【新規追加】C-c d と C-c C-d でカレントディレクトリを移動 ---
@@ -250,12 +452,65 @@
               (local-set-key (kbd "C-c C-_") #'python-black-region))))
 
 
+(leaf diff-hl
+  :straight t
+;;  :ensure t
+  :config
+  (global-diff-hl-mode)
+  ;; ターミナルの場合、行の背景色を使うように設定
+  (unless (display-graphic-p)
+    (diff-hl-margin-mode 1)))
+;; 保存時に更新
+(add-hook 'after-save-hook 'diff-hl-update)
 
-(defun my-c-comment-dwim (arg)
-  "Comment or uncomment current line or region with //ys in C and C++ modes."
+;; バッファ切り替え時に更新
+(add-hook 'focus-in-hook 'diff-hl-update)
+
+(fringe-mode '(8 . 8))
+
+;; shell-popの設定
+(leaf shell-pop
+;;  :ensure t
+  :straight t
+  :require t
+  :custom
+  (shell-pop-shell-type . '("eshell" "*eshell*" (lambda () (eshell))))
+  ;; (shell-pop-shell-type . '("term" "*term*" (lambda () (term "/run/current-system/sw/bin/zsh"))))
+  ;; (shell-pop-shell-type . '("term" "*term*" (lambda () (term "/bin/bash"))))
+  ;; 例: (shell-pop-window-size . 30) ; ウィンドウのサイズを30%に設定
+  ;;     (shell-pop-full-span . t) ; フル幅で表示
+  :bind
+  (("C-t" . shell-pop)))
+
+;; eshell-specific settings
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            (define-key eshell-mode-map (kbd "<tab>") 'completion-at-point)))
+;; Eshell用にcdpjrootエイリアスを設定
+(defun eshell/cdpjroot ()
+  "Change directory to the root of the Git repository in Eshell."
+  (let ((git-root (string-trim (shell-command-to-string "git rev-parse --show-toplevel"))))
+    (eshell/cd git-root)))  ;; eshellのcdコマンドを使う
+
+;; helmをeshellで無効化する設定
+(defun my/eshell-disable-helm ()
+  "Disable helm completion in eshell."
+  (setq-local helm-mode-no-completion-in-region-in-modes '(eshell-mode)))
+(add-hook 'eshell-mode-hook 'my/eshell-disable-helm)
+;; eshell からファイルを開く.
+(with-eval-after-load 'eshell
+  (defun setup-eshell-aliases ()
+    (eshell/alias "emacs" "find-file $1")
+    (eshell/alias "m" "find-file $1")
+    (eshell/alias "mc" "find-file $1"))
+  (add-hook 'eshell-mode-hook 'setup-eshell-aliases))
+
+
+
+(defun my-python-comment-dwim (arg)
+  "Comment or uncomment current line or region with #ys in Python mode."
   (interactive "*P")
-  (let ((comment-start "//ys ")
-        (comment-end ""))
+  (let ((comment-start "#ys "))
     (if (use-region-p)
         (comment-dwim arg)
       (save-excursion
@@ -265,6 +520,15 @@
           (progn
             (beginning-of-line)
             (insert comment-start)))))))
-(defun my-c-comment-style ()
-  (setq comment-start "//ys "
+
+(defun my-python-comment-style ()
+  (setq comment-start "#ys "
         comment-end ""))
+
+(add-hook 'python-mode-hook 'my-python-comment-style)
+(add-hook 'python-mode-hook
+          (lambda ()
+            (local-set-key (kbd "M-;") 'my-python-comment-dwim)))
+
+
+
