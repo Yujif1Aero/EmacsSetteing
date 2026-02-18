@@ -248,3 +248,23 @@
               (local-set-key (kbd "C-c /") #'python-black-buffer)
               ;; 選択範囲を整形 (C-c C-_)
               (local-set-key (kbd "C-c C-_") #'python-black-region))))
+
+
+
+(defun my-c-comment-dwim (arg)
+  "Comment or uncomment current line or region with //ys in C and C++ modes."
+  (interactive "*P")
+  (let ((comment-start "//ys ")
+        (comment-end ""))
+    (if (use-region-p)
+        (comment-dwim arg)
+      (save-excursion
+        (beginning-of-line)
+        (if (looking-at (concat "^\\s-*" (regexp-quote comment-start)))
+            (uncomment-region (line-beginning-position) (line-end-position))
+          (progn
+            (beginning-of-line)
+            (insert comment-start)))))))
+(defun my-c-comment-style ()
+  (setq comment-start "//ys "
+        comment-end ""))
