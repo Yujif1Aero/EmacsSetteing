@@ -195,6 +195,7 @@ uv tool install black
 ```
 sudo apt update && sudo apt install -y texlive-full && sudo apt install -y libpng-dev zlib1g-dev libpoppler-glib-dev libpoppler-private-dev imagemagick
 sudo apt install -y build-essential gfortran-13 libopenmpi-dev
+sudo apt install bear
 ```
 
 - ref :
