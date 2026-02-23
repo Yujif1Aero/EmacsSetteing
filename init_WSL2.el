@@ -16,8 +16,10 @@
   (setq magit-git-global-arguments 
         (append magit-git-global-arguments '("-c" "core.editor=notepad.exe"))))
 
-(setq select-enable-clipboard t)
-(setq select-enable-primary t)
+;; (setq select-enable-clipboard t)
+;; (setq select-enable-primary t)
+(setq select-enable-clipboard nil)
+(setq select-enable-primary nil)
 (setq frame-resize-pixelwise t)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 

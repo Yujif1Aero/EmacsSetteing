@@ -18,8 +18,8 @@
         (send-string-to-terminal osc52-string))
     (error nil)))
 
-(unless (display-graphic-p)
-  (setq interprogram-cut-function (lambda (text) (my/copy-to-clipboard text) nil)))
+;; (unless (display-graphic-p)
+;;   (setq interprogram-cut-function (lambda (text) (my/copy-to-clipboard text) nil)))
 (defun yujif1aero/add-to-load-path (&rest paths)
   (let (path)
     (dolist (path paths paths)
@@ -532,3 +532,14 @@
 
 
 
+;; 選択範囲をWindowsのクリップボードへ明示的に送るショートカット (例: C-c c)
+(defun my/copy-region-to-clipboard (beg end)
+  "選択範囲をOSC 52経由でWindowsのクリップボードにコピーする。"
+  (interactive "r")
+  (if (use-region-p)
+      (let ((text (buffer-substring-no-properties beg end)))
+        (my/copy-to-clipboard text)
+        (message "クリップボードにコピーしました！"))
+    (message "範囲が選択されていません。")))
+
+(global-set-key (kbd "C-c c") #'my/copy-region-to-clipboard)
