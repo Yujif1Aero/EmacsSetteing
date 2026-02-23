@@ -20,6 +20,7 @@
 ;; (setq select-enable-primary t)
 (setq select-enable-clipboard nil)
 (setq select-enable-primary nil)
+(setq interprogram-paste-function nil)
 (setq frame-resize-pixelwise t)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 

@@ -17,6 +17,18 @@
                              (format "\e]52;c;%s\a" b64-text))))
         (send-string-to-terminal osc52-string))
     (error nil)))
+;; ==========================================
+;; tmux/ターミナル環境での自動クリップボード同期を強制遮断
+;; ==========================================
+(unless (display-graphic-p)
+  ;; Emacs 25以降のターミナルでの自動クリップボード連携をオフ
+  (setq xterm-select-enable-clipboard nil)
+  
+  ;; ペースト時に外部（tmux等）のクリップボードを見に行く関数を無効化
+  (setq interprogram-paste-function nil)
+  
+  ;; コピー（キル）時に外部へ送信する関数を無効化（もっさり対策）
+  (setq interprogram-cut-function nil))
 
 ;; (unless (display-graphic-p)
 ;;   (setq interprogram-cut-function (lambda (text) (my/copy-to-clipboard text) nil)))
