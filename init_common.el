@@ -517,7 +517,32 @@
     (eshell/alias "mc" "find-file $1"))
   (add-hook 'eshell-mode-hook 'setup-eshell-aliases))
 
+;;; ============================================================
+;;; C/C++用：カスタムコメント機能 (//ys )
+;;; ============================================================
+(defun my-c-comment-dwim (arg)
+  "Comment or uncomment current line or region with //ys in C/C++ mode."
+  (interactive "*P")
+  (let ((comment-start "//ys "))
+    (if (use-region-p)
+        (comment-dwim arg)
+      (save-excursion
+        (beginning-of-line)
+        (if (looking-at (concat "^\\s-*" (regexp-quote comment-start)))
+            (uncomment-region (line-beginning-position) (line-end-position))
+          (progn
+            (beginning-of-line)
+            (insert comment-start)))))))
 
+(defun my-c-comment-style ()
+  (setq comment-start "//ys "
+        comment-end ""))
+
+;; c-mode-common-hook は C や C++ などの共通フックです
+(add-hook 'c-mode-common-hook 'my-c-comment-style)
+(add-hook 'c-mode-common-hook
+          (lambda ()
+            (local-set-key (kbd "M-;") 'my-c-comment-dwim)))
 
 (defun my-python-comment-dwim (arg)
   "Comment or uncomment current line or region with #ys in Python mode."
