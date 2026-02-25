@@ -191,44 +191,60 @@
 
 (leaf lsp-mode
   :straight t
-  :commands lsp
-  :hook ((c-mode . lsp)
-         (c++-mode . lsp)) ;; C/C++ を開いた時に自動起動
+  :commands (lsp lsp-deferred)
   :init
+  ;; --- C/C++ を開いた時に確実に自動起動（非同期）させる ---
+  (add-hook 'c-mode-hook #'lsp-deferred)
+  (add-hook 'c++-mode-hook #'lsp-deferred)
+
   ;; clangd の起動オプション（マルチコアを使って高速化）
   (setq lsp-clients-clangd-args '("-j=4" "--background-index" "--clang-tidy" "--completion-style=detailed"))
-  :config
-  ;; キーバインド
-  (define-key lsp-mode-map (kbd "M-.") #'lsp-find-definition)
-  (define-key lsp-mode-map (kbd "M-,") #'lsp-find-references)
-  (define-key lsp-mode-map (kbd "M-s") #'lsp-find-implementation)
-  (define-key lsp-mode-map (kbd "M-t") #'lsp-find-declaration))
-
-(leaf lsp-mode
-  ;;  :ensure t
-  :straight t
-  :commands lsp
-  :init
-  ;; LSP 全般の設定
-  (setq lsp-clients-clangd-args nil) ;; clangd 設定を無効化
+  
   :config
   ;; キーバインド
   (define-key lsp-mode-map (kbd "M-.") #'lsp-find-definition)
   (define-key lsp-mode-map (kbd "M-,") #'lsp-find-references)
   (define-key lsp-mode-map (kbd "M-s") #'lsp-find-implementation)
   (define-key lsp-mode-map (kbd "M-t") #'lsp-find-declaration)
+  
   ;; Python 用 LSP 手動起動
   (defun my/lsp-start-python ()
     "Manually start LSP for Python."
     (interactive)
     (require 'lsp-pyright)
-    (lsp))
+    (lsp)))
+
   ;; Python モードで簡単に起動
   ;; (add-hook 'python-mode-hook
   ;;           (lambda ()
   ;;             (local-set-key (kbd "C-c l") 'my/lsp-start-python)))
-  ;;   ;; 必要に応じて他の言語用関数も追加可能
-  )
+  ;;   ;; 必要に応じて他の言語用関数も追加可能)
+
+;; (leaf lsp-mode
+;;   ;;  :ensure t
+;;   :straight t
+;;   :commands lsp
+;;   :init
+;;   ;; LSP 全般の設定
+;;   (setq lsp-clients-clangd-args nil) ;; clangd 設定を無効化
+;;   :config
+;;   ;; キーバインド
+;;   (define-key lsp-mode-map (kbd "M-.") #'lsp-find-definition)
+;;   (define-key lsp-mode-map (kbd "M-,") #'lsp-find-references)
+;;   (define-key lsp-mode-map (kbd "M-s") #'lsp-find-implementation)
+;;   (define-key lsp-mode-map (kbd "M-t") #'lsp-find-declaration)
+;;   ;; Python 用 LSP 手動起動
+;;   (defun my/lsp-start-python ()
+;;     "Manually start LSP for Python."
+;;     (interactive)
+;;     (require 'lsp-pyright)
+;;     (lsp))
+;;   ;; Python モードで簡単に起動
+;;   ;; (add-hook 'python-mode-hook
+;;   ;;           (lambda ()
+;;   ;;             (local-set-key (kbd "C-c l") 'my/lsp-start-python)))
+;;   ;;   ;; 必要に応じて他の言語用関数も追加可能
+;;   )
 
 (leaf company :straight t :init (global-company-mode) :custom (company-idle-delay . 0.2))
 (leaf which-key :straight t :config (which-key-mode) (which-key-setup-side-window-right))
