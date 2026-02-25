@@ -178,16 +178,31 @@
           "-c" "gc.auto=0"))
   )
 ;;ccls を導入
-(leaf ccls
-  ;;  :ensure t
+;; (leaf ccls
+;;   ;;  :ensure t
+;;   :straight t
+;;   :after lsp-mode
+;;   :init
+;;   (setq ccls-executable "/usr/bin/ccls")  ;; cclsの実行可能ファイルのパスを適切に設定
+;;   :config
+;;   (setq lsp-enable-snippet nil
+;;         lsp-enable-semantic-highlighting t
+;;         lsp-ccls-enable t))
+
+(leaf lsp-mode
   :straight t
-  :after lsp-mode
+  :commands lsp
+  :hook ((c-mode . lsp)
+         (c++-mode . lsp)) ;; C/C++ を開いた時に自動起動
   :init
-  (setq ccls-executable "/usr/bin/ccls")  ;; cclsの実行可能ファイルのパスを適切に設定
+  ;; clangd の起動オプション（マルチコアを使って高速化）
+  (setq lsp-clients-clangd-args '("-j=4" "--background-index" "--clang-tidy" "--completion-style=detailed"))
   :config
-  (setq lsp-enable-snippet nil
-        lsp-enable-semantic-highlighting t
-        lsp-ccls-enable t))
+  ;; キーバインド
+  (define-key lsp-mode-map (kbd "M-.") #'lsp-find-definition)
+  (define-key lsp-mode-map (kbd "M-,") #'lsp-find-references)
+  (define-key lsp-mode-map (kbd "M-s") #'lsp-find-implementation)
+  (define-key lsp-mode-map (kbd "M-t") #'lsp-find-declaration))
 
 (leaf lsp-mode
   ;;  :ensure t
