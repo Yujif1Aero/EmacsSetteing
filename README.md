@@ -79,7 +79,7 @@ ref : https://github.com/joaotavora/eglot
 ## ccls(clangdよりも重い) けど優秀
 
 ```bash
-sudo apt install ccls
+sudo apt install ccls -> clang へ移行
 
 ```
 project root directry として選択した履歴は`~/.emacs.d/lsp-session-v1` に残る。 もしかしたら、プロジェクトルートに`.ccls-root`を置く必要があるかも。基本的に`M-x lsp`したあとに `i`と入力すれば、OK
@@ -208,3 +208,4 @@ sudo apt install bear
 1. https://qiita.com/blue0513/items/acc962738c7f4da26656
 1. https://qiita.com/kari_tech/items/4754fac39504dccfd7be
 1. https://blog.misosi.ru/2017/01/17/osc52e-el/
+
