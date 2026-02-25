@@ -45,7 +45,10 @@ pip install compiledb
 compiledb make
 
 ```
-
+or
+```bash
+make clean; bear -- make
+```
 ## for installing key
 
 1. Emacsを開き、M-x package-install-file を実行します。
