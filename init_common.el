@@ -611,3 +611,4 @@
     (message "範囲が選択されていません。")))
 
 (global-set-key (kbd "C-c c") #'my/copy-region-to-clipboard)
+(global-set-key (kbd "<f5>") 'compile)
