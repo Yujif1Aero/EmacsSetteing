@@ -23,7 +23,7 @@ alias pjroot='cd $(git rev-parse --show-toplevel)'
 
 # emacs install
 ```bash
-#sudo add-apt-repository ppa:kelleyk/emacs
+sudo add-apt-repository ppa:kelleyk/emacs
 sudo apt update
 #sudo apt install emacs28-nativecomp
 sudo apt install emacs 

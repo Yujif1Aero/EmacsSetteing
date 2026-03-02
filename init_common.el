@@ -23,20 +23,20 @@
 (unless (display-graphic-p)
   ;; Emacs 25以降のターミナルでの自動クリップボード連携をオフ
   (setq xterm-select-enable-clipboard nil)
-  
+
   ;; ペースト時に外部（tmux等）のクリップボードを見に行く関数を無効化
   (setq interprogram-paste-function nil)
-  
+
   ;; コピー（キル）時に外部へ送信する関数を無効化（もっさり対策）
   (setq interprogram-cut-function nil))
 
 ;; (unless (display-graphic-p)
 ;;   (setq interprogram-cut-function (lambda (text) (my/copy-to-clipboard text) nil)))
 (defun yujif1aero/add-to-load-path (&rest paths)
-  
+
   (let (path)
     (dolist (path paths paths)
-      
+
       (let ((default-directory
              (expand-file-name (concat user-emacs-directory path))))
         (unless (file-exists-p default-directory)
@@ -164,18 +164,18 @@
   :custom
   (magit-save-repository-buffers . nil)
   (magit-display-buffer-function . #'magit-display-buffer-same-window-except-diff-v1)
-  
+
   ;; --- 高速化のための追加設定 ---
   (magit-refresh-status-buffer . nil)      ; 自動更新をオフ（必要な時だけ 'g' で更新）
   (magit-diff-highlight-indentation . nil) ; インデントのハイライトをオフ
   (magit-diff-highlight-trailing . nil)    ; 行末空白の強調をオフ
   (magit-commit-show-diffstat . nil)       ; コミット時の統計表示をオフ
-  
+
   :config
   ;; Git側の動作を最適化する引数
-  (setq magit-git-global-arguments 
-        '("-c" "core.preloadIndex=true" 
-          "-c" "core.fscache=true" 
+  (setq magit-git-global-arguments
+        '("-c" "core.preloadIndex=true"
+          "-c" "core.fscache=true"
           "-c" "gc.auto=0"))
   )
 ;;ccls を導入
@@ -197,17 +197,19 @@
   ;; --- C/C++ を開いた時に確実に自動起動（非同期）させる ---
   (add-hook 'c-mode-hook #'lsp-deferred)
   (add-hook 'c++-mode-hook #'lsp-deferred)
-
+  (setq lsp-enable-on-type-formatting nil) ; タイピング中の自動整形を無効化
+  (setq lsp-enable-indentation nil)         ; LSPによるインデント制御を無効化
   ;; clangd の起動オプション（マルチコアを使って高速化）
   (setq lsp-clients-clangd-args '("-j=4" "--background-index" "--clang-tidy" "--completion-style=detailed"))
-  
+
+
   :config
   ;; キーバインド
   (define-key lsp-mode-map (kbd "M-.") #'lsp-find-definition)
   (define-key lsp-mode-map (kbd "M-,") #'lsp-find-references)
   (define-key lsp-mode-map (kbd "M-s") #'lsp-find-implementation)
   (define-key lsp-mode-map (kbd "M-t") #'lsp-find-declaration)
-  
+
   ;; Python 用 LSP 手動起動
   (defun my/lsp-start-python ()
     "Manually start LSP for Python."
@@ -215,11 +217,11 @@
     (require 'lsp-pyright)
     (lsp)))
 
-  ;; Python モードで簡単に起動
-  ;; (add-hook 'python-mode-hook
-  ;;           (lambda ()
-  ;;             (local-set-key (kbd "C-c l") 'my/lsp-start-python)))
-  ;;   ;; 必要に応じて他の言語用関数も追加可能)
+;; Python モードで簡単に起動
+;; (add-hook 'python-mode-hook
+;;           (lambda ()
+;;             (local-set-key (kbd "C-c l") 'my/lsp-start-python)))
+;;   ;; 必要に応じて他の言語用関数も追加可能)
 
 ;; (leaf lsp-mode
 ;;   ;;  :ensure t
@@ -261,10 +263,10 @@
     ;; これにより、ディレクトリなら中に入り、名前がユニークなら補完されます
     (define-key helm-find-files-map (kbd "TAB") 'helm-execute-persistent-action)
     (define-key helm-read-file-map (kbd "TAB") 'helm-execute-persistent-action)
-    
+
     ;; ターミナル環境（C-i と TAB が同じ扱い）への対策
     (define-key helm-find-files-map (kbd "C-i") 'helm-execute-persistent-action)
-    
+
     ;; 元々TABにあった「アクションメニュー」を C-z に割り当て
     (define-key helm-map (kbd "C-z") 'helm-select-action)
     (define-key helm-find-files-map (kbd "C-z") 'helm-select-action))
@@ -280,7 +282,7 @@
 (leaf treemacs-projectile
   :after (treemacs projectile)
   :straight t
-;;  :ensure t
+  ;;  :ensure t
   )
 
 (leaf treemacs-icons-dired
@@ -328,7 +330,7 @@
 
 
 (leaf projectile
-;;  :ensure t
+  ;;  :ensure t
   :straight t
   :require t
   :config
@@ -362,7 +364,7 @@
 
 (leaf diff-hl
   :straight t
-;;  :ensure t
+  ;;  :ensure t
   :config
   (global-diff-hl-mode)
   ;; ターミナルの場合、行の背景色を使うように設定
@@ -378,7 +380,7 @@
 
 ;; shell-popの設定
 (leaf shell-pop
-;;  :ensure t
+  ;;  :ensure t
   :straight t
   :require t
   :custom
@@ -511,7 +513,7 @@
 
 (leaf diff-hl
   :straight t
-;;  :ensure t
+  ;;  :ensure t
   :config
   (global-diff-hl-mode)
   ;; ターミナルの場合、行の背景色を使うように設定
@@ -527,7 +529,7 @@
 
 ;; shell-popの設定
 (leaf shell-pop
-;;  :ensure t
+  ;;  :ensure t
   :straight t
   :require t
   :custom
