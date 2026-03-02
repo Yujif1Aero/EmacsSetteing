@@ -108,16 +108,87 @@ I will use `os52` to share clip bord between local and sever.Or I set `(el-get-b
 node.js >> version 18
 ```bash
 sudo apt update
-sudo apt install nodejs npm
-curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-nvm --version
+# 1) nvm をインストール
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-nvm --version
+# 2) bash 設定を読み直す
+source ~/.bashrc
 
+# 3) nvm が使えるか確認
+command -v nvm
+
+# 4) Node.js の LTS 版をインストール
+nvm install --lts
+
+# 5) その LTS を使う
+nvm use --lts
+
+# 6) 確認
+node -v
+npm -v
 nvm install 22
 npm install -g @github/copilot-language-server
+```
+
+NOTE:
+```
+nvm install 22
+npm install -g @github/copilot-language-server
+これはする必要があります？
+
+必要性を確認しています。ポイントは 「Copilot Language Server に Node 22 が本当に必要か」 と 「npm グローバル導入が必須か」 の2点です。
+
+Thought for 1m 45s
+
+結論だけ言うと、
+
+Copilot を Emacs の copilot.el で使いたいなら、Node の更新は必要です
+
+でも npm install -g @github/copilot-language-server は必須ではありません
+
+理由はこうです。
+
+copilot.el の README では、@github/copilot-language-server には Node.js 22+ が必要 と書かれていて、導入手順としては M-x copilot-install-server → M-x copilot-login が案内されています。つまり、Emacs 側の導入フローを使うなら、手動でグローバル npm install しなくてもよい ということです。
+
+一方で、GitHub の copilot-language-server 公開リポジトリでは、npm install @github/copilot-language-server や npx @github/copilot-language-server --version の形が案内されていて、ローカル install や npx 実行も可能 です。なので、-g は「必須」ではなく「手動でグローバルに置きたいときの選択肢」 です。
+
+それと、あなたの今の Node は v18.20.8 でしたが、Node 18 はすでに EOL です。現在は v24 が Active LTS、v22 が Maintenance LTS なので、今から入れ直すなら nvm install --lts のほうが自然です。copilot.el の条件である 22+ も満たします。
+
+なので、あなたにはこの進め方をおすすめします。
+
+nvm install --lts
+nvm use --lts
+node -v
+npm -v
+
+そのあと Emacs で:
+
+M-x copilot-install-server
+
+M-x copilot-login
+
+これで十分です。npm install -g @github/copilot-language-server は、Emacs の自動導入がうまくいかないときだけ後から試せばOK です。
+
+手動でやるなら、順番はこうです。
+
+nvm install --lts
+nvm use --lts
+npm install -g @github/copilot-language-server
+
+つまり、あなたの質問への答えはこうです。
+
+nvm install 22
+→ ほぼ必要。ただし 22固定より --lts がおすすめ
+
+npm install -g @github/copilot-language-server
+→ 必須ではない。copilot.el を使うならまず M-x copilot-install-server を試すのがよい
+
+今すぐやるなら、まずはこれです。
+
+nvm install --lts
+nvm use --lts
+
+その次に Emacs 側で M-x copilot-install-server を実行してください。
 ```
 for windows user please refer to below URL
 https://nodejs.org/ja/download
