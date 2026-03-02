@@ -126,8 +126,9 @@ nvm use --lts
 # 6) 確認
 node -v
 npm -v
-nvm install 22
-npm install -g @github/copilot-language-server
+#nvm install 22
+#npm install -g @github/copilot-language-server
+npm -g --prefix ~/.emacs.d/.cache/copilot install @github/copilot-language-server
 ```
 
 NOTE:
