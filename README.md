@@ -190,7 +190,7 @@ WESTON_RDP_DISABLE_HI_DPI_SCALING=true
 ## python
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
-source $HOME/.cargo/env
+#source $HOME/.cargo/env
 uv tool install black
 ```
 
