@@ -511,14 +511,6 @@
               (local-set-key (kbd "C-c C-_") #'python-black-region))))
 
 
-(leaf diff-hl
-  :straight t
-  ;;  :ensure t
-  :config
-  (global-diff-hl-mode)
-  ;; ターミナルの場合、行の背景色を使うように設定
-  (unless (display-graphic-p)
-    (diff-hl-margin-mode 1)))
 ;; 保存時に更新
 (add-hook 'after-save-hook 'diff-hl-update)
 

@@ -21,14 +21,14 @@ sudo apt install hub
 alias pjroot='cd $(git rev-parse --show-toplevel)'
 ```
 
-# emacs install
+# emacs install -> Please check emacs_installer.sh
 ```bash
-sudo add-apt-repository ppa:kelleyk/emacs
-sudo apt update
+#sudo add-apt-repository ppa:kelleyk/emacs
+#sudo apt update
 #sudo apt install emacs28-nativecomp
-sudo apt install emacs 
-sudo apt install fcitx-mozc
-sudo apt install mozc-server mozc-utils-gui mozc-data emacs-mozc
+#sudo apt install emacs 
+#sudo apt install fcitx-mozc
+#sudo apt install mozc-server mozc-utils-gui mozc-data emacs-mozc
 ```
 
 
