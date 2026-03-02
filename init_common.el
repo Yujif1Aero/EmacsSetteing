@@ -33,6 +33,7 @@
 ;; (unless (display-graphic-p)
 ;;   (setq interprogram-cut-function (lambda (text) (my/copy-to-clipboard text) nil)))
 (defun yujif1aero/add-to-load-path (&rest paths)
+  
   (let (path)
     (dolist (path paths paths)
       
@@ -415,8 +416,21 @@
 (setq enable-local-variables t)
 
 ;; AI・ツール連携
-(leaf copilot :if (executable-find "node") :straight (copilot :type git :host github :repo "zerolfx/copilot.el" :files ("*.el"))
-  :commands (copilot-mode) :bind (("C-c M-f" . copilot-mode)))
+(leaf copilot
+  :if (executable-find "node")
+  :straight (copilot :type git :host github :repo "zerolfx/copilot.el" :files ("*.el"))
+  :commands (copilot-mode)
+  :bind (("C-c M-f" . copilot-mode)
+         ;; サジェストが出ている時(copilot-completion-map)のみTABを上書き
+         (copilot-completion-map
+          ("<tab>" . copilot-accept-completion)
+          ("M-TAB" . copilot-accept-completion-by-word)
+          ("TAB"   . copilot-accept-completion)))
+  :hook (prog-mode-hook . copilot-mode) ; 全てのプログラミングモードで自動オン
+  :config
+  ;; ネットワーク等の理由でサジェストが遅れる場合の微調整（任意）
+  (setq copilot-idle-delay 0.1))
+
 (leaf clang-format :straight t :bind (("C-c C-_" . clang-format-region) ("C-c /" . clang-format-buffer)))
 
 ;; --- 【新規追加】C-c d と C-c C-d でカレントディレクトリを移動 ---
