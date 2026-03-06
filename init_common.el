@@ -386,3 +386,9 @@
 
 
 (global-set-key (kbd "<f5>") 'compile)
+
+;; Nixファイルのサポート
+(leaf nix-mode
+  :straight t
+  :leaf-defer t
+  :mode "\\.nix\\'")
