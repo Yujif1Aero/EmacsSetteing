@@ -392,3 +392,15 @@
   :straight t
   :leaf-defer t
   :mode "\\.nix\\'")
+
+
+;; ==========================================
+;; コードの折りたたみ (HideShow)
+;; ==========================================
+(leaf hideshow
+  :require t
+  :hook (prog-mode-hook . hs-minor-mode) ; 全てのプログラミング言語で有効化
+  :bind ((prog-mode-map
+          ("C-c f" . hs-toggle-hiding)   ; カーソル位置のブロックを折りたたみ/展開 (Fold)
+          ("C-c F" . hs-hide-all)        ; ファイル全体のブロックをすべて折りたたみ
+          ("C-c A" . hs-show-all))))     ; ファイル全体のブロックをすべて展開 (All)
