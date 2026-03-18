@@ -333,3 +333,8 @@ else
   export PS1='\[\e[1;36m\]$(nix_prompt)\[\e[0;31m\]\W\[\e[0m\] :$ '
 fi
 # ==============================
+# GUIで開きたい場合（WSLg環境）
+alias e='emacsclient -c -a ""'
+
+# ターミナル内で開きたい場合
+alias et='emacsclient -t -a ""'
