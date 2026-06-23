@@ -1,0 +1,47 @@
+# --- 基本設定 ---
+export DISPLAY=:0
+alias gterm="/usr/bin/gnome-terminal"
+
+# .bashrc の読み込み [cite: 39, 40]
+if [[ -f ~/.bashrc ]] ; then
+    . ~/.bashrc
+fi
+
+# Git ユーザー名判定 [cite: 41, 42]
+# function _ps1_git_username {
+#     local name=$(git config user.name)
+#     if [ -z "$name" ]; then
+#         echo "No Git User"
+#     elif [[ "$name" == "Yuji Shimojima" || "$name" == "Yuji Sam Shimojima" ]]; then
+#         echo "🍜"
+#     else
+#         echo "$name"
+#     fi
+# }
+
+# # --- Git プロンプト設定 (WSL最適化版) --- [cite: 43]
+# git_prompt_script=/usr/lib/git-core/git-sh-prompt
+
+# if [ -f "$git_prompt_script" ]; then
+#     source "$git_prompt_script"
+
+#     # ステータス表示設定 [cite: 43]
+#     export GIT_PS1_SHOWDIRTYSTATE=1      # + (ステージ済), * (未ステージ)
+#     export GIT_PS1_SHOWUNTRACKEDFILES=1  # % (未追跡)
+#     export GIT_PS1_SHOWSTASHSTATE=1      # $ (スタッシュ)
+#     export GIT_PS1_SHOWUPSTREAM="auto"   # = (リモート一致)
+
+#     # 色の定義（\[ \] を PS1 内で直接使うため、ここではエスケープ文字のみ定義）
+#     C_RED=$'\e[0;31m'
+#     C_GREEN=$'\e[0;32m'
+#     C_RESET=$'\e[0m'
+
+#     # PS1 の定義: 
+#     # \[ \] で色コードを囲むことで Bash に文字幅ゼロであることを伝えます。
+#     # シングルクォートを使用し、実行時に変数を評価させます。 [cite: 43]
+#     export PS1='\[${C_RED}\]$(venv_prompt)\W\[${C_GREEN}\] ($(_ps1_git_username)$(__git_ps1 ":%s")) \[${C_RESET}\]:\$ '
+# else
+#     export PS1='\[\e[0;31m\]\u@\h:\W\$ \[\e[0m\]'
+# fi
+
+export LSCOLORS=ExGxFxdxCxDxDxaccxaeex

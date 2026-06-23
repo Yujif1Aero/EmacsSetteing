@@ -29,4 +29,8 @@
   :custom
   (shell-pop-shell-type . '("powershell" "*powershell*" (lambda () (powershell)))))
 
+
+;;words encode
+(setq whitespace-display-mappings
+            '((tab-mark ?\t [?> ? ] [?\\ ?\t]))) ;  "> " 
 (message "init_windows.el has been loaded.")

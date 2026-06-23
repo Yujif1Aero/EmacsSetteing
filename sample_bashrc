@@ -1,0 +1,340 @@
+# ~/.bashrc: executed by bash(1) for non-login shells.
+# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
+# for examples
+
+# If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+
+# don't put duplicate lines or lines starting with space in the history.
+# See bash(1) for more options
+HISTCONTROL=ignoreboth
+
+# append to the history file, don't overwrite it
+#shopt -s histappend
+# add smjm
+# function share_history {
+#     history -a
+#     history -c
+#     history -r
+# }
+# PROMPT_COMMAND='share_history'
+# shopt -u histappend
+export HISTSIZE=10000
+export HISTFILESIZE=10000
+#export HISTIGNORE=ls:history:pwd
+#export HISTTIMEFORMAT='%Y/%m/%d %H:%M:%S, '
+function share_history {
+    history -a
+    history -n
+}
+PROMPT_COMMAND='share_history'
+shopt -s histappend
+
+
+# # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+#modified smjm
+# HISTSIZE=1000
+# HISTFILESIZE=2000
+
+
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+# If set, the pattern "**" used in a pathname expansion context will
+# match all files and zero or more directories and subdirectories.
+#shopt -s globstar
+
+# make less more friendly for non-text input files, see lesspipe(1)
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+# set variable identifying the chroot you work in (used in the prompt below)
+if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
+    debian_chroot=$(cat /etc/debian_chroot)
+fi
+
+# set a fancy prompt (non-color, unless we know we "want" color)
+case "$TERM" in
+    xterm-color|*-256color) color_prompt=yes;;
+esac
+
+# # uncomment for a colored prompt, if the terminal has the capability; turned
+# # off by default to not distract the user: the focus in a terminal window
+# # should be on the output of commands, not on the prompt
+# #force_color_prompt=yes
+
+# if [ -n "$force_color_prompt" ]; then
+#     if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+# 	# We have color support; assume it's compliant with Ecma-48
+# 	# (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+# 	# a case would tend to support setf rather than setaf.)
+# 	color_prompt=yes
+#     else
+# 	color_prompt=
+#     fi
+# fi
+
+# if [ "$color_prompt" = yes ]; then
+#     PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+# else
+#     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+# fi
+# unset color_prompt force_color_prompt
+
+# # If this is an xterm set the title to user@host:dir
+# case "$TERM" in
+# xterm*|rxvt*)
+#     PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+#     ;;
+# *)
+#     ;;
+# esac
+
+# enable color support of ls and also add handy aliases
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    #alias dir='dir --color=auto'
+    #alias vdir='vdir --color=auto'
+
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+fi
+
+# colored GCC warnings and errors
+#export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
+# some more ls aliases
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+
+# Add an "alert" alias for long running commands.  Use like so:
+#   sleep 10; alert
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+
+# Alias definitions.
+# You may want to put all your additions into a separate file like
+# ~/.bash_aliases, instead of adding them here directly.
+# See /usr/share/doc/bash-doc/examples in the bash-doc package.
+
+if [ -f ~/.bash_aliases ]; then
+    . ~/.bash_aliases
+fi
+
+# enable programmable completion features (you don't need to enable
+# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
+# sources /etc/bash.bashrc).
+# if ! shopt -oq posix; then
+#   if [ -f /usr/share/bash-completion/bash_completion ]; then
+#     . /usr/share/bash-completion/bash_completion
+#   elif [ -f /etc/bash_completion ]; then
+#     . /etc/bash_completion
+#   fi
+# fi
+
+#SMJM
+# show Time
+## PS1='\e[32m\u@\h \e[35m\t \e[34m\w \e[0m\$ '<---- gomi setting
+
+
+##PS1='\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot) }\[\e[01;36m\]\u@\h\[\e[00m\]\[\e[01;34m\]\w\[\e[00m\][$(type __git_ps1 >/dev/null 2>&1 && __git_ps1 "(%s)")]\D{%FT%T}\n\$'
+
+alias pbcopy='xsel --clipboard --input'
+#SMJM
+
+export PATH=$HOME/ParaView-5.11.2-MPI-Linux-Python3.9-x86_64/bin:$PATH
+
+## SMJM openGL setting if the command is on, paraview dose not work.
+## ref
+## https://github.com/microsoft/WSL/issues/4793#issuecomment-577232999
+## https://github.com/microsoft/WSL/issues/6430#issuecomment-760989910
+
+#export DISPLAY=192.168.100.23:0.0
+#export DISPLAY=172.27.224.1:0
+#export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):0
+#export DISPLAY=localhost:0
+#export DISPLAY=$(grep nameserver /etc/resolv.conf | awk '{print $2}'):0
+#export DISPLAY=127.0.0.1:0
+#export LIBGL_ALWAYS_INDIRECT=1
+#export DISPLAY="$(grep nameserver /etc/resolv.conf | sed 's/nameserver //'):0"
+#export DISPLAY=$(awk '/nameserver / {print $2; exit}' /etc/resolv.conf 2>/dev/null):0
+#export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):0.0
+##wslg
+export DISPLAY=:0
+#export LIBGL_ALWAYS_INDIRECT=1
+
+
+# # Colors for customizing the prompt
+# ColorReset='\[\e[0m\]'
+# ColorRed='\[\e[0;31m\]'
+# ColorGreen='\[\e[0;32m\]'
+# ColorYellow='\[\e[0;33m\]'
+
+# # Function to display staged and unstaged changes
+# function git_changes {
+#   local staged
+#   local unstaged
+#   staged=$(git diff --cached --shortstat 2>/dev/null | tr -d '\n')
+#   unstaged=$(git diff --shortstat 2>/dev/null | tr -d '\n')
+#   if [ -n "$staged" ]; then
+#     echo -e " [Staged: $staged]"
+#   fi
+#   if [ -n "$unstaged" ]; then
+#     echo -e " [Unstaged: $unstaged]"
+#   fi
+# }
+
+# # Function to display Git branch name and commit information
+# function git_prompt {
+#   local branch
+#   branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+#   if [ "$branch" ]; then
+#     local commit_info
+#     commit_info=$(git log --oneline -1 2>/dev/null)
+#     echo -e " ($branch)${ColorYellow} $commit_info${ColorReset}"
+#   fi
+# }
+
+# # PS1 is the variable for the prompt you see every time you hit enter
+# export PS1="${ColorRed}\W${ColorGreen}\$(git_prompt)${ColorReset}\$(git_changes) :$ "
+
+
+# #ref https://github.com/andresgongora/synth-shell/issues/199
+# #checks to see if we are in a windows or linux dir
+# function isWinDir {
+#   case $PWD/ in
+#     /mnt/*) return $(true);;
+#     *) return $(false);;
+#   esac
+# }
+# # wrap the git command to either run windows git or linux
+# function git {
+#   if isWinDir
+#   then
+#     git.exe "$@"
+#   else
+#     /usr/bin/git "$@"
+#   fi
+# }
+# # Powerline-Go
+# # Reference: https://github.com/justjanne/powerline-go
+# GOPATH=$HOME/go
+# # function _update_ps1() {
+# #     PS1="$($GOPATH/bin/powerline-go -error $? -jobs $(jobs -p | wc -l))"
+
+# #     # Uncomment the following line to automatically clear errors after showing
+# #     # them once. This not only clears the error for powerline-go, but also for
+# #     # everything else you run in that shell. Don't enable this if you're not
+# #     # sure this is what you want.
+
+# #     #set "?"
+# # }
+
+# # if [ "$TERM" != "linux" ] && [ -f "$GOPATH/bin/powerline-go" ]; then
+# #     PROMPT_COMMAND="_update_ps1; $PROMPT_COMMAND"
+# # fi
+
+# INTERACTIVE_BASHPID_TIMER="/tmp/${USER}.START.$$"
+
+# PS0='$(echo $SECONDS > "$INTERACTIVE_BASHPID_TIMER")'
+
+# function _update_ps1() {
+#   local __ERRCODE=$?
+
+#   local __DURATION=0
+#   if [ -e $INTERACTIVE_BASHPID_TIMER ]; then
+#     local __END=$SECONDS
+#     local __START=$(cat "$INTERACTIVE_BASHPID_TIMER")
+#     __DURATION="$(($__END - ${__START:-__END}))"
+#     rm -f "$INTERACTIVE_BASHPID_TIMER"
+#   fi
+
+#   #PS1="$($GOPATH/bin/powerline-go -modules duration -duration $__DURATION -error $__ERRCODE -shell bash)"
+#   #PS1="$($GOPATH/bin/powerline-go -error $? -modules cwd,git,root -error $__ERRCODE -cwd-mode dironly -shell bash)"
+#    PS1="$($GOPATH/bin/powerline-go -error $? -newline -modules cwd,git,root,duration -duration $__DURATION -error $__ERRCODE -cwd-mode fancy  -shell bash) "
+# }
+
+# if [ "$TERM" != "linux" ] && [ -f "$GOPATH/bin/powerline-go" ]; then
+#   PROMPT_COMMAND="_update_ps1; $PROMPT_COMMAND"
+# fi
+
+
+alias tree="ls -R | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/   /' -e 's/-/|/'"
+
+## pip path
+export PATH="$PATH:/home/yujif1aero/.local/bin"
+
+
+
+alias cdpjroot='cd $(git rev-parse --show-toplevel)'
+
+## create emacs env file
+perl -wle \
+    'do { print qq/(setenv "$_" "$ENV{$_}")/ if exists $ENV{$_} } for @ARGV' \
+    PATH > ~/.emacs.d/shellenv.el
+
+
+
+if [ -f ~/.git-completion.bash ]; then
+    source ~/.git-completion.bash
+fi
+
+## Python
+venv_prompt() {
+  if [ -n "$VIRTUAL_ENV" ]; then
+    # パスの最後の部分だけを表示（例: /home/yuji/pytorch-test/.venv → .venv）
+    printf "(%s) " "$(basename "$VIRTUAL_ENV")"
+  fi
+}
+
+# プロンプト設定
+#PS1='$(venv_prompt)\u@\h:\w\$ '
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# === ここから .bashrc に追記 ===
+# Colors
+ColorReset='\[\e[0m\]'
+ColorRed='\[\e[0;31m\]'
+ColorGreen='\[\e[0;32m\]'
+
+# Git Username取得関数
+function join_by { local IFS="$1"; shift; echo "$*"; }
+function _ps1_git_username {
+  local git_users_array=`git config --global --get-all user.name`
+  git_users=`join_by , $git_users_array`
+  test "$git_users" == 'Yuji,Sam,Shimojima' && echo "🍜" && return
+  test "$git_users" && echo "$git_users" && return
+  echo "No Git User"
+}
+
+# Nix Shell判定用関数 (色指定はここでは行わず、文字だけを出力します)
+function nix_prompt {
+  if [ -n "$IN_NIX_SHELL" ]; then
+    echo -n "[nix: $name] "
+  fi
+}
+
+# プロンプト(PS1)の構築
+git_prompt_script=/usr/local/etc/bash_completion.d/git-prompt.sh
+if [ -s $git_prompt_script ]; then
+  source $git_prompt_script
+  export GIT_PS1_SHOWDIRTYSTATE=true
+  # nix_promptの前に明るい水色(\e[1;36m)を配置し、文字化けを防ぎます
+  export PS1='\[\e[1;36m\]$(nix_prompt)\[\e[0;31m\]\W\[\e[0;32m\] ($(_ps1_git_username "(%s)")$(__git_ps1 ":%s")) \[\e[0m\]:$ '
+else
+  export PS1='\[\e[1;36m\]$(nix_prompt)\[\e[0;31m\]\W\[\e[0m\] :$ '
+fi
+# ==============================
+# GUIで開きたい場合（WSLg環境）
+alias e='emacsclient -c -a ""'
+
+# ターミナル内で開きたい場合
+alias et='emacsclient -t -a ""'

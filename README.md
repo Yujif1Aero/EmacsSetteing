@@ -21,14 +21,14 @@ sudo apt install hub
 alias pjroot='cd $(git rev-parse --show-toplevel)'
 ```
 
-# emacs install
+# emacs install -> Please check emacs_installer.sh
 ```bash
 #sudo add-apt-repository ppa:kelleyk/emacs
-sudo apt update
+#sudo apt update
 #sudo apt install emacs28-nativecomp
-sudo apt install emacs 
-sudo apt install fcitx-mozc
-sudo apt install mozc-server mozc-utils-gui mozc-data emacs-mozc
+#sudo apt install emacs 
+#sudo apt install fcitx-mozc
+#sudo apt install mozc-server mozc-utils-gui mozc-data emacs-mozc
 ```
 
 
@@ -45,7 +45,10 @@ pip install compiledb
 compiledb make
 
 ```
-
+or
+```bash
+make clean; bear -- make
+```
 ## for installing key
 
 1. Emacsを開き、M-x package-install-file を実行します。
@@ -76,7 +79,7 @@ ref : https://github.com/joaotavora/eglot
 ## ccls(clangdよりも重い) けど優秀
 
 ```bash
-sudo apt install ccls
+sudo apt install ccls -> clang へ移行
 
 ```
 project root directry として選択した履歴は`~/.emacs.d/lsp-session-v1` に残る。 もしかしたら、プロジェクトルートに`.ccls-root`を置く必要があるかも。基本的に`M-x lsp`したあとに `i`と入力すれば、OK
@@ -105,16 +108,88 @@ I will use `os52` to share clip bord between local and sever.Or I set `(el-get-b
 node.js >> version 18
 ```bash
 sudo apt update
-sudo apt install nodejs npm
-curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-nvm --version
+# 1) nvm をインストール
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-nvm --version
+# 2) bash 設定を読み直す
+source ~/.bashrc
 
+# 3) nvm が使えるか確認
+command -v nvm
+
+# 4) Node.js の LTS 版をインストール
+nvm install --lts
+
+# 5) その LTS を使う
+nvm use --lts
+
+# 6) 確認
+node -v
+npm -v
+#nvm install 22
+#npm install -g @github/copilot-language-server
+npm -g --prefix ~/.emacs.d/.cache/copilot install @github/copilot-language-server
+```
+
+NOTE:
+```
 nvm install 22
 npm install -g @github/copilot-language-server
+これはする必要があります？
+
+必要性を確認しています。ポイントは 「Copilot Language Server に Node 22 が本当に必要か」 と 「npm グローバル導入が必須か」 の2点です。
+
+Thought for 1m 45s
+
+結論だけ言うと、
+
+Copilot を Emacs の copilot.el で使いたいなら、Node の更新は必要です
+
+でも npm install -g @github/copilot-language-server は必須ではありません
+
+理由はこうです。
+
+copilot.el の README では、@github/copilot-language-server には Node.js 22+ が必要 と書かれていて、導入手順としては M-x copilot-install-server → M-x copilot-login が案内されています。つまり、Emacs 側の導入フローを使うなら、手動でグローバル npm install しなくてもよい ということです。
+
+一方で、GitHub の copilot-language-server 公開リポジトリでは、npm install @github/copilot-language-server や npx @github/copilot-language-server --version の形が案内されていて、ローカル install や npx 実行も可能 です。なので、-g は「必須」ではなく「手動でグローバルに置きたいときの選択肢」 です。
+
+それと、あなたの今の Node は v18.20.8 でしたが、Node 18 はすでに EOL です。現在は v24 が Active LTS、v22 が Maintenance LTS なので、今から入れ直すなら nvm install --lts のほうが自然です。copilot.el の条件である 22+ も満たします。
+
+なので、あなたにはこの進め方をおすすめします。
+
+nvm install --lts
+nvm use --lts
+node -v
+npm -v
+
+そのあと Emacs で:
+
+M-x copilot-install-server
+
+M-x copilot-login
+
+これで十分です。npm install -g @github/copilot-language-server は、Emacs の自動導入がうまくいかないときだけ後から試せばOK です。
+
+手動でやるなら、順番はこうです。
+
+nvm install --lts
+nvm use --lts
+npm install -g @github/copilot-language-server
+
+つまり、あなたの質問への答えはこうです。
+
+nvm install 22
+→ ほぼ必要。ただし 22固定より --lts がおすすめ
+
+npm install -g @github/copilot-language-server
+→ 必須ではない。copilot.el を使うならまず M-x copilot-install-server を試すのがよい
+
+今すぐやるなら、まずはこれです。
+
+nvm install --lts
+nvm use --lts
+
+その次に Emacs 側で M-x copilot-install-server を実行してください。
 ```
 for windows user please refer to below URL
 https://nodejs.org/ja/download
@@ -176,16 +251,26 @@ GIT
 $sudo install /tmp/git /usr/local/bin
 ```
 
+Put below .wslgconfig into C:\Users\<あなたのユーザー名>\.wslgconfig
+
+```bash
+[system-distro-env]
+WESTON_RDP_DISABLE_HI_DPI_SCALING=true
+
+```
+
 ## python
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
-source $HOME/.cargo/env
+#source $HOME/.cargo/env
+uv tool install black
 ```
 
 ## Other compiler
 ```
-sudo apt update && sudo apt install -y texlive-full
+sudo apt update && sudo apt install -y texlive-full && sudo apt install -y libpng-dev zlib1g-dev libpoppler-glib-dev libpoppler-private-dev imagemagick
 sudo apt install -y build-essential gfortran-13 libopenmpi-dev
+sudo apt install bear
 ```
 
 - ref :
@@ -195,3 +280,4 @@ sudo apt install -y build-essential gfortran-13 libopenmpi-dev
 1. https://qiita.com/blue0513/items/acc962738c7f4da26656
 1. https://qiita.com/kari_tech/items/4754fac39504dccfd7be
 1. https://blog.misosi.ru/2017/01/17/osc52e-el/
+
