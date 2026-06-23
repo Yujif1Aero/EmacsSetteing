@@ -286,6 +286,23 @@
   :config
   (setq copilot-idle-delay 0.1))
 
+;; ==========================================
+;; Codex IDE
+;; ==========================================
+
+(leaf transient
+  :straight t
+  :leaf-defer t)
+
+(leaf codex-ide
+  :straight (codex-ide
+             :type git
+             :host github
+             :repo "dgillis/emacs-codex-ide"
+             :files ("*.el"))
+  :commands (codex-ide codex-ide-menu)
+  :bind (("C-c C-;" . codex-ide-menu)))
+
 (leaf clang-format :straight t :leaf-defer t :bind (("C-c C-_" . clang-format-region) ("C-c /" . clang-format-buffer)))
 
 ;; --- C-c d と C-c C-d でカレントディレクトリを移動 ---
