@@ -54,7 +54,7 @@
 
 ;; 基本パッケージ
 (leaf hydra :straight t :leaf-defer t)
-(leaf el-get :straight t :leaf-defer t :custom '((el-get-git-shallow-clone . t)))
+(leaf el-get :straight t :leaf-defer t :custom ((el-get-git-shallow-clone . t)))
 (leaf leaf :require t :init (leaf leaf-convert :straight t) (leaf leaf-tree :straight t :blackout t :custom (imenu-list-position . 'left)))
 (leaf blackout :straight t :config (leaf eldoc :blackout t))
 (leaf Libraries :config (leaf cl-lib :leaf-defer t) (leaf dash :straight t :leaf-defer t))
@@ -103,8 +103,14 @@
 ;; 句読点変換ショートカット設定
 (defconst kutoten-zenpunct-kv '(("。" . "．") ("、" . "，")))
 (defconst zenpunct-kutoten-kv '(("．" . "。") ("，" . "、")))
+
 (defun replace-kutoten-zenpunct-region (b e) (interactive "r") (replace-kv-region b e kutoten-zenpunct-kv))
+(defun replace-zenpunct-kutoten-region (b e)
+  (interactive "r")
+  ;; 逆変換も同じ API で用意し、定義済みの zenpunct-kutoten-kv を未使用のまま残さない。
+  (replace-kv-region b e zenpunct-kutoten-kv))
 (global-set-key "\C-x\C-m/" 'replace-kutoten-zenpunct-region)
+(global-set-key "\C-x\C-m\\" 'replace-zenpunct-kutoten-region)
 
 (leaf undo-tree :straight t :leaf-defer t :bind (("M-/" . undo-tree-redo)) :global-minor-mode global-undo-tree-mode)
 (leaf whitespace :straight t :leaf-defer t :global-minor-mode global-whitespace-mode :custom ((whitespace-style . '(face trailing tabs space-mark tab-mark))))
@@ -120,7 +126,9 @@
   :bind (("C-M-t" . elscreen-create) ("C-M-l" . elscreen-next) ("C-M-r" . elscreen-previous) ("C-M-c" . my/elscreen-kill-with-confirmation)))
 
 ;; 操作性・スクロール・windmove
-(xterm-mouse-mode 1)
+;; xterm-mouse-mode は端末用。GUI では不要な minor mode を起動しない。
+(unless (display-graphic-p)
+  (xterm-mouse-mode 1))
 (mouse-wheel-mode 1)
 (setq mouse-wheel-scroll-amount '(10 ((shift) . 1) ((control) . nil)))
 ;; ホイール加速は有効にして、長いバッファでは少ない操作で移動できるようにする。
@@ -255,7 +263,9 @@
 ;; (add-hook 'after-save-hook 'diff-hl-update)
 ;; (add-hook 'focus-in-hook 'diff-hl-update)
 
-(fringe-mode '(8 . 8))
+;; fringe は GUI フレームでだけ有効。端末起動時の不要な設定呼び出しを避ける。
+(when (display-graphic-p)
+  (fringe-mode '(8 . 8)))
 
 ;; shell-popの設定 (※重複排除済)
 (leaf shell-pop
@@ -272,8 +282,11 @@
             (define-key eshell-mode-map (kbd "<tab>") 'completion-at-point)))
 (defun eshell/cdpjroot ()
   "Change directory to the root of the Git repository in Eshell."
-  (let ((git-root (string-trim (shell-command-to-string "git rev-parse --show-toplevel"))))
-    (eshell/cd git-root)))
+  ;; Git 管理外では空文字へ cd してしまうため、終了コードを見て失敗時は何もしない。
+  (let ((git-root (string-trim (shell-command-to-string "git rev-parse --show-toplevel 2>/dev/null"))))
+    (if (string= git-root "")
+        (message "Not inside a Git repository")
+      (eshell/cd git-root))))
 
 (defun my/eshell-disable-helm ()
   "Disable helm completion in eshell."

@@ -18,16 +18,26 @@
              (string-match "microsoft" (shell-command-to-string "uname -a"))))))
 
 ;; 3. 環境別設定のロード
+(defun my/load-tex-config-after-startup ()
+  ;; AUCTeX/pdf-tools は重いため、通常編集の起動完了後に少し遅らせて読む。
+  ;; 起動完了前のロードを避けつつ、TeX を使う環境では従来通り設定が入る。
+  (add-hook 'emacs-startup-hook
+            (lambda ()
+              (run-at-time
+               1 nil
+               (lambda ()
+                 (load (expand-file-name "tex.el" user-emacs-directory)))))))
+
 (cond
  ((running-in-wsl-p)
   (message "Target Environment: WSL2")
   (load (expand-file-name "init_WSL2.el" user-emacs-directory))
-  (load (expand-file-name "tex.el" user-emacs-directory)))
+  (my/load-tex-config-after-startup))
  ((eq system-type 'windows-nt)
   (load (expand-file-name "init_windows.el" user-emacs-directory)))
  (t
   (load (expand-file-name "init_linux.el" user-emacs-directory))
-  (load (expand-file-name "tex.el" user-emacs-directory))))
+  (my/load-tex-config-after-startup)))
 
 
 
