@@ -299,9 +299,17 @@
              :type git
              :host github
              :repo "dgillis/emacs-codex-ide"
-             :files ("*.el"))
+             :files (:defaults "bin" "*.el"))
   :commands (codex-ide codex-ide-menu)
-  :bind (("C-c C-;" . codex-ide-menu)))
+  :bind (("C-c x" . codex-ide-menu)))
+
+(defun my/check-codex-cli ()
+  "Check whether Emacs can find the Codex CLI."
+  (interactive)
+  (let ((codex (executable-find "codex")))
+    (if codex
+        (message "codex found: %s" codex)
+      (message "codex not found in Emacs exec-path"))))
 
 (leaf clang-format :straight t :leaf-defer t :bind (("C-c C-_" . clang-format-region) ("C-c /" . clang-format-buffer)))
 
@@ -313,7 +321,8 @@
       (let ((dir (file-name-directory (buffer-file-name)))) (cd dir) (message "Changed cwd to: %s" dir))
     (message "Not visiting a file")))
 (global-set-key (kbd "C-c d") 'my/set-cwd-to-current-file)
-(global-set-key (kbd "C-c C-d") 'my/set-cwd-to-current-file)
+;; Codex IDE session mode uses C-c C-d for session diff.
+;;(global-set-key (kbd "C-c C-d") 'my/set-cwd-to-current-file)
 
 (leaf markdown-mode :straight t :leaf-defer t :mode ("\\.md\\'" . markdown-mode))
 
