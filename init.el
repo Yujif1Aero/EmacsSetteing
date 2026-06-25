@@ -11,9 +11,11 @@
 ;; 2. WSL環境判定
 (defun running-in-wsl-p ()
   "WSL環境かどうかを判定します。"
-  (or (let ((case-fold-search t))
-        (string-match "microsoft" (shell-command-to-string "uname -a")))
-      (file-exists-p "/proc/sys/fs/binfmt_misc/WSLInterop")))
+  ;; WSL2 では WSLInterop があれば外部プロセスなしで判定できるため、起動時の uname 呼び出しを最後の保険にする。
+  (or (file-exists-p "/proc/sys/fs/binfmt_misc/WSLInterop")
+      (and (executable-find "uname")
+           (let ((case-fold-search t))
+             (string-match "microsoft" (shell-command-to-string "uname -a"))))))
 
 ;; 3. 環境別設定のロード
 (cond

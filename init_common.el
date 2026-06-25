@@ -74,9 +74,23 @@
 (show-paren-mode t)
 (setq its-hira-period "．")
 (setq its-hira-comma "，")
-(defun replace-kv-region (l) (save-excursion (save-restriction (narrow-to-region b e) (format-replace-strings l))))
-(defun query-replace-strings (a) (dolist (i a) (goto-char b) (query-replace (car i) (cdr i))))
-(defun query-replace-kv-region (l) (save-excursion (save-restriction (narrow-to-region b e) (query-replace-strings l))))
+(defun replace-kv-region (b e l)
+  ;; lexical-binding 下で未束縛の b/e を参照しないよう、範囲を明示的に受け取る。
+  (save-excursion
+    (save-restriction
+      (narrow-to-region b e)
+      (format-replace-strings l))))
+(defun query-replace-strings (b a)
+  ;; 各置換を同じリージョン先頭から始めるため、呼び出し側から開始位置を渡す。
+  (dolist (i a)
+    (goto-char b)
+    (query-replace (car i) (cdr i))))
+(defun query-replace-kv-region (b e l)
+  ;; replace-kv-region と同じ範囲指定 API に揃え、対話置換でも未束縛変数を避ける。
+  (save-excursion
+    (save-restriction
+      (narrow-to-region b e)
+      (query-replace-strings b l))))
 
 (set-language-environment "Japanese")
 (prefer-coding-system 'utf-8)
@@ -89,7 +103,7 @@
 ;; 句読点変換ショートカット設定
 (defconst kutoten-zenpunct-kv '(("。" . "．") ("、" . "，")))
 (defconst zenpunct-kutoten-kv '(("．" . "。") ("，" . "、")))
-(defun replace-kutoten-zenpunct-region (b e) (interactive "r") (replace-kv-region kutoten-zenpunct-kv))
+(defun replace-kutoten-zenpunct-region (b e) (interactive "r") (replace-kv-region b e kutoten-zenpunct-kv))
 (global-set-key "\C-x\C-m/" 'replace-kutoten-zenpunct-region)
 
 (leaf undo-tree :straight t :leaf-defer t :bind (("M-/" . undo-tree-redo)) :global-minor-mode global-undo-tree-mode)
@@ -109,7 +123,7 @@
 (xterm-mouse-mode 1)
 (mouse-wheel-mode 1)
 (setq mouse-wheel-scroll-amount '(10 ((shift) . 1) ((control) . nil)))
-(setq mouse-wheel-progressive-speed nil)
+;; ホイール加速は有効にして、長いバッファでは少ない操作で移動できるようにする。
 (setq mouse-wheel-follow-mouse 't)
 (setq scroll-step 1)
 (setq scroll-conservatively 10000)
@@ -173,6 +187,8 @@
   :bind (("M-x" . helm-M-x)
          ("C-x C-f" . helm-find-files))
   :config
+  ;; Dired は通常の read-directory-name で起動させる。helm-mode が dired を包むと *helm-mode-dired* が残り、
+  ;; helm-keyboard-quit や helm-mouse-select-candidate が Helm セッション外で呼ばれることがあるため。
   (add-to-list 'helm-completing-read-handlers-alist '(dired . nil))
   (add-to-list 'helm-completing-read-handlers-alist '(dired-other-window . nil))
   (with-eval-after-load 'helm-files
