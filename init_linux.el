@@ -21,3 +21,14 @@
 ;; C-z で Emacs をサスペンドする
 (global-set-key (kbd "C-z") 'suspend-emacs)
 
+(require 'server)
+
+(unless (server-running-p)
+  (server-start))
+
+(when (and (boundp 'server-socket-dir)
+           server-socket-dir
+           (boundp 'server-name)
+           server-name)
+  (setenv "EMACS_SOCKET_NAME"
+          (expand-file-name server-name server-socket-dir)))

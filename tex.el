@@ -446,5 +446,3 @@
   ;; 環境によって C-_ が入りにくい保険
   (define-key latex-mode-map (kbd "C-c C-/") #'my/latexindent-region))
 
-;; （任意） .tikz を LaTeX-mode にしたいなら。既にやってるなら不要。
-(add-to-list 'auto-mode-alist '("\\.tikz\\'" . LaTeX-mode))

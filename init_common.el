@@ -173,6 +173,8 @@
   :bind (("M-x" . helm-M-x)
          ("C-x C-f" . helm-find-files))
   :config
+  (add-to-list 'helm-completing-read-handlers-alist '(dired . nil))
+  (add-to-list 'helm-completing-read-handlers-alist '(dired-other-window . nil))
   (with-eval-after-load 'helm-files
     (define-key helm-find-files-map (kbd "TAB") 'helm-execute-persistent-action)
     (define-key helm-read-file-map (kbd "TAB") 'helm-execute-persistent-action)
