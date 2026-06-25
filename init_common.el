@@ -357,6 +357,50 @@
 
 (leaf markdown-mode :straight t :leaf-defer t :mode ("\\.md\\'" . markdown-mode))
 
+(leaf org
+  :straight t
+  :leaf-defer t
+  :mode (("\\.org\\'" . org-mode))
+  :bind (("C-c a" . org-agenda)
+         ("C-c l" . org-store-link)
+         ("C-c c" . org-capture)
+         ("C-c n c" . org-capture))
+  :custom
+  (org-directory . "~/Documents/org")
+  (org-default-notes-file . "~/Documents/org/inbox.org")
+  (org-startup-indented . t)
+  (org-hide-leading-stars . t)
+  (org-log-done . (quote time))
+  :config
+  ;; Org の既定ディレクトリが無い環境でも capture/agenda をすぐ使えるようにする。
+  (make-directory org-directory t)
+  (unless (file-exists-p org-default-notes-file)
+    (write-region "" nil org-default-notes-file))
+  (setq org-agenda-files (list org-directory))
+  (setq org-capture-templates
+        (quote (("t" "Todo" entry (file+headline org-default-notes-file "Tasks")
+                 "* TODO %?\n  %U\n")
+                ("n" "Note" entry (file+headline org-default-notes-file "Notes")
+                 "* %?\n  %U\n")))))
+
+(leaf denote
+  :straight t
+  :leaf-defer t
+  :commands (denote denote-open-or-create denote-link denote-backlinks denote-dired)
+  :bind (("C-c n n" . denote)
+         ("C-c n o" . denote-open-or-create)
+         ("C-c n l" . denote-link)
+         ("C-c n b" . denote-backlinks)
+         ("C-c n d" . denote-dired))
+  :custom
+  (denote-directory . "~/Documents/notes")
+  (denote-known-keywords . (quote ("emacs" "work" "study" "idea")))
+  (denote-infer-keywords . t)
+  (denote-sort-keywords . t)
+  :config
+  ;; Denote の保存先を明示し、初回起動直後からノート作成できるようにする。
+  (make-directory denote-directory t))
+
 ;; 選択範囲を tab幅ぶん右/左にずらす
 (defun my/indent-shift-right (beg end)
   (interactive "r")
