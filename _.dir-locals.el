@@ -100,19 +100,15 @@
 ;;           (c++-mode . ((eval . (require 'lsp-mode) (lsp-deferred))))))
 
 
-((nil . ((eval . (add-hook 'lsp-mode-hook
-                           (lambda ()
-                             (when (derived-mode-p 'c++-mode)
-                               (setq lsp-file-watch-ignored
-                                     '("[/\\\\]\\.git$"
-                                       "[/\\\\]build$"
-                                       "[/\\\\]apps/[a-z]*"
-                                       "[/\\\\]examples$"
-                                       "[/\\\\]config$"
-                                       "[/\\\\]doc$"
-                                       "[/\\\\]hooks$"
-                                       "[/\\\\]tests$"
-                                       "[/\\\\]dist$"
-                                       "[/\\\\]node_modules$"
-                                       "[/\\\\]\\..*"
-                                       "\\`\\*.*\\.lock\\.json\\'")))))))))
+((nil . ((lsp-file-watch-ignored-directories . ("[/\\\\]\\.git$"
+                                                "[/\\\\]build$"
+                                                "[/\\\\]apps/[a-z]*"
+                                                "[/\\\\]examples$"
+                                                "[/\\\\]config$"
+                                                "[/\\\\]doc$"
+                                                "[/\\\\]hooks$"
+                                                "[/\\\\]tests$"
+                                                "[/\\\\]dist$"
+                                                "[/\\\\]node_modules$"
+                                                "[/\\\\]\\..*"))
+         (lsp-file-watch-ignored-files . ("\\`\\*.*\\.lock\\.json\\'")))))
