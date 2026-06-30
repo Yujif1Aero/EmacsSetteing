@@ -191,14 +191,12 @@
 (leaf helm
   :straight t
   :leaf-defer t
-  :global-minor-mode helm-mode
+  ;; helm-mode は completing-read/read-buffer 全体を差し替えて副作用が大きいため使わない。
+  ;; 必要な Helm UI だけを明示 bind し、Dired や通常の switch-to-buffer は標準挙動のままにする。
   :bind (("M-x" . helm-M-x)
-         ("C-x C-f" . helm-find-files))
+         ("C-x C-f" . helm-find-files)
+         ("C-x b" . helm-buffers-list))
   :config
-  ;; Dired は通常の read-directory-name で起動させる。helm-mode が dired を包むと *helm-mode-dired* が残り、
-  ;; helm-keyboard-quit や helm-mouse-select-candidate が Helm セッション外で呼ばれることがあるため。
-  (add-to-list 'helm-completing-read-handlers-alist '(dired . nil))
-  (add-to-list 'helm-completing-read-handlers-alist '(dired-other-window . nil))
   (with-eval-after-load 'helm-files
     (define-key helm-find-files-map (kbd "TAB") 'helm-execute-persistent-action)
     (define-key helm-read-file-map (kbd "TAB") 'helm-execute-persistent-action)
