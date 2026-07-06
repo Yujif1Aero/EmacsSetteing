@@ -131,13 +131,13 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 alias cdpjroot='cd $(git rev-parse --show-toplevel)'
 
-export PATH=/opt/openmpi-cuda/bin:$PATH
-export LD_LIBRARY_PATH=/opt/openmpi-cuda/lib:$LD_LIBRARY_PATH
-export OPAL_PREFIX=/opt/openmpi-cuda
+# export PATH=/opt/openmpi-cuda/bin:$PATH
+# export LD_LIBRARY_PATH=/opt/openmpi-cuda/lib:$LD_LIBRARY_PATH
+# export OPAL_PREFIX=/opt/openmpi-cuda
 
-export CUDA_HOME=/usr/local/cuda
-export PATH=$CUDA_HOME/bin:$PATH
-export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
+# export CUDA_HOME=/usr/local/cuda
+# export PATH=$CUDA_HOME/bin:$PATH
+# export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
 
 ### ROCM ###
 export ROCM_PATH=/home/ubuntu/leonardo/rocm
@@ -147,6 +147,13 @@ export HIP_CLANG_PATH=$ROCM_PATH/lib/llvm/bin
 export DEVICE_LIB_PATH=$ROCM_PATH/amdgcn/bitcode
 export PATH=$ROCM_PATH/bin:$ROCM_PATH/lib/llvm/bin:$PATH
 export LD_LIBRARY_PATH=$ROCM_PATH/lib:$ROCM_PATH/lib64:$LD_LIBRARY_PATH
+
+### ROCM-awere with ucx openMPI (TEST because this machine has only one GPU) ###
+##https://download.open-mpi.org/release/open-mpi/v5.0/openmpi-5.0.7.tar.gz
+##https://github.com/openucx/ucx.git git checkout v1.17.0
+export PATH=$HOME/work/openmpi-rocm/bin:$HOME/work/ucx-rocm/bin:$PATH
+export LD_LIBRARY_PATH=$HOME/work/openmpi-rocm/lib:$HOME/work/ucx-rocm/lib:/opt/rocm/lib:$LD_LIBRARY_PATH
+export OPAL_PREFIX=$HOME/work/openmpi-rocm
 
 ##ref https://datawokagaku.com/terminal_prompt_git/
 # Show staged/unstaged markers such as + and * in the prompt.
@@ -196,3 +203,7 @@ export LSCOLORS=ExGxFxdxCxDxDxaccxaeex
 git_completion_script=/usr/local/etc/bash_completion.d/git-completion.sh
 test -s $git_completion_script && source $git_completion_script
 # A more colorful prompt
+
+
+# Share history across all open terminal tabs and windows
+export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
