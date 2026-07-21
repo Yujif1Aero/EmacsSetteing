@@ -1,0 +1,57 @@
+{
+  "colorScheme": "dark",
+  "enableTelemetry": false,
+  "trustedWorkspaces": [
+    "/home/ubuntu"
+  ],
+  "toolPermission": "request-review",
+  "allowNonWorkspaceAccess": false,
+  "permissions": {
+    "allow": [
+      "command(pwd)",
+      "command(ls)",
+      "command(tree)",
+      "command(find)",
+      "command(grep)",
+      "command(rg)",
+      "command(which)",
+      "command(whereis)",
+      "command(file)",
+      "command(stat)",
+      "command(wc)",
+      "command(cat)",
+      "command(head)",
+      "command(tail)",
+      "command(sort)",
+      "command(uniq)",
+      "command(cut)",
+      "command(jq)",
+      "command(echo)",
+      "command(printf)",
+      "command(realpath)",
+      "command(readlink)",
+      "command(dirname)",
+      "command(basename)",
+      "command(du)",
+      "command(df)",
+      "command(mkdir)",
+      "command(emacsclient)",
+      "command(git (status|log|diff|show|branch|rev-parse|describe|remote|tag))",
+      "command(git (add|checkout|switch|restore|stash|fetch))"
+    ],
+    "ask": [
+      "command(git commit)",
+      "command(git merge)",
+      "command(git pull)"
+    ],
+    "deny": [
+      "command(git push)",
+      "command(git reset --hard)",
+      "command(git clean (-f|-df|-fd))",
+      "command(sudo)",
+      "command(curl)",
+      "command(wget)",
+      "command(rm (-rf|-fr))"
+    ]
+  }
+}

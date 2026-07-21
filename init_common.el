@@ -381,7 +381,7 @@
 ;;             (message "claude not found in Emacs exec-path"))))
 
 ;; ==========================================
-;; agent-shell (ACP): Claude を「端末TUI」ではなく通常の Emacs バッファに描画。
+;; agent-shell (ACP): Claude / Codex / Antigravity を通常の Emacs バッファに描画。
 ;; ==========================================
 ;; codex-ide と同じ ACP 方式なので、会話をバッファのように自由に遡れる/検索できる。
 ;; claude-code-ide(vterm/MCP)と併設し、用途で使い分ける。
@@ -390,13 +390,45 @@
 ;; 別途 npm ブリッジが必要:
 ;;   npm install -g @agentclientprotocol/claude-agent-acp
 
+;; Antigravity は公式 agy にまだ ACP がないため、非公式の agy-acp を介して接続する。
+;; https://github.com/openabdev/openab/tree/main/agy-acp
+(defconst my/agent-shell-antigravity-acp-command
+    (expand-file-name "~/.local/bin/agy-acp")
+    "Path to the ACP adapter for Antigravity CLI.")
+
+(defun my/agent-shell-antigravity-config ()
+    "Create an `agent-shell' configuration for Antigravity CLI."
+    (agent-shell-make-agent-config
+        :identifier 'antigravity
+        :mode-line-name "Antigravity"
+        :buffer-name "Antigravity"
+        :shell-prompt "Antigravity> "
+        :shell-prompt-regexp "Antigravity> "
+        :client-maker
+        (lambda (buffer)
+            (agent-shell--make-acp-client
+                :command my/agent-shell-antigravity-acp-command
+                :context-buffer buffer))
+        :install-instructions
+        "Install Google Antigravity CLI (agy) and the agy-acp adapter."))
+
+(defun my/agent-shell-start-antigravity ()
+    "Start Antigravity CLI through the agy-acp adapter."
+    (interactive)
+    (require 'agent-shell)
+    (agent-shell-start :config (my/agent-shell-antigravity-config)))
+
 ;; 依存 (acp / shell-maker) は agent-shell が自動で引き込む。
 (leaf agent-shell
     :straight t
     :commands (agent-shell agent-shell-anthropic-start-claude-code agent-shell-openai-start-codex)
     :bind (("C-c y" . agent-shell-anthropic-start-claude-code)
-              ("C-c x" . agent-shell-openai-start-codex))
+              ("C-c x" . agent-shell-openai-start-codex)
+              ("C-c G" . my/agent-shell-start-antigravity))
     :config
+    ;; M-x agent-shell のエージェント選択にも Antigravity を追加する。
+    (add-to-list 'agent-shell-agent-configs
+        #'my/agent-shell-antigravity-config t)
     ;; 既存の Claude ログイン認証を利用(APIキー不要)。値は関数呼び出しのため
     ;; パッケージ読み込み後 (:config) に設定してエラーを避ける。
     (when (fboundp 'agent-shell-anthropic-make-authentication)

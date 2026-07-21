@@ -1,16 +1,22 @@
-# Project instructions — .emacs.d
+# Global preferences
 
-Mirrors the global preferences in `~/.codex/AGENTS.md`.
+## Storing answers and outputs
 
-## Storing answers / outputs
+- Use `~/X-output` as the default output directory.
+- When asked to save, store, or keep an answer, or to produce a report,
+  summary, or write-up as a document, save it there as a dated Markdown file
+  named `YYYY-MM-DD-<short-topic>.md`.
+- If saving was not requested or clearly implied, answer in chat without
+  creating a file.
 
-- Default output store: `~/X-output`.
-- When I ask you to **save / store / keep** an answer, or to produce a
-  report, summary, or write-up as a document, save it there by default as a
-  dated Markdown file named `YYYY-MM-DD-<short-topic>.md`
-  (e.g. `2026-07-21-emacs-config-notes.md`), matching the existing outputs
-  already in that directory.
-- `~/X-output` is already a writable root (see `writable_roots` under
-  `[sandbox_workspace_write]` in `~/.codex/config.toml`).
-- If I don't explicitly ask to save, just answer in the chat as usual — only
-  persist to `~/X-output` when saving is requested (or clearly implied).
+## Language
+
+- Use English by default, even when the user writes some Japanese.
+- When the user asks for Japanese, for example by writing `日本語で`, respond
+  in Japanese.
+
+## Workspace instructions
+
+- Follow a workspace's `AGENTS.md` or `GEMINI.md` in addition to this global
+  file.
+- Preserve unrelated user changes when editing an existing workspace.
