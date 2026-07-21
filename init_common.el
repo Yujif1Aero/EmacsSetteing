@@ -340,6 +340,84 @@
             (message "codex found: %s" codex)
             (message "codex not found in Emacs exec-path"))))
 
+;; ==========================================
+;; Claude Code IDE
+;; ==========================================
+;; Codex 用の emacs-codex-ide と対になる、Claude Code CLI 連携。
+;; claude-code-ide.el は端末バックエンド (evterm) を必要とする。
+
+;; (leaf websocket
+;;     :straight t
+;;     :leaf-defer t)
+
+;; vterm: C 実装の高速端末。claude の重量級 TUI でも固まりにくい。
+;; ビルドに libvterm-dev(システムライブラリ)+ cmake + gcc が必要。
+;; (leaf vterm
+;;     :straight t
+;;     :leaf-defer t
+;;     :custom (vterm-max-scrollback . 10000))
+
+;; (leaf claude-code-ide
+;;     :straight (claude-code-ide
+;;                   :type git
+;;                   :host github
+;;                   :repo "manzaltu/claude-code-ide.el"
+;;                   :files (:defaults))
+;;     :commands (claude-code-ide claude-code-ide-menu)
+;;     :bind (("C-c Y" . claude-code-ide-menu))
+;;     :custom (claude-code-ide-terminal-backend . 'vterm)
+;;     :config
+;;     ;; Emacs 側のツール (ファイルを開く/差分表示など) を Claude Code に公開する。
+;;     (when (fboundp 'claude-code-ide-emacs-tools-setup)
+;;         (claude-code-ide-emacs-tools-setup)))
+
+;; (defun my/check-claude-cli ()
+;;     "Check whether Emacs can find the Claude Code CLI."
+;;     (interactive)
+;;     (let ((claude (executable-find "claude")))
+;;         (if claude
+;;             (message "claude found: %s" claude)
+;;             (message "claude not found in Emacs exec-path"))))
+
+;; ==========================================
+;; agent-shell (ACP): Claude を「端末TUI」ではなく通常の Emacs バッファに描画。
+;; ==========================================
+;; codex-ide と同じ ACP 方式なので、会話をバッファのように自由に遡れる/検索できる。
+;; claude-code-ide(vterm/MCP)と併設し、用途で使い分ける。
+;;   - じっくり読む/遡る          → agent-shell    (M-x agent-shell-anthropic-start-claude-code)
+;;   - Emacs情報を使った自律作業  → claude-code-ide (C-c Y)
+;; 別途 npm ブリッジが必要:
+;;   npm install -g @agentclientprotocol/claude-agent-acp
+
+;; 依存 (acp / shell-maker) は agent-shell が自動で引き込む。
+(leaf agent-shell
+    :straight t
+    :commands (agent-shell agent-shell-anthropic-start-claude-code)
+    :bind (("C-c y" . agent-shell-anthropic-start-claude-code))
+    :config
+    ;; 既存の Claude ログイン認証を利用(APIキー不要)。値は関数呼び出しのため
+    ;; パッケージ読み込み後 (:config) に設定してエラーを避ける。
+    (when (fboundp 'agent-shell-anthropic-make-authentication)
+        (setq agent-shell-anthropic-authentication
+            (agent-shell-anthropic-make-authentication :login t)))
+    ;; resume 時に会話全体を再表示する(既定 minimal はタイトルのみで過去ログが出ない)。
+    ;; 軽くしたい場合は 'first-last / 'last に変更可。
+    (setq agent-shell-session-restore-verbosity 'full)
+    ;; --- A案: セッション選択のときだけ helm を使う(全体の helm-mode は有効化しない) ---
+    ;; agent-shell のセッション一覧ピッカー呼び出し中だけ helm-mode を一時的に有効化し、
+    ;; 終わったら元へ戻す。既存の completing-read 操作感には影響しない。
+    (defun my/agent-shell-with-helm (orig &rest args)
+        "Run ORIG with `helm-mode' temporarily enabled for a readable list."
+        (if (bound-and-true-p helm-mode)
+            (apply orig args)
+            (helm-mode 1)
+            (unwind-protect (apply orig args)
+                (helm-mode -1))))
+    (dolist (fn '(agent-shell--prompt-select-session
+                     agent-shell--read-shell-buffer))
+        (when (fboundp fn)
+            (advice-add fn :around #'my/agent-shell-with-helm))))
+
 (leaf clang-format :straight t :leaf-defer t :bind (("C-c C-_" . clang-format-region) ("C-c /" . clang-format-buffer)))
 
 ;; --- C-c d と C-c C-d でカレントディレクトリを移動 ---

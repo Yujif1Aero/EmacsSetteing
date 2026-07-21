@@ -28,3 +28,4 @@ projects
 *.eld
 shellenv.el
 secrets
+projectile-bookmarks.eld
