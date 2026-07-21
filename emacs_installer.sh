@@ -31,8 +31,8 @@ sudo apt update
 echo "[6/7] install Emacs + Mozc (fcitx) + emacs-mozc"
 sudo apt install -y emacs
 sudo apt install -y fcitx-mozc
-sudo apt install -y mozc-server mozc-utils-gui mozc-data emacs-mozc
-
+sudo apt install -y mozc-server mozc-utils-gui mozc-data
+sudo apt install -y emacs-mozc emacs-mozc-bin
 echo "[7/7] verify"
 emacs --version | head -n 1
 apt-cache policy emacs | sed -n '1,20p'

@@ -29,6 +29,14 @@
 ;; C-z で Emacs をサスペンドする
 (global-set-key (kbd "C-z") 'suspend-emacs)
 
+;; --- 日本語入力: Mozc (Google日本語入力相当) ---
+;; C-\ で 半角英数 ⇔ 日本語 をトグルする。
+(add-to-list 'load-path "/usr/share/emacs/site-lisp/emacs-mozc")
+(when (require 'mozc nil t)
+  (setq default-input-method "japanese-mozc")
+  ;; 変換候補をエコーエリアに表示 (GUI/端末どちらでも安定)
+  (setq mozc-candidate-style 'echo-area))
+
 (require 'server)
 
 (defun my/start-server-after-startup ()
