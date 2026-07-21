@@ -215,3 +215,6 @@ alias eg="emacsclient -c -n -a ''"
 alias enw="emacsclient -nw -a ''"
 alias ekill="emacsclient -e '(kill-emacs)'"
 
+
+# Added by Antigravity CLI installer
+export PATH="/home/ubuntu/.local/bin:$PATH"
