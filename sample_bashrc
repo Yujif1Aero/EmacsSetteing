@@ -207,3 +207,11 @@ test -s $git_completion_script && source $git_completion_script
 
 # Share history across all open terminal tabs and windows
 export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
+
+
+## emacs alias
+alias e="emacsclient -n -a ''"
+alias eg="emacsclient -c -n -a ''"
+alias enw="emacsclient -nw -a ''"
+alias ekill="emacsclient -e '(kill-emacs)'"
+
