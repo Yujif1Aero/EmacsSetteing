@@ -508,3 +508,25 @@
                ("C-c F" . hs-hide-all)        ; ファイル全体のブロックをすべて折りたたみ
                ("C-c A" . hs-show-all))))     ; ファイル全体のブロックをすべて展開 (All)
 
+;; ==========================================
+;; 時間表示
+;; ==========================================
+(defvar my/header-line-clock-timer nil)
+
+(defun my/date-time-string ()
+    (format-time-string "%Y-%m-%d %H:%M"))
+
+(setq global-mode-string
+      (delq 'display-time-string global-mode-string))
+(display-time-mode -1)
+
+(defun my/tab-bar-date-time ()
+    (concat " " (my/date-time-string) " "))
+
+(setq tab-bar-format '(my/tab-bar-date-time))
+(tab-bar-mode 1)
+
+(when (timerp my/header-line-clock-timer)
+    (cancel-timer my/header-line-clock-timer))
+(setq my/header-line-clock-timer
+      (run-at-time t 60 #'force-mode-line-update t))
