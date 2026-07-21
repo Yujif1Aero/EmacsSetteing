@@ -27,20 +27,50 @@
 (when (display-graphic-p)
   (set-face-attribute 'default nil :height 140)
   (set-scroll-bar-mode nil)
-  (set-fringe-mode 8))
+  (set-fringe-mode 8)
+  ;; --- 日本語フォント設定 (X/WSLg GUI 用) ---
+  ;; インストール済みのものを上から順に探して割り当てる。
+  (let ((jp-font (seq-find (lambda (f) (member f (font-family-list)))
+                           '("Noto Sans CJK JP" "Noto Sans JP"
+                             "BIZ UDGothic" "Yu Gothic" "Meiryo"))))
+    (when jp-font
+      (dolist (charset '(japanese-jisx0208 japanese-jisx0212
+                         katakana-jisx0201 kana han cjk-misc symbol))
+        (set-fontset-font t charset (font-spec :family jp-font)))
+      ;; 日本語入力・表示時の既定コーディングを UTF-8 に統一
+      (set-language-environment "Japanese")
+      (prefer-coding-system 'utf-8))))
+
+;; --- 日本語入力: Mozc (Google日本語入力相当) ---
+;; C-\ で 半角英数 ⇔ 日本語 をトグルする。
+(add-to-list 'load-path "/usr/share/emacs/site-lisp/emacs-mozc")
+(when (require 'mozc nil t)
+  (setq default-input-method "japanese-mozc")
+  ;; 変換候補をエコーエリアに表示 (GUI/端末どちらでも安定)
+  (setq mozc-candidate-style 'echo-area))
 
 (require 'server)
 (unless (server-running-p) (server-start))
 ;; --- クリップボード連携 (tmux 対応版 OSC 52) ---
 (defun my/copy-to-clipboard (text)
-  "OSC 52 を使い、tmux 越しでも Windows へコピーする。日本語対応。"
+  "テキストを Windows のクリップボードへコピーする。日本語対応。
+GUI (X/WSLg) では clip.exe に流し込み、端末では OSC 52 を使う。"
   (condition-case nil
-      (let* ((encoded-text (encode-coding-string text 'utf-8))
-             (b64-text (base64-encode-string encoded-text t))
-             (osc52-string (if (getenv "TMUX")
-                               (format "\ePtmux;\e\e]52;c;%s\a\e\\" b64-text)
-                             (format "\e]52;c;%s\a" b64-text))))
-        (send-string-to-terminal osc52-string))
+      (if (display-graphic-p)
+          ;; --- GUI (X/WSLg): 端末が無いので OSC 52 は届かない ---
+          ;; clip.exe に UTF-16LE で渡すことで日本語も確実にコピーする。
+          (let ((coding-system-for-write 'utf-16le-with-signature)
+                (process-connection-type nil))
+            (let ((proc (start-process "clip" nil "clip.exe")))
+              (process-send-string proc text)
+              (process-send-eof proc)))
+        ;; --- 端末: OSC 52 (tmux 越しにも対応) ---
+        (let* ((encoded-text (encode-coding-string text 'utf-8))
+               (b64-text (base64-encode-string encoded-text t))
+               (osc52-string (if (getenv "TMUX")
+                                 (format "\ePtmux;\e\e]52;c;%s\a\e\\" b64-text)
+                               (format "\e]52;c;%s\a" b64-text))))
+          (send-string-to-terminal osc52-string)))
     (error nil)))
 
 ;; ==========================================
