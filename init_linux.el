@@ -49,3 +49,8 @@
                (expand-file-name server-name server-socket-dir))))))
 
 (add-hook 'emacs-startup-hook #'my/start-server-after-startup)
+
+(setenv "EMACS_SOCKET_NAME" "/run/user/1000/emacs/server")
+(setenv "EMACS_SERVER_FILE" "/run/user/1000/emacs/server")
+(setenv "XDG_RUNTIME_DIR" "/run/user/1000")
+
