@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "additionalDirectories": [
+      "/home/ubuntu/X-output"
+    ],
+    "allow": [
+      "Bash(rg:*)",
+      "Bash(ls:*)",
+      "Bash(env:*)",
+      "Bash(head:*)",
+      "Bash(emacsclient:*)",
+      "Bash(perl -0pi -e:*)"
+    ]
+  }
+}

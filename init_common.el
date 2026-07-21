@@ -323,14 +323,15 @@
     :straight t
     :leaf-defer t)
 
-(leaf codex-ide
-    :straight (codex-ide
-                  :type git
-                  :host github
-                  :repo "dgillis/emacs-codex-ide"
-                  :files (:defaults "bin" "*.el"))
-    :commands (codex-ide codex-ide-menu)
-    :bind (("C-c x" . codex-ide-menu)))
+;; 【無効化】codex は agent-shell(ACP)へ移行。残しておくので戻すときはコメント解除。
+;; (leaf codex-ide
+;;     :straight (codex-ide
+;;                   :type git
+;;                   :host github
+;;                   :repo "dgillis/emacs-codex-ide"
+;;                   :files (:defaults "bin" "*.el"))
+;;     :commands (codex-ide codex-ide-menu)
+;;     :bind (("C-c x" . codex-ide-menu)))
 
 (defun my/check-codex-cli ()
     "Check whether Emacs can find the Codex CLI."
@@ -392,14 +393,19 @@
 ;; 依存 (acp / shell-maker) は agent-shell が自動で引き込む。
 (leaf agent-shell
     :straight t
-    :commands (agent-shell agent-shell-anthropic-start-claude-code)
-    :bind (("C-c y" . agent-shell-anthropic-start-claude-code))
+    :commands (agent-shell agent-shell-anthropic-start-claude-code agent-shell-openai-start-codex)
+    :bind (("C-c y" . agent-shell-anthropic-start-claude-code)
+              ("C-c x" . agent-shell-openai-start-codex))
     :config
     ;; 既存の Claude ログイン認証を利用(APIキー不要)。値は関数呼び出しのため
     ;; パッケージ読み込み後 (:config) に設定してエラーを避ける。
     (when (fboundp 'agent-shell-anthropic-make-authentication)
         (setq agent-shell-anthropic-authentication
             (agent-shell-anthropic-make-authentication :login t)))
+    ;; codex も既存のログイン認証を利用。別途ブリッジ codex-acp が PATH に必要。
+    (when (fboundp 'agent-shell-openai-make-authentication)
+        (setq agent-shell-openai-authentication
+            (agent-shell-openai-make-authentication :login t)))
     ;; resume 時に会話全体を再表示する(既定 minimal はタイトルのみで過去ログが出ない)。
     ;; 軽くしたい場合は 'first-last / 'last に変更可。
     (setq agent-shell-session-restore-verbosity 'full)

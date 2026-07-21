@@ -1,0 +1,177 @@
+# ============================================================
+# 一般的な閲覧・検索コマンド：確認なしで許可
+# ============================================================
+
+prefix_rule(
+    pattern = [[
+        "pwd",
+        "ls",
+        "tree",
+        "find",
+        "grep",
+        "rg",
+        "which",
+        "whereis",
+        "file",
+        "stat",
+        "wc",
+        "cat",
+        "head",
+        "tail",
+        "sort",
+        "uniq",
+        "cut",
+        "jq",
+        "echo",
+        "printf",
+        "realpath",
+        "readlink",
+        "dirname",
+        "basename",
+        "du",
+        "df",
+        "mkdir",
+    ]],
+    decision = "allow",
+    justification = "Allow routine inspection and search commands",
+)
+
+# ============================================================
+# Git：参照系は確認なし
+# ============================================================
+
+prefix_rule(
+    pattern = [
+        "git",
+        [
+            "status",
+            "log",
+            "diff",
+            "show",
+            "branch",
+            "rev-parse",
+            "describe",
+            "remote",
+            "tag",
+        ],
+    ],
+    decision = "allow",
+    justification = "Allow read-only Git commands",
+)
+
+# ============================================================
+# Git：ローカル操作は確認なし
+# ============================================================
+
+prefix_rule(
+    pattern = [
+        "git",
+        [
+            "add",
+            "checkout",
+            "switch",
+            "restore",
+            "stash",
+            "fetch",
+        ],
+    ],
+    decision = "allow",
+    justification = "Allow selected local Git operations",
+)
+
+# ============================================================
+# Git：実行前に確認
+# ============================================================
+
+prefix_rule(
+    pattern = ["git", "commit"],
+    decision = "prompt",
+    justification = "Creating a commit requires confirmation",
+)
+
+prefix_rule(
+    pattern = ["git", "merge"],
+    decision = "prompt",
+    justification = "Merging branches requires confirmation",
+)
+
+prefix_rule(
+    pattern = ["git", "pull"],
+    decision = "prompt",
+    justification = "Git pull may merge or rebase remote changes",
+)
+
+# ============================================================
+# Git：禁止
+# ============================================================
+
+# 通常のpushもforce pushもすべて禁止
+prefix_rule(
+    pattern = ["git", "push"],
+    decision = "forbidden",
+    justification = "Run git push manually after reviewing the changes",
+)
+
+prefix_rule(
+    pattern = ["git", "reset", "--hard"],
+    decision = "forbidden",
+    justification = "Use git status and git diff, then run reset manually if necessary",
+)
+
+# Claude Codeの Bash(git clean -f *) に相当
+prefix_rule(
+    pattern = ["git", "clean", "-f"],
+    decision = "forbidden",
+    justification = "git clean -f can permanently delete untracked files",
+)
+
+# オプション順序違いも禁止
+prefix_rule(
+    pattern = ["git", "clean", "-df"],
+    decision = "forbidden",
+    justification = "git clean can permanently delete untracked files",
+)
+
+prefix_rule(
+    pattern = ["git", "clean", "-fd"],
+    decision = "forbidden",
+    justification = "git clean can permanently delete untracked files",
+)
+
+# ============================================================
+# システム・外部通信系：禁止
+# ============================================================
+
+prefix_rule(
+    pattern = ["sudo"],
+    decision = "forbidden",
+    justification = "Run administrative commands manually",
+)
+
+prefix_rule(
+    pattern = ["curl"],
+    decision = "forbidden",
+    justification = "Use a manually reviewed download method instead",
+)
+
+prefix_rule(
+    pattern = ["wget"],
+    decision = "forbidden",
+    justification = "Use a manually reviewed download method instead",
+)
+
+# ============================================================
+# 危険な削除：禁止
+# ============================================================
+
+prefix_rule(
+    pattern = ["rm", "-rf"],
+    decision = "forbidden",
+    justification = "Recursive forced deletion must be run manually",
+)
+
+prefix_rule(
+    pattern = ["rm", "-fr"],
+    decision = "forbidden",
+    justification = "Recursive forced deletion must be run manually",
+)
