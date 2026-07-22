@@ -31,7 +31,12 @@
 (setq straight-repository-branch "develop")
 (setq straight-vc-git-default-clone-depth 1)
 ;; 【重要】起動時の変更チェックを最小限にして爆速化
-(setq straight-check-for-modifications '(check-hashes find-when-checking))
+;; Windows は check-hashes(全パッケージのファイルをハッシュ計算)が特に重いため、
+;; 保存時のみチェックする check-on-save に切り替える。Linux/WSL は従来どおり。
+(setq straight-check-for-modifications
+      (if (eq system-type 'windows-nt)
+          '(check-on-save find-when-checking)
+        '(check-hashes find-when-checking)))
 
 (defvar bootstrap-version)
 (let ((bootstrap-file
