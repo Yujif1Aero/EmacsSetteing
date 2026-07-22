@@ -16,11 +16,18 @@
   (setq magit-git-global-arguments 
         (append magit-git-global-arguments '("-c" "core.editor=notepad.exe"))))
 
-;; (setq select-enable-clipboard t)
-;; (setq select-enable-primary t)
-(setq select-enable-clipboard nil)
-(setq select-enable-primary nil)
-(setq interprogram-paste-function nil)
+;; --- クリップボード連携 ---
+;; GUI(WSLg/X)では WSLg が X の CLIPBOARD を Windows のクリップボードへ橋渡しするので、
+;; 標準の連携を有効化する。→ C-y で Windows から貼り付け、キル/ヤンクも Windows と同期する。
+;; 端末では自動連携は使わず、明示的な OSC52 コピー(C-c c)を使う。
+(if (display-graphic-p)
+    (progn
+      (setq select-enable-clipboard t)
+      (setq select-enable-primary t)
+      (setq interprogram-paste-function #'gui-selection-value))
+  (setq select-enable-clipboard nil)
+  (setq select-enable-primary nil)
+  (setq interprogram-paste-function nil))
 (setq frame-resize-pixelwise t)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
