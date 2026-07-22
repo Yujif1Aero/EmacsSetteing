@@ -1,7 +1,7 @@
 {
   "permissions": {
     "additionalDirectories": [
-      "/home/ubuntu/X-output"
+      "~/X-output"
     ],
     "allow": [
       "Bash(pwd:*)",

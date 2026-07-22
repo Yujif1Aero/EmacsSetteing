@@ -2,7 +2,7 @@
   "colorScheme": "dark",
   "enableTelemetry": false,
   "trustedWorkspaces": [
-    "/home/ubuntu"
+    "~"
   ],
   "toolPermission": "request-review",
   "allowNonWorkspaceAccess": false,
