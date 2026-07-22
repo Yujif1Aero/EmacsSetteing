@@ -93,3 +93,24 @@ GUI (X/WSLg) では clip.exe に流し込み、端末では OSC 52 を使う。"
 
 (global-set-key (kbd "C-c c") #'my/copy-region-to-clipboard)
 (message "init_WSL2.el has been loaded successfully.")
+
+
+;; ==========================================
+;;  emacs をGUIで開くと文字が小さくなりすぎるのを解消する．ref:https://www.ncaq.net/2024/12/31/14/33/29/
+;; ==========================================
+(leaf *font
+  :init
+  (defun font-setup ()
+    (set-face-attribute
+     'default
+     nil
+     :family "HackGen Console NF"
+     ;; 2画面分割でだいたい横120文字を表示できるフォントサイズにする。
+     ;; フルHDと4Kを想定。
+     :height (if (<= (frame-pixel-width) 1920) 180 220))
+    (set-fontset-font t 'unicode (font-spec :name "HackGen Console NF") nil 'append)
+    (unless (eq system-type 'darwin)
+      (set-fontset-font t '(#x1F000 . #x1FAFF) (font-spec :name "Noto Color Emoji") nil 'append)))
+  ;; `frame-pixel-width'がフレーム作成後でないと実用的な値を返さないので、
+  ;; 初期化後にフォントサイズを設定します。
+  :hook (window-setup-hook . font-setup))

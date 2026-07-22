@@ -1,4 +1,6 @@
-# --- 基本設定 ---
+# 外部Xサーバ(VcXsrv等)向けの上書き。WSLg内蔵ディスプレイ(DISPLAY=:0, 96dpi)を使うため無効化。
+# これを有効にすると外部Xサーバの誤ったDPI(50dpi)でフォントが極小・画面が巨大になる。
+# export DISPLAY=$(/usr/sbin/ip route show | grep default | awk '{print $3}'):0.0# --- 基本設定 ---
 export DISPLAY=:0
 alias gterm="/usr/bin/gnome-terminal"
 
