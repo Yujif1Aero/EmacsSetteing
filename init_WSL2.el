@@ -29,7 +29,23 @@
 ;; 端末(-nw)だけで使いたい場合のみ明示コピー(C-c c / OSC52)を利用する。
 (setq select-enable-clipboard t)
 (setq select-enable-primary t)
+
+;; GUI (X) フレームでのみ xclip を使う。端末フレームでは走らせない。
+(when (display-graphic-p)
+  (leaf xclip
+    :require t
+    :straight t
+    :config
+      (xclip-mode 1)))
+
+
 (setq interprogram-paste-function #'gui-selection-value)
+;; clipetty は interprogram-cut-function を :around でラップし、内部で必ず
+;; (funcall orig-fun string) と元の関数へ委譲する(clipetty.el:166)。
+;; 既定が nil だと「Symbol's function definition is void: nil」で落ちるため、
+;; 標準の gui-select-text を明示して常に非 nil にしておく。
+;; (GUI では X クリップボードへ、端末では clipetty が OSC52 送出後に no-op で委譲)
+(setq interprogram-cut-function #'gui-select-text)
 (setq frame-resize-pixelwise t)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
@@ -96,27 +112,6 @@
 
 (require 'server)
 (unless (server-running-p) (server-start))
-;; --- クリップボード連携 (tmux 対応版 OSC 52) ---
-(defun my/copy-to-clipboard (text)
-  "テキストを Windows のクリップボードへコピーする。日本語対応。
-GUI (X/WSLg) では clip.exe に流し込み、端末では OSC 52 を使う。"
-  (condition-case nil
-      (if (display-graphic-p)
-          ;; --- GUI (X/WSLg): 端末が無いので OSC 52 は届かない ---
-          ;; clip.exe に UTF-16LE で渡すことで日本語も確実にコピーする。
-          (let ((coding-system-for-write 'utf-16le-with-signature)
-                (process-connection-type nil))
-            (let ((proc (start-process "clip" nil "clip.exe")))
-              (process-send-string proc text)
-              (process-send-eof proc)))
-        ;; --- 端末: OSC 52 (tmux 越しにも対応) ---
-        (let* ((encoded-text (encode-coding-string text 'utf-8))
-               (b64-text (base64-encode-string encoded-text t))
-               (osc52-string (if (getenv "TMUX")
-                                 (format "\ePtmux;\e\e]52;c;%s\a\e\\" b64-text)
-                               (format "\e]52;c;%s\a" b64-text))))
-          (send-string-to-terminal osc52-string)))
-    (error nil)))
 
 ;; ==========================================
 ;; tmux/ターミナル環境での自動クリップボード同期を強制遮断
@@ -124,22 +119,23 @@ GUI (X/WSLg) では clip.exe に流し込み、端末では OSC 52 を使う。"
 ;; NOTE: `daemonp' を条件に加える。デーモン起動時は (display-graphic-p) が nil のため、
 ;; この遮断が誤って走り interprogram-paste-function を nil に潰していた(=eg フレームで
 ;; クリップボード貼り付け不可の原因)。純粋な端末専用 emacs(-nw かつ非デーモン)でのみ遮断する。
+;; NOTE: interprogram-cut-function は nil にしない。clipetty が :around で委譲先に
+;; するため、nil にすると (funcall nil) で落ちる。端末での送信は clipetty が担う。
 (unless (or (display-graphic-p) (daemonp))
-  (setq xterm-select-enable-clipboard nil)
-  (setq interprogram-paste-function nil)
-  (setq interprogram-cut-function nil))
+  (setq interprogram-paste-function nil))
 
-;; 選択範囲をWindowsのクリップボードへ明示的に送るショートカット (例: C-c c)
-(defun my/copy-region-to-clipboard (beg end)
-  "選択範囲をOSC 52経由でWindowsのクリップボードにコピーする。"
-  (interactive "r")
-  (if (use-region-p)
-      (let ((text (buffer-substring-no-properties beg end)))
-        (my/copy-to-clipboard text)
-        (message "クリップボードにコピーしました！"))
-    (message "範囲が選択されていません。")))
+;; --- 端末(-nw)用クリップボード自動同期: clipetty ---
+;; 端末フレームでキル(M-w / C-w / C-k …)するたびに OSC 52 で Windows クリップボードへ
+;; 自動送信する。tmux / ssh の入れ子も clipetty が自動処理する。
+;; global-clipetty-mode はフレーム種別を見て動くため、GUI(WSLg)フレームでは何もしない。
+;; → デーモン1本で GUI と端末を両方開く構成でも安全に共存する。
+;; コピーは clipetty(端末) と native 連携(GUI) が自動で担うため、明示コピー用の
+;; 手書き関数・C-c c バインドは廃止した。
+(leaf clipetty
+  :straight t
+  :config
+  (global-clipetty-mode 1))
 
-(global-set-key (kbd "C-c c") #'my/copy-region-to-clipboard)
 (message "init_WSL2.el has been loaded successfully.")
 
 
