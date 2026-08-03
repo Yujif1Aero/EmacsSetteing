@@ -1,22 +1,34 @@
-(leaf xclip
-;;  :ensure t
+;;; -*- coding: utf-8 -*-
+;;; init_linux.el --- Linux / SSH 端末向け設定 -*- lexical-binding: t -*-
 
-  :require t
-  :straight t
-  :config
-  ;; xclip-mode を有効にする
-  (xclip-mode 1))
-
-;; (when (display-graphic-p)
-;;   (leaf xclip
-;;     :require t
-;;     :straight t
-;;     :config
-;;     (xclip-mode 1)))
-
-
+;; --- クリップボード連携 ---
+;; このマシンは SSH 越しの端末(-nw)で使うことが多い。
+;; 端末には X が無く、DISPLAY が SSH 転送先(実在しない X server)を指すため、
+;; xclip を無条件に有効化すると C-y のたびに "Can't open display" になる。
+;; 対策:
+;;   * xclip は GUI フレームのときだけ有効化する(端末では読み込まない)。
+;;   * 端末(-nw)では clipetty が kill を OSC 52 で接続元PCのクリップボードへ送る。
+;;     → M-w / C-w がそのままローカルのクリップボードにコピーされる。
+;;   * 端末→Emacs への貼り付けは端末側のペースト(Ctrl+Shift+V 等)を使う。
+;;     C-y は Emacs 自身の kill-ring から貼れる(xclip 不要)。
 (setq select-enable-clipboard t)
 (setq select-enable-primary t)
+
+;; GUI (X) フレームでのみ xclip を使う。端末フレームでは走らせない。
+(when (display-graphic-p)
+  (leaf xclip
+    :require t
+    :straight t
+    :config
+    (xclip-mode 1)))
+
+;; 端末(-nw)向け: clipetty が kill を OSC 52 経由でローカルのクリップボードへ送る。
+;; clipetty は端末フレームのときだけ OSC 52 を送るので GUI フレームには干渉しない。
+;; tmux / screen の passthrough も自動対応。
+(leaf clipetty
+  :require t
+  :straight t
+  :global-minor-mode global-clipetty-mode)
 
 (leaf eshell-git-prompt
   ;; :ensure t
@@ -61,4 +73,3 @@
 (setenv "EMACS_SOCKET_NAME" "/run/user/1000/emacs/server")
 (setenv "EMACS_SERVER_FILE" "/run/user/1000/emacs/server")
 (setenv "XDG_RUNTIME_DIR" "/run/user/1000")
-
