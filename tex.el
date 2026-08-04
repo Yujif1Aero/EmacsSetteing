@@ -358,7 +358,19 @@
   (add-hook 'pdf-view-mode-hook (lambda () (display-line-numbers-mode -1)))
   (add-hook 'pdf-view-mode-hook #'pdf-sync-minor-mode)
 
-  (setq pdf-view-midnight-colors '("#ebdbb2" . "#282828")))
+  (setq pdf-view-midnight-colors '("#ebdbb2" . "#282828"))
+
+  ;; --- VS Code 風レイアウト: PDF は常に右側のウィンドウに表示する ---
+  ;; ソース(tex)を左、PDF を右に固定し、コンパイル時に上下分割にならないようにする。
+  (add-to-list 'display-buffer-alist
+               '("\\.pdf\\'"
+                 (display-buffer-reuse-window display-buffer-in-side-window)
+                 (side . right)
+                 (window-width . 0.5)
+                 (reusable-frames . visible)))
+  ;; 幅が広い時に AUCTeX のバッファ分割も左右優先にする
+  (setq split-height-threshold nil
+        split-width-threshold 120))
 ;;; --- latexindent: 手動整形コマンド（TeX / TikZ 用） -------------------------
 
 (defgroup my-latexindent nil
