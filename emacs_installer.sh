@@ -21,11 +21,21 @@ echo "[4/7] add Emacs 30.x PPA and update"
 sudo add-apt-repository -y ppa:ubuntuhandbook1/emacs
 sudo apt update
 
-echo "[5/7] install Emacs + Mozc (fcitx) + emacs-mozc"
+echo "[5/7] install Emacs + Japanese input (fcitx5 + Mozc) + emacs-mozc"
 sudo apt install -y emacs
-sudo apt install -y fcitx-mozc
+# Japanese input: fcitx5 (NOT the obsolete fcitx v4 'fcitx-mozc', which breaks on
+# GNOME Wayland). fcitx5 is what this machine used before.
+sudo apt install -y fcitx5 fcitx5-mozc fcitx5-config-qt \
+                    fcitx5-frontend-gtk3 fcitx5-frontend-gtk4 \
+                    fcitx5-frontend-qt5 fcitx5-frontend-qt6
 sudo apt install -y mozc-server mozc-utils-gui mozc-data
 sudo apt install -y emacs-mozc emacs-mozc-bin
+# make fcitx5 the active IM framework (writes ~/.xinputrc as the invoking user)
+im-config -n fcitx5 || true
+# NOTE: if the obsolete fcitx v4 is still installed from an older run, remove it
+#       manually AFTER simulating (it must not drag in desktop packages):
+#         sudo apt-get -s purge 'fcitx' 'fcitx-*' 'libfcitx-*'   # review output
+#         sudo apt      purge   'fcitx' 'fcitx-*' 'libfcitx-*'
 
 echo "[6/7] LaTeX toolchain + pdf-tools(epdfinfo) build deps (for AUCTeX/pdf-tools workflow)"
 # latexmk = C-c C-c の既定コンパイラ, 残りは M-x pdf-tools-install で epdfinfo をビルドするのに必要
