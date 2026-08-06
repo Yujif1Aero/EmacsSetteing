@@ -21,12 +21,89 @@ sudo apt install hub
 alias pjroot='cd $(git rev-parse --show-toplevel)'
 ```
 
-# emacs install -> Please check emacs_installer.sh
+# Emacs LaTeX / Overleaf environment setup
+
+このリポジトリ同梱のスクリプトで、Emacs 30 + 日本語入力 + LaTeX/PDF + Overleaf 同期 +
+スペル/文法チェックを構築する手順。実行順は次のとおり。
+
+## 1. Emacs 30 本体 + 日本語入力(fcitx5) + LaTeX ツール
+```bash
+bash emacs_installer.sh
+```
+- PPA `ppa:ubuntuhandbook1/emacs` から Emacs 30 を導入。
+- 併せて `fcitx5` + `fcitx5-mozc`（日本語入力）、`latexmk` と pdf-tools のビルド依存も導入。
+- 内部で `emacs_uninstaller.sh` を呼んで既存 Emacs を purge してから入れ直す。
+
+### ⚠️ 事故防止メモ（過去に GNOME を巻き込んで消した反省）
+- `emacs_uninstaller.sh` は **`emacsen-common` を purge しない**（`dictionaries-common`
+  → enchant → GNOME への連鎖削除を防ぐため）。purge 前にシミュレーションし、
+  desktop 系が巻き込まれるなら中止する安全弁入り。
+- `apt autoremove --purge -y` は**自動実行しない**（掃除は必ず `-s` で確認してから手動）。
+- 表示マネージャ(DM)を purge するときは要注意。`gdm3` を有効化しないまま
+  `lightdm`/`sddm` を消すと CLI 起動になる。復旧は:
+  ```bash
+  sudo systemctl enable --force gdm3 && sudo systemctl start gdm3
+  ```
+
+### 日本語入力(fcitx5)を有効化
+```bash
+im-config -n fcitx5      # 自分のユーザーで（root 不可）
+# 再ログイン後: fcitx5-configtool で Mozc を追加、Ctrl+Space で切替
+```
+
+## 2. Emacs 内で pdf-tools(epdfinfo) をビルド
+```
+M-x pdf-tools-install
+```
+以後 `.tex` で `C-c C-c`(Latexmk) → 右ウィンドウに PDF、保存＆再コンパイルで自動更新。
+
+## 3. スペルチェック(aspell + flyspell)
+```bash
+bash spellcheck_installer.sh
+```
+`tex.el` が LaTeX/text で flyspell を自動 ON（つづり修正は単語上で `M-$`）。
+
+## 4. 文法・文体チェック(LTeX / LanguageTool, オフライン・無料)
+```bash
+bash ltex_installer.sh    # ~/.local/opt に ltex-ls-plus(Java 同梱) を展開
+```
+`.tex` で `M-x eglot` → 文法指摘が下線表示（一覧 `M-x flymake-show-buffer-diagnostics`）。
+Writefull の代替。Writefull 本体は Overleaf/Word 専用で Emacs では使えない。
+
+## 5. Overleaf (Git bridge)
+overleaf.el(リアルタイム同期)は**使わない方針**。VS Code のようにプロジェクト全体を
+扱うため、**Overleaf Git bridge でプロジェクトを clone し、magit で pull/push** する
+（magit は `init_common.el` に設定済み）。
+
+### 5-1. 前提: Git integration が使えるか確認
+- Overleaf のプロジェクトを開く → 左上 **Menu → Sync → Git**、または
+  **Account Settings → Git Integration** に項目があれば利用可。
+- 有料/教育機関プラン（大学経由の Overleaf Professional 等）で有効。
+  項目が無ければ大学の Overleaf が Git bridge 無効な可能性あり。
+
+### 5-2. clone してローカルにプロジェクトを取得
+```bash
+# Overleaf の Git 認証トークンを Account Settings → Git Integration で発行しておく
+git clone https://git.overleaf.com/<PROJECT_ID> myproject
+cd myproject          # main.tex / 画像 / bib など全ファイルがローカルに揃う
+```
+- ユーザー名は任意、パスワードの代わりに**発行した Git トークン**を入力。
+- 認証情報を保存するなら: `git config --global credential.helper store`
+
+### 5-3. Emacs での運用（magit）
+- `C-x C-f myproject/main.tex` で編集（AUCTeX + pdf-tools + LTeX がそのまま効く）。
+- 同期は magit（`init_common.el` 参照）:
+  - `magit-pull` で Overleaf 側の変更を取り込み
+  - `magit-commit` → `magit-push` で自分の変更を Overleaf に反映
+- リアルタイムではないが、**プロジェクト全体 + バージョン管理**が得られ、VS Code 感覚に近い。
+
+---
+（旧メモ / 参考）
 ```bash
 #sudo add-apt-repository ppa:kelleyk/emacs
 #sudo apt update
 #sudo apt install emacs28-nativecomp
-#sudo apt install emacs 
+#sudo apt install emacs
 #sudo apt install fcitx-mozc
 #sudo apt install mozc-server mozc-utils-gui mozc-data emacs-mozc
 ```

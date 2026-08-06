@@ -371,6 +371,46 @@
   ;; 幅が広い時に AUCTeX のバッファ分割も左右優先にする
   (setq split-height-threshold nil
         split-width-threshold 120))
+
+;;; --- Spell check (flyspell + aspell) ------------------------------------
+;; 要 aspell 本体（未導入なら ~/restore-spell.sh を実行）。
+(with-eval-after-load 'ispell
+  (setq ispell-program-name (or (executable-find "aspell") "aspell")
+        ispell-dictionary "en_US"
+        ispell-extra-args '("--sug-mode=ultra")))
+;; LaTeX/テキストは本文をスペルチェック、コードはコメント/文字列のみ
+(add-hook 'LaTeX-mode-hook #'flyspell-mode)
+(add-hook 'text-mode-hook  #'flyspell-mode)
+(add-hook 'prog-mode-hook  #'flyspell-prog-mode)
+;; C-; は他機能と衝突しやすいので、修正候補は C-c $ / M-$ を使う想定
+
+;;; --- Overleaf ------------------------------------------------------------
+;; overleaf.el(リアルタイム同期)は使わない方針に変更。
+;; Overleaf は Git bridge でプロジェクトを clone し、magit で pull/push 運用する。
+;; 手順は README.md「5. Overleaf (Git bridge)」を参照。
+
+;;; --- LTeX: 文法・文体チェック（LanguageTool ベース, オフライン） -----------
+;; 本体は git 外に配置（~/ltex_installer.sh 相当の ltex_installer.sh で導入）。
+;; Eglot(標準搭載) から ltex-ls-plus をローカル起動する。
+(defvar my/ltex-ls-dir
+  (expand-file-name ".local/opt/ltex-ls-plus-18.7.0" "~")
+  "ltex-ls-plus を展開したディレクトリ。バージョンを上げたらここも更新する。")
+
+(with-eval-after-load 'eglot
+  (let ((ltex-bin (expand-file-name "bin/ltex-ls-plus" my/ltex-ls-dir)))
+    (when (file-executable-p ltex-bin)
+      (add-to-list 'eglot-server-programs
+                   `((latex-mode LaTeX-mode plain-tex-mode context-mode)
+                     . (,ltex-bin))))))
+
+;; 文法チェックしたいバッファで手動起動: M-x eglot
+;; （JVM 起動が重いので自動起動はしない。常時ONにしたい場合は下を有効化）
+;; (add-hook 'LaTeX-mode-hook #'eglot-ensure)
+;;
+;; 言語や辞書はプロジェクトごとに .dir-locals.el で上書き可能:
+;;   ((latex-mode . ((eglot-workspace-configuration
+;;     . (:ltex (:language "en-US"))))))
+
 ;;; --- latexindent: 手動整形コマンド（TeX / TikZ 用） -------------------------
 
 (defgroup my-latexindent nil
