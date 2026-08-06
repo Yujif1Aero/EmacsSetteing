@@ -309,7 +309,10 @@
 
   (with-eval-after-load 'tex
     (add-to-list 'TeX-file-extensions "tikz")
-    (setq TeX-view-program-list '(("pdf-tools" "TeX-pdfview-sync-view")))
+    ;; pdf-tools のビューアは「関数シンボル」で指定する。
+    ;; 文字列にすると AUCTeX がシェルコマンドとして実行してしまい（該当コマンドは
+    ;; 存在しないので）何も表示されない。正しい関数は TeX-pdf-tools-sync-view。
+    (setq TeX-view-program-list '(("pdf-tools" TeX-pdf-tools-sync-view)))
     (setq TeX-view-program-selection '((output-pdf "pdf-tools")))
     (add-to-list 'TeX-command-list
                  '("Latexmk" "latexmk -pdf -pdflatex='pdflatex -shell-escape -synctex=1 -interaction=nonstopmode' %t"
@@ -509,4 +512,45 @@
   (with-current-buffer buf
     (when (eq major-mode 'latex-mode)
       (LaTeX-mode))))
+
+;;; --- 端末(-nw)での C-c C-a: 外部ビューアで表示＋完了メッセージ ------------
+;; -nw では pdf-tools が PDF を画像描画できず「文字列」になってしまう。
+;; そこで端末フレームでは evince で開き、GUI フレームでは従来どおり pdf-tools。
+;; evince はファイル変更を自動再読込するので、同じ PDF の evince が
+;; まだ無いときだけ起動する（毎回ウィンドウが増えないように）。
+(with-eval-after-load 'tex
+  ;; evince はファイル変更を自動再読込するので、同じ PDF の evince が
+  ;; まだ無いときだけ起動する（毎回ウィンドウが増えないように）。
+  ;; 判定は「プロセス名が正確に evince のものだけ」を対象にする（pgrep -ax evince）。
+  ;; pgrep -f だとラッパの sh -c '...evince %o...' 自身にマッチしてしまい、
+  ;; 常に「起動済み」と誤判定して evince が開かないので注意。
+  (add-to-list 'TeX-view-program-list
+               '("evince-reuse"
+                 "sh -c 'f=%o; b=$(basename \"$f\"); pgrep -ax evince 2>/dev/null | grep -Fq \"$b\" || (evince \"$f\" >/dev/null 2>&1 &)'"))
+  ;; 【重要】TeX-view-program-selection の条件は「TeX-view-predicate-list に
+  ;; 登録した述語名」でなければ評価されない（任意の関数名は不可。AUCTeX は
+  ;; 名前に対応する式を eval する）。現在のフレームが非グラフィカルかを判定する
+  ;; 述語 frame-not-graphic を登録して、その名前を selection で使う。
+  (add-to-list 'TeX-view-predicate-list
+               '(frame-not-graphic (not (display-graphic-p))))
+  ;; 端末(-nw)フレームなら evince、GUI フレームなら pdf-tools。
+  (setq TeX-view-program-selection
+        '(((output-pdf frame-not-graphic) "evince-reuse")
+          (output-pdf "pdf-tools"))))
+
+;; コンパイル完了を知らせる（GUI / 端末どちらでも）。
+;; TeX-command-run-all(C-c C-a) はビルド後に上記ビューアで PDF を開く。
+;; フレーム種別に応じて文言を変える:
+;;   GUI    → pdf-tools が右側に描画
+;;   端末   → evince で開く/更新
+(defun my/tex-notify-compile-finished (file)
+  "コンパイル完了と PDF 更新をエコーエリアに表示する。"
+  (when (and file (string-match-p "\\.pdf\\'" file))
+    (message "✅ コンパイル完了 — %s を%s"
+             (file-name-nondirectory file)
+             (if (display-graphic-p)
+                 "pdf-tools で右側に更新表示しました"
+               "更新して evince で開きました"))))
+(add-hook 'TeX-after-compilation-finished-functions
+          #'my/tex-notify-compile-finished)
 
