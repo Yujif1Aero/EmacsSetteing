@@ -498,3 +498,15 @@
   ;; 環境によって C-_ が入りにくい保険
   (define-key latex-mode-map (kbd "C-c C-/") #'my/latexindent-region))
 
+;;; --- 必ず AUCTeX の LaTeX-mode を使う（標準 latex-mode を避ける） -----------
+;; init.el はこのファイルを起動の約1秒後に読み込むため、コマンドライン
+;; (emacs main.tex) で開いた .tex は先に組み込みの `latex-mode` で開かれてしまい、
+;; C-c C-a (TeX-command-run-all) が "undefined" になる。
+;; 1) 今後開く .tex は latex-mode → LaTeX-mode に自動で載せ替える。
+(add-to-list 'major-mode-remap-alist '(latex-mode . LaTeX-mode))
+;; 2) すでに標準 latex-mode で開いているバッファを AUCTeX へ切り替える。
+(dolist (buf (buffer-list))
+  (with-current-buffer buf
+    (when (eq major-mode 'latex-mode)
+      (LaTeX-mode))))
+
