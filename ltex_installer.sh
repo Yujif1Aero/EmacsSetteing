@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+sudo apt update
+sudo apt install texlive-full
 # Install ltex-ls-plus (LanguageTool LSP server, offline grammar/spell for LaTeX).
 # Uses the linux-x64 build which BUNDLES a Java runtime -> no separate Java needed.
 # Installed OUTSIDE this git repo (~/.local/opt) so the ~200MB payload is not tracked.
