@@ -544,13 +544,33 @@
 ;;   GUI    → pdf-tools が右側に描画
 ;;   端末   → evince で開く/更新
 (defun my/tex-notify-compile-finished (file)
-  "コンパイル完了と PDF 更新をエコーエリアに表示する。"
+  "コンパイル結果をエコーエリアに表示する。
+AUCTeX / latexmk はビルド失敗時（例: パッケージ未検出の Fatal error）でも
+このフックを呼ぶことがあり、TeX-error-list が空のまま「成功」と誤認する。
+そこでフックの呼び出しを信用せず、PDF が実際に生成・更新されたか
+（存在する＋直近 20 秒以内に更新された）を独自に検証し、
+本当に成功したときだけ ✅、そうでなければ ❌ を表示する。"
   (when (and file (string-match-p "\\.pdf\\'" file))
-    (message "✅ コンパイル完了 — %s を%s"
-             (file-name-nondirectory file)
-             (if (display-graphic-p)
-                 "pdf-tools で右側に更新表示しました"
-               "更新して evince で開きました"))))
+    (let* ((attrs  (file-attributes file))
+           (mtime  (and attrs (nth 5 attrs)))
+           ;; 今回のビルドで生成されたなら mtime はほぼ現在時刻になる。
+           (fresh  (and mtime (< (float-time (time-since mtime)) 20)))
+           ;; AUCTeX がエラーを拾えていれば失敗確定。
+           (has-errors
+            (ignore-errors
+              (with-current-buffer (if (and (boundp 'TeX-command-buffer)
+                                            (buffer-live-p TeX-command-buffer))
+                                       TeX-command-buffer
+                                     (current-buffer))
+                (and (boundp 'TeX-error-list) TeX-error-list)))))
+      (if (and fresh (not has-errors))
+          (message "✅ コンパイル完了 — %s を%s"
+                   (file-name-nondirectory file)
+                   (if (display-graphic-p)
+                       "pdf-tools で右側に更新表示しました"
+                     "更新して evince で開きました"))
+        (message "❌ コンパイル失敗 — %s は更新されませんでした（C-c C-l でログ / *TeX Help* を確認）"
+                 (file-name-nondirectory file))))))
 (add-hook 'TeX-after-compilation-finished-functions
           #'my/tex-notify-compile-finished)
 
