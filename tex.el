@@ -538,6 +538,14 @@
         '(((output-pdf frame-not-graphic) "evince-reuse")
           (output-pdf "pdf-tools"))))
 
+;; C-c C-a / C-c C-c の既定コンパイラを latexmk にする。
+;; TeX-command-default はバッファローカル変数で、mode 初期化時に "LaTeX" 等へ
+;; セットされるため :custom では確実に効かない。LaTeX-mode-hook で毎回上書きする。
+;; TeX-command-run-all(C-c C-a) は再コンパイルが必要なとき、この変数の値を実行する
+;; ので、これで C-c C-a が latexmk（差分ビルド＋必要な回数・bibtex を自動）になる。
+(add-hook 'LaTeX-mode-hook
+          (lambda () (setq TeX-command-default "Latexmk")))
+
 ;; コンパイル完了を知らせる（GUI / 端末どちらでも）。
 ;; TeX-command-run-all(C-c C-a) はビルド後に上記ビューアで PDF を開く。
 ;; フレーム種別に応じて文言を変える:
