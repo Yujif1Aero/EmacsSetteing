@@ -21,12 +21,129 @@ sudo apt install hub
 alias pjroot='cd $(git rev-parse --show-toplevel)'
 ```
 
-# emacs install -> Please check emacs_installer.sh
+# Emacs LaTeX / Overleaf environment setup
+
+このリポジトリ同梱のスクリプトで、Emacs 30 + 日本語入力 + LaTeX/PDF + Overleaf 同期 +
+スペル/文法チェックを構築する手順。実行順は次のとおり。
+
+## 0. セットアップ（新規マシン / クイックスタート）
+
+1. このリポジトリを `~/.emacs.d` に clone:
+   ```bash
+   git clone git@github.com:Yujif1Aero/EmacsSetteing.git ~/.emacs.d
+   ```
+2. スクリプトを順に実行（`~/.emacs.d` 内で）:
+   ```bash
+   cd ~/.emacs.d
+   bash emacs_installer.sh       # 必須: Emacs 30 + 日本語入力 + LaTeX ツール
+   bash spellcheck_installer.sh  # 任意: aspell 辞書（flyspell 用）
+   bash ltex_installer.sh        # 任意: LTeX 文法チェック（~/.local/opt, ~200MB）
+   ```
+3. Emacs を初回起動 → **straight.el が自動で bootstrap し、パッケージを取得**（初回は数分かかる）。
+4. Emacs 内で一度だけ `M-x pdf-tools-install`（PDF 表示用の epdfinfo をビルド）。
+
+### スクリプト一覧
+| スクリプト | 役割 | 必須 |
+|---|---|---|
+| `emacs_installer.sh` | Emacs 30(PPA) + fcitx5/Mozc + latexmk + pdf-tools ビルド依存を導入。内部で `emacs_uninstaller.sh` を呼び、既存 Emacs を purge してから入れ直す | ◎ |
+| `emacs_uninstaller.sh` | dpkg の `emacs*` エディタ系のみ purge（`emacsen-common` は残す = GNOME 巻き込み防止）。単体でアンインストールにも使える | ○ |
+| `spellcheck_installer.sh` | aspell/hunspell 英語辞書（flyspell 用） | △ |
+| `ltex_installer.sh` | ltex-ls-plus(Java 同梱) を `~/.local/opt` に展開 | △ |
+
+> 注: 詳細と注意点は下の各セクション参照。特に `emacs_installer.sh` は
+> desktop 系を巻き込まない安全弁付き（§1 の「⚠️ 事故防止メモ」参照）。
+
+## 1. Emacs 30 本体 + 日本語入力(fcitx5) + LaTeX ツール
+```bash
+bash emacs_installer.sh
+```
+- PPA `ppa:ubuntuhandbook1/emacs` から Emacs 30 を導入。
+- 併せて `fcitx5` + `fcitx5-mozc`（日本語入力）、`latexmk` と pdf-tools のビルド依存も導入。
+- 内部で `emacs_uninstaller.sh` を呼んで既存 Emacs を purge してから入れ直す。
+
+### ⚠️ 事故防止メモ（過去に GNOME を巻き込んで消した反省）
+- `emacs_uninstaller.sh` は **`emacsen-common` を purge しない**（`dictionaries-common`
+  → enchant → GNOME への連鎖削除を防ぐため）。purge 前にシミュレーションし、
+  desktop 系が巻き込まれるなら中止する安全弁入り。
+- `apt autoremove --purge -y` は**自動実行しない**（掃除は必ず `-s` で確認してから手動）。
+- 表示マネージャ(DM)を purge するときは要注意。`gdm3` を有効化しないまま
+  `lightdm`/`sddm` を消すと CLI 起動になる。復旧は:
+  ```bash
+  sudo systemctl enable --force gdm3 && sudo systemctl start gdm3
+  ```
+
+### 日本語入力(fcitx5)を有効化
+```bash
+im-config -n fcitx5      # 自分のユーザーで（root 不可）
+# 再ログイン後: fcitx5-configtool で Mozc を追加、Ctrl+Space で切替
+```
+
+## 2. LaTeX → PDF（コンパイルと表示）
+
+初回のみ Emacs 内で epdfinfo をビルド:
+```
+M-x pdf-tools-install
+```
+
+要点:
+- **ビルド＆表示は `C-c C-a`**（`TeX-command-run-all`: latexmk でコンパイル → ビューア表示）。ログは `C-c C-l`。
+- `main.tex` は AUCTeX の **`LaTeX-mode`**（モードライン `LaTeX`）であること。標準の `latex-mode` だと `C-c C-a` は未定義。`tex.el` が `latex-mode → LaTeX-mode` へ自動で載せ替える。
+- **GUI 起動**の Emacs: PDF は **pdf-tools で右ウィンドウ**に描画（保存＆再コンパイルで自動更新）。
+- **端末(`-nw`)**の Emacs: 端末では pdf-tools が画像描画できず PDF が“文字列”になるため、**外部ビューア evince(`DISPLAY=:0`)で表示**。evince は自動再読込するのでウィンドウは増えない。
+- どちらもコンパイル後に `✅ コンパイル完了 …` を表示。フレーム種別(GUI/端末)で自動的にビューアを切替。
+
+設定は `tex.el`。ハマりどころ（対処済み・触るとき注意）:
+- pdf-tools のビューアは**関数シンボル** `TeX-pdf-tools-sync-view` で登録する（**文字列にするとシェルコマンド扱い**になり何も表示されない）。
+- 端末判定は `TeX-view-predicate-list` に**述語** `frame-not-graphic`＝`(not (display-graphic-p))` を登録し、その名前を `TeX-view-program-selection` で使う（**任意の関数名は不可**）。
+- evince の重複起動ガードは `pgrep -ax evince`（プロセス名一致）で判定する。`pgrep -f` はラッパの `sh -c '…evince…'` 自身にマッチして誤判定するため使わない。
+
+## 3. スペルチェック(aspell + flyspell)
+```bash
+bash spellcheck_installer.sh
+```
+`tex.el` が LaTeX/text で flyspell を自動 ON（つづり修正は単語上で `M-$`）。
+
+## 4. 文法・文体チェック(LTeX / LanguageTool, オフライン・無料)
+```bash
+bash ltex_installer.sh    # ~/.local/opt に ltex-ls-plus(Java 同梱) を展開
+```
+`.tex` で `M-x eglot` → 文法指摘が下線表示（一覧 `M-x flymake-show-buffer-diagnostics`）。
+Writefull の代替。Writefull 本体は Overleaf/Word 専用で Emacs では使えない。
+
+## 5. Overleaf (Git bridge)
+overleaf.el(リアルタイム同期)は**使わない方針**。VS Code のようにプロジェクト全体を
+扱うため、**Overleaf Git bridge でプロジェクトを clone し、magit で pull/push** する
+（magit は `init_common.el` に設定済み）。
+
+### 5-1. 前提: Git integration が使えるか確認
+- Overleaf のプロジェクトを開く → 左上 **Menu → Sync → Git**、または
+  **Account Settings → Git Integration** に項目があれば利用可。
+- 有料/教育機関プラン（大学経由の Overleaf Professional 等）で有効。
+  項目が無ければ大学の Overleaf が Git bridge 無効な可能性あり。
+
+### 5-2. clone してローカルにプロジェクトを取得
+```bash
+# Overleaf の Git 認証トークンを Account Settings → Git Integration で発行しておく
+git clone https://git.overleaf.com/<PROJECT_ID> myproject
+cd myproject          # main.tex / 画像 / bib など全ファイルがローカルに揃う
+```
+- ユーザー名は任意、パスワードの代わりに**発行した Git トークン**を入力。
+- 認証情報を保存するなら: `git config --global credential.helper store`
+
+### 5-3. Emacs での運用（magit）
+- `C-x C-f myproject/main.tex` で編集（AUCTeX + pdf-tools + LTeX がそのまま効く）。
+- 同期は magit（`init_common.el` 参照）:
+  - `magit-pull` で Overleaf 側の変更を取り込み
+  - `magit-commit` → `magit-push` で自分の変更を Overleaf に反映
+- リアルタイムではないが、**プロジェクト全体 + バージョン管理**が得られ、VS Code 感覚に近い。
+
+---
+（旧メモ / 参考）
 ```bash
 #sudo add-apt-repository ppa:kelleyk/emacs
 #sudo apt update
 #sudo apt install emacs28-nativecomp
-#sudo apt install emacs 
+#sudo apt install emacs
 #sudo apt install fcitx-mozc
 #sudo apt install mozc-server mozc-utils-gui mozc-data emacs-mozc
 ```
@@ -48,19 +165,6 @@ compiledb make
 or
 ```bash
 make clean; bear -- make
-```
-## for installing key
-
-1. Emacsを開き、M-x package-install-file を実行します。
-1. プロンプトが表示されたら、ダウンロードした gnu-elpa-keyring-update の .tar ファイルへの完全なパスを入力します。
-1. インストールが完了したら、Emacsを再起動してください。
-
-## eglot(今は使っていない)
-
-```
-M-x eglot
-if you do not have `compile_commands.json` , for example put clangd in C++/C. CHECK sever list in refernce git URL.
-ref : https://github.com/joaotavora/eglot
 ```
 
 ## additional instaling for LSP ( もしかしたら，メタプログラミングに不向き？)
@@ -91,17 +195,6 @@ project root directry に`.ccls`を置こう。中身は一行  `%compile_comman
 git config --global core.editor emacs
 git config --global sequence.editor emacs
 ```
-
-
-
-## os52.el
-I will use `os52` to share clip bord between local and sever.Or I set `(el-get-bundle gist:49eabc1978fe3d6dedb3ca5674a16ece:osc52e)` in this `init.el`
-
-```bash
- wget https://chromium.googlesource.com/apps/libapps/+/master/hterm/etc/osc52.el -O ~/.emacs.d/osc52.el
-
-```
-貼り付けに関してはsshをしていても cntl+shift+vでできるように元に戻った（謎）
 
 
 ## GIT hub copilot
@@ -219,10 +312,6 @@ helm-ag の検索結果が表示されている状態で C-c C-e（または M-x
 
 helm-do-agでファイル内文字列の検索をしないファイルはやディレクトは`.agignore`に書いてプロジェクトルートに置く。
 
-## ollama
-```bash
-ollama serve
-```
 ## Whitespace (ホワイトスペース)
 M-x whitespace-mode
 M-x global-whitespace-mode
@@ -233,6 +322,10 @@ M-x undo-tree-visualize
 ## Kill Ring
 M-x helm-show-kill-ring
 C-x c M-y
+
+## クリップボード
+- パッケージ管理は straight.el（package.el/ELPA 署名検証は未使用）。
+- コピペ: 端末は clipetty(OSC52)、GUI は xclip（旧 osc52.el は廃止・削除済み）。
 
 ## wsl environment setting
 git infomation show slow when workspace is in not wsl system but in windows system.
