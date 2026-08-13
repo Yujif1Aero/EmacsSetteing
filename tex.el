@@ -546,39 +546,57 @@
 (add-hook 'LaTeX-mode-hook
           (lambda () (setq TeX-command-default "Latexmk")))
 
-;; コンパイル完了を知らせる（GUI / 端末どちらでも）。
-;; TeX-command-run-all(C-c C-a) はビルド後に上記ビューアで PDF を開く。
-;; フレーム種別に応じて文言を変える:
-;;   GUI    → pdf-tools が右側に描画
-;;   端末   → evince で開く/更新
+;; コンパイル結果を知らせる（GUI / 端末どちらでも）。
+;; 【重要】latexmk の "Nothing to do / up-to-date"（＝変更が無く PDF は既に最新）は
+;; 成功として扱う。「mtime が新しくない＝失敗」にすると up-to-date を誤って ❌ にする。
+;; 失敗と見なすのは: PDF 不在 / AUCTeX がエラーを拾った / 出力に Fatal error 等がある場合のみ。
+;; 更新されたか(mtime)は成否ではなく「文言」だけに使う。
 (defun my/tex-notify-compile-finished (file)
   "コンパイル結果をエコーエリアに表示する。
-AUCTeX / latexmk はビルド失敗時（例: パッケージ未検出の Fatal error）でも
-このフックを呼ぶことがあり、TeX-error-list が空のまま「成功」と誤認する。
-そこでフックの呼び出しを信用せず、PDF が実際に生成・更新されたか
-（存在する＋直近 20 秒以内に更新された）を独自に検証し、
-本当に成功したときだけ ✅、そうでなければ ❌ を表示する。"
+latexmk の『Nothing to do / up-to-date』は成功（PDF は最新）として扱い、
+実際の失敗（PDF 不在 / AUCTeX が拾ったエラー / 出力に Fatal error・Emergency stop・
+Latexmk: Errors 等）のときだけ ❌ を出す。更新の有無(mtime)は文言だけに使う。"
   (when (and file (string-match-p "\\.pdf\\'" file))
-    (let* ((attrs  (file-attributes file))
-           (mtime  (and attrs (nth 5 attrs)))
-           ;; 今回のビルドで生成されたなら mtime はほぼ現在時刻になる。
+    (let* ((exists (file-exists-p file))
+           (mtime  (and exists (nth 5 (file-attributes file))))
            (fresh  (and mtime (< (float-time (time-since mtime)) 20)))
-           ;; AUCTeX がエラーを拾えていれば失敗確定。
+           ;; AUCTeX が拾ったエラー。
            (has-errors
             (ignore-errors
               (with-current-buffer (if (and (boundp 'TeX-command-buffer)
                                             (buffer-live-p TeX-command-buffer))
                                        TeX-command-buffer
                                      (current-buffer))
-                (and (boundp 'TeX-error-list) TeX-error-list)))))
-      (if (and fresh (not has-errors))
-          (message "✅ コンパイル完了 — %s を%s"
+                (and (boundp 'TeX-error-list) TeX-error-list))))
+           ;; コンパイル出力バッファ(*master output*)に致命的エラーが無いか確認。
+           (fatal
+            (ignore-errors
+              (let* ((master (with-current-buffer
+                                 (if (and (boundp 'TeX-command-buffer)
+                                          (buffer-live-p TeX-command-buffer))
+                                     TeX-command-buffer (current-buffer))
+                               (TeX-master-file)))
+                     (pbuf (and master (get-buffer (TeX-process-buffer-name master)))))
+                (and pbuf
+                     (with-current-buffer pbuf
+                       (save-excursion
+                         (goto-char (point-min))
+                         (re-search-forward
+                          "Emergency stop\\|Fatal error\\|Latexmk: Errors\\|! LaTeX Error\\|! Package [^ ]+ Error"
+                          nil t))))))))
+      (if (and exists (not has-errors) (not fatal))
+          (message "✅ %s: %s（%s）"
+                   (if fresh "コンパイル完了・更新" "最新（変更なし）")
                    (file-name-nondirectory file)
-                   (if (display-graphic-p)
-                       "pdf-tools で右側に更新表示しました"
-                     "更新して evince で開きました"))
-        (message "❌ コンパイル失敗 — %s は更新されませんでした（C-c C-l でログ / *TeX Help* を確認）"
+                   (if (display-graphic-p) "pdf-tools 右側" "evince"))
+        (message "❌ コンパイル失敗 — %s（C-c C-l でログ / *TeX Help* を確認）"
                  (file-name-nondirectory file))))))
 (add-hook 'TeX-after-compilation-finished-functions
           #'my/tex-notify-compile-finished)
+
+;; 注: C-c C-a は AUCTeX 既定の TeX-command-run-all のまま使う。
+;; latexmk を既定にしているので、編集して再コンパイルする通常フローは1発で
+;; 正しく更新・表示される。変更が全く無い状態で C-c C-a すると、run-all が
+;; latexmk を数回試して「Stopping after running Latexmk 4 times」とログに出すが、
+;; 表示は正しく行われ、害はない（＝“変更なし”の合図）。
 
