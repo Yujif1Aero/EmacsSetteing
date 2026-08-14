@@ -316,7 +316,12 @@
     (setq TeX-view-program-selection '((output-pdf "pdf-tools")))
     (add-to-list 'TeX-command-list
                  '("Latexmk" "latexmk -pdf -pdflatex='pdflatex -shell-escape -synctex=1 -interaction=nonstopmode' %t"
-                   TeX-run-TeX nil (latex-mode) :help "Run Latexmk")))
+                   TeX-run-TeX nil (latex-mode) :help "Run Latexmk"))
+    ;; 日本語用: LuaLaTeX(+luatexja)。C-c C-c で "LatexmkLua" を選ぶか、C-c C-l で一発。
+    ;; 文書側は \documentclass{ltjsarticle} か article+\usepackage{luatexja} を使う。
+    (add-to-list 'TeX-command-list
+                 '("LatexmkLua" "latexmk -pdf -pdflatex='lualatex -shell-escape -synctex=1 -interaction=nonstopmode' %t"
+                   TeX-run-TeX nil (latex-mode) :help "Run Latexmk with LuaLaTeX (Japanese)")))
 
   ;; コンパイル後の自動更新（Bad file descriptor 対策）
   (add-hook 'TeX-after-compilation-finished-functions
@@ -331,7 +336,13 @@
                        (TeX-source-correlate-mode t)
                        (LaTeX-math-mode t)
                        ;; --- 【重要】C-c C-g を直接 pdf-sync-forward-search にバインド ---
-                       (local-set-key (kbd "C-c C-g") (lambda () (interactive) (pdf-sync-forward-search))))))
+                       (local-set-key (kbd "C-c C-g") (lambda () (interactive) (pdf-sync-forward-search)))
+                       ;; --- C-c C-l: LuaLaTeX(日本語) で一発コンパイル＋表示 ---
+                       ;; C-c C-a(pdflatex 版)はそのまま残し、日本語文書はこちらを使う。
+                       (local-set-key (kbd "C-c C-l")
+                                      (lambda () (interactive)
+                                        (let ((TeX-command-default "LatexmkLua"))
+                                          (TeX-command-run-all nil)))))))
 
 (leaf pdf-tools
   :straight t
