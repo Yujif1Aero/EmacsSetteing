@@ -222,7 +222,6 @@
 (leaf helm-ag
     :straight t
     :leaf-defer t
-    :after helm
     :custom
     (helm-ag-base-command . "ag --nocolor --nogroup")
     (helm-ag-insert-at-point . 'symbol)
