@@ -1,3 +1,4 @@
+;;; -*- coding: utf-8; lexical-binding: nil; -*-
 ;;; early-init.el --- パッケージ管理の競合防止用
 
 ;; package.el の自動有効化を無効化（straight.el を使うために必須）

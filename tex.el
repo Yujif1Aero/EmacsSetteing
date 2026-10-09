@@ -1,3 +1,4 @@
+;;; -*- coding: utf-8; lexical-binding: nil; -*-
 ;; (leaf auctex
 ;;   :straight t
 ;;   :ensure t

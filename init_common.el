@@ -1,4 +1,4 @@
-;;; -*- coding: utf-8 -*-
+;;; -*- coding: utf-8; lexical-binding: nil; -*-
 ;;; init_common.el --- あなたの設定を完全に保持した高速・日本語対応版 (爆速最適化済)
 
 (setq debug-on-error nil)
@@ -438,13 +438,56 @@
     (when (fboundp 'agent-shell-anthropic-make-authentication)
         (setq agent-shell-anthropic-authentication
             (agent-shell-anthropic-make-authentication :login t)))
+    ;; Use the installed Claude CLI instead of the ACP SDK's bundled CLI.
+    (when-let ((claude (executable-find "claude")))
+        (setq agent-shell-anthropic-claude-environment
+            (cons (concat "CLAUDE_CODE_EXECUTABLE=" claude)
+                (seq-remove (lambda (entry)
+                                (string-prefix-p "CLAUDE_CODE_EXECUTABLE=" entry))
+                    agent-shell-anthropic-claude-environment))))
     ;; codex も既存のログイン認証を利用。別途ブリッジ codex-acp が PATH に必要。
     (when (fboundp 'agent-shell-openai-make-authentication)
         (setq agent-shell-openai-authentication
             (agent-shell-openai-make-authentication :login t)))
+    ;; The Nix codex-acp wrapper may pin an older Codex than Emacs's PATH.
+    ;; Use the installed CLI so model metadata and account support stay current.
+    (when-let ((codex (executable-find "codex")))
+        (setq agent-shell-openai-codex-environment
+            (cons (concat "CODEX_PATH=" codex)
+                (seq-remove (lambda (entry) (string-prefix-p "CODEX_PATH=" entry))
+                    agent-shell-openai-codex-environment))))
     ;; resume 時に会話全体を再表示する(既定 minimal はタイトルのみで過去ログが出ない)。
     ;; 軽くしたい場合は 'first-last / 'last に変更可。
     (setq agent-shell-session-restore-verbosity 'full)
+    ;; agent-shell is an ACP shell rather than each vendor's native TUI, so
+    ;; handle a familiar /model locally for Codex, Claude, and other agents.
+    (defun my/agent-shell-current-prompt-input ()
+        "Return the current `agent-shell' prompt input."
+        (save-excursion
+            (goto-char (point-max))
+            (when (re-search-backward comint-prompt-regexp nil t)
+                (string-trim
+                    (buffer-substring-no-properties (match-end 0) (point-max))))))
+
+    (defun my/agent-shell-clear-current-prompt-input ()
+        "Clear the current `agent-shell' prompt input."
+        (let ((inhibit-read-only t))
+            (save-excursion
+                (goto-char (point-max))
+                (when (re-search-backward comint-prompt-regexp nil t)
+                    (delete-region (match-end 0) (point-max))))))
+
+    (defun my/agent-shell-submit-or-local-command (orig &rest args)
+        "Handle local `agent-shell' slash commands before ORIG submit."
+        (if (and (derived-mode-p 'agent-shell-mode)
+                 (null (plist-get args :input))
+                 (string= (my/agent-shell-current-prompt-input) "/model"))
+            (progn
+                (call-interactively #'agent-shell-set-session-model)
+                (my/agent-shell-clear-current-prompt-input))
+            (apply orig args)))
+
+    (advice-add 'shell-maker-submit :around #'my/agent-shell-submit-or-local-command)
     ;; --- A案: セッション選択のときだけ helm を使う(全体の helm-mode は有効化しない) ---
     ;; agent-shell のセッション一覧ピッカー呼び出し中だけ helm-mode を一時的に有効化し、
     ;; 終わったら元へ戻す。既存の completing-read 操作感には影響しない。

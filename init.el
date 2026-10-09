@@ -1,4 +1,4 @@
-;;; -*- coding: utf-8 -*-
+;;; -*- coding: utf-8; lexical-binding: nil; -*-
 ;;; init.el --- Unified Emacs config -*- lexical-binding: t -*-
 
 ;; 起動高速化：システム設定をスキップし、GC閾値を一時的に上げる

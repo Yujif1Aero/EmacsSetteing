@@ -1,4 +1,4 @@
-;;; -*- coding: utf-8 -*-
+;;; -*- coding: utf-8; lexical-binding: nil; -*-
 ;;; init_linux.el --- Linux / SSH 端末向け設定 -*- lexical-binding: t -*-
 
 ;; --- クリップボード連携 ---
