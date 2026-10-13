@@ -365,7 +365,11 @@ sudo apt update && sudo apt install -y texlive-full && sudo apt install -y libpn
 sudo apt install -y build-essential gfortran-13 libopenmpi-dev
 sudo apt install bear
 ```
-
+## emacs server
+```bash
+emacs --daemon=work
+emacsclient -s work -c -n
+```
 - ref :
 1. https://qiita.com/fnobi/items/8906c8e7759751d32b6b
 1. https://github.com/xuchunyang/eshell-git-prompt
