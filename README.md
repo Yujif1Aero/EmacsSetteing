@@ -370,6 +370,7 @@ sudo apt install bear
 emacs --daemon=work
 emacsclient -s work -c -n
 emacsclient -s work -e '(kill-emacs)'
+ps -eo pid,args | grep '[e]macs.*daemon'
 ```
 - ref :
 1. https://qiita.com/fnobi/items/8906c8e7759751d32b6b

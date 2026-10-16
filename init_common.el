@@ -360,11 +360,16 @@
 ;; 2026-10-16: NixOS では straight にビルドさせず、home-manager の
 ;; programs.emacs.extraPackages (epkgs.vterm) で入れたモジュールを使う (:straight nil)。
 ;; `home-manager switch` 前は vterm が無いので、読み込み失敗で起動を止めないよう保護する。
+;; early-init.el で package-enable-at-startup を nil にしているため、Nix が置いた
+;; vterm-autoloads.el は読まれない。:commands で autoload を自前登録しないと
+;; (require 'vterm) するまで (fboundp 'vterm) が nil のままになる。
 (leaf vterm
     :straight nil
     :leaf-defer t
     :when (locate-library "vterm")
-    :custom (vterm-max-scrollback . 10000))
+    :commands (vterm vterm-other-window)
+    ;; 2026-10-16: claude/codex の会話履歴を端末のスクロールバックに残すため上限 (vterm の最大値 100000) に。
+    :custom (vterm-max-scrollback . 100000))
 
 ;; eat: 純 elisp の端末 (ビルド不要)。vterm が無い環境でも TUI (claude, codex) を動かせる。
 ;; 使い方: M-x eat → `claude --resume <session-id>` で /status /cost /compact が使える。
@@ -375,51 +380,110 @@
     :custom (eat-kill-buffer-on-exit . t))
 
 ;;; AI CLI TUI (Claude Code / Codex)
+;;
+;; コマンド一覧 (Claude / Codex で同じ形):
+;;   M-x my/claude-tui            新規起動。同じプロジェクトで動作中ならそのバッファへ切替
+;;   C-u M-x my/claude-tui        セッション ID を入力して再開 (空 Enter で履歴一覧)
+;;   M-x my/claude-resume-last    このプロジェクトの直近セッションを再開
+;;   M-x my/codex-tui / C-u M-x my/codex-tui / M-x my/codex-resume-last も同様
+;;
+;; claude も codex も履歴を作業ディレクトリ単位で管理するので、
+;; 起動ディレクトリはプロジェクトルート (無ければ現在のディレクトリ) に揃える。
 
 (require 'subr-x)
 
+(defun my/ai-tui-directory ()
+    "Return the directory to start an AI CLI in: project root or `default-directory'."
+    (or (when-let ((proj (and (fboundp 'project-current) (project-current))))
+            (project-root proj))
+        default-directory))
 
-;; Codex
-(defun my/codex-tui (&optional session-id)
-    "Open Codex TUI.
-With a prefix argument, resume SESSION-ID."
+(defun my/ai-tui-buffer-name (tool dir)
+    "Return the base buffer name for TOOL running in DIR."
+    (format "*%s-tui: %s*" tool
+        (file-name-nondirectory (directory-file-name dir))))
+
+;; 共通ヘルパー (M-x からは呼ばない)。
+;; TOOL の端末バッファで COMMAND を実行する。vterm が使えれば vterm、無ければ eat。
+;; COMMAND をシェル経由ではなく端末のプロセスとして直接起動するので、
+;; CLI を終了するとバッファも閉じる (vterm / eat どちらも kill-buffer-on-exit)。
+(defun my/open-ai-tui (tool command &optional reuse)
+    "Run COMMAND for TOOL in a new terminal buffer and switch to it.
+TOOL is a string such as \"claude\" or \"codex\"; it must be on `exec-path'.
+The command runs in the project root (see `my/ai-tui-directory').
+When REUSE is non-nil and a live TOOL buffer for the same project exists,
+switch to it instead of starting a new process.
+Use vterm when its native module can be loaded, otherwise eat."
+    (unless (executable-find tool)
+        (user-error "%s not found in Emacs exec-path" tool))
+    (let* ((dir (my/ai-tui-directory))
+           (default-directory dir)
+           (name (my/ai-tui-buffer-name tool dir))
+           (live (and reuse
+                      (seq-find (lambda (b)
+                                    (and (string-prefix-p name (buffer-name b))
+                                         (get-buffer-process b)
+                                         (process-live-p (get-buffer-process b))))
+                          (buffer-list)))))
+        (cond
+         (live (pop-to-buffer-same-window live))
+         ((and (locate-library "vterm") (require 'vterm nil t))
+          ;; 文字列引数の vterm は常に新しいバッファを作る (同名なら <2> が付く)。
+          (let ((vterm-shell command))
+              (vterm name)))
+         (t
+          ;; 非数値の第2引数で eat は常に新しいバッファを作る。
+          (let ((eat-buffer-name name))
+              (eat command t))))))
+
+(defun my/ai-tui-read-session (tool)
+    "Prompt for a TOOL session id; return nil when the input is empty."
+    (let ((id (string-trim
+               (read-string (format "Resume %s session id (empty = picker): " tool)))))
+        (unless (string-empty-p id) id)))
+
+;; Claude Code
+(defun my/claude-tui (&optional resume session-id)
+    "Open the Claude Code TUI for the current project.
+Without a prefix argument, start Claude, or switch to a running Claude
+buffer of the same project.  With a prefix argument (RESUME non-nil),
+prompt for SESSION-ID and resume it; empty input opens the session picker."
     (interactive
-        (list (when current-prefix-arg
-                  (read-string "Resume Codex session id: "))))
-    (my/open-ai-tui
-        "*codex-tui*"
-        (if (and session-id (not (string-empty-p session-id)))
-            (format "codex resume %s"
-                (shell-quote-argument session-id))
-            "codex")))
-
-;; Codex: Resume last session
-(defun my/codex-resume-last ()
-    "Resume the most recent Codex session."
-    (interactive)
-    (my/open-ai-tui
-        "*codex-tui*"
-        "codex resume --last"))
-
-;; TUI をすぐ開くための補助コマンド: vterm があれば vterm、無ければ eat を使う。
-(defun my/claude-tui (&optional session-id)
-    "Open the Claude Code TUI in a terminal buffer (vterm if available, else eat).
-With a prefix argument, prompt for a SESSION-ID to resume."
-    (interactive (list (when current-prefix-arg (read-string "Resume session id: "))))
-    (let ((cmd (if (and session-id (not (string-empty-p session-id)))
-                   (format "claude --resume %s" session-id)
-                   "claude")))
-        (if (fboundp 'vterm)
-            (progn (vterm "*claude-tui*") (vterm-send-string cmd) (vterm-send-return))
-            (eat cmd))))
-
+        (let ((resume (and current-prefix-arg t)))
+            (list resume (and resume (my/ai-tui-read-session "Claude")))))
+    (cond
+     (session-id
+      (my/open-ai-tui "claude"
+          (format "claude --resume %s" (shell-quote-argument session-id))))
+     (resume (my/open-ai-tui "claude" "claude --resume"))
+     (t (my/open-ai-tui "claude" "claude" t))))
 
 (defun my/claude-resume-last ()
-  "Resume the most recent Claude Code session."
-  (interactive)
-  (my/open-ai-tui
-   "*claude-tui*"
-   "claude --continue"))
+    "Resume the most recent Claude Code session of the current project."
+    (interactive)
+    (my/open-ai-tui "claude" "claude --continue"))
+
+;; Codex
+(defun my/codex-tui (&optional resume session-id)
+    "Open the Codex TUI for the current project.
+Without a prefix argument, start Codex, or switch to a running Codex
+buffer of the same project.  With a prefix argument (RESUME non-nil),
+prompt for SESSION-ID (UUID or session name) and resume it; empty input
+opens the session picker."
+    (interactive
+        (let ((resume (and current-prefix-arg t)))
+            (list resume (and resume (my/ai-tui-read-session "Codex")))))
+    (cond
+     (session-id
+      (my/open-ai-tui "codex"
+          (format "codex resume %s" (shell-quote-argument session-id))))
+     (resume (my/open-ai-tui "codex" "codex resume"))
+     (t (my/open-ai-tui "codex" "codex" t))))
+
+(defun my/codex-resume-last ()
+    "Resume the most recent Codex session of the current project."
+    (interactive)
+    (my/open-ai-tui "codex" "codex resume --last"))
 
 
 ;; (leaf claude-code-ide
