@@ -357,10 +357,34 @@
 
 ;; vterm: C 実装の高速端末。claude の重量級 TUI でも固まりにくい。
 ;; ビルドに libvterm-dev(システムライブラリ)+ cmake + gcc が必要。
-;; (leaf vterm
-;;     :straight t
-;;     :leaf-defer t
-;;     :custom (vterm-max-scrollback . 10000))
+;; 2026-10-16: NixOS では straight にビルドさせず、home-manager の
+;; programs.emacs.extraPackages (epkgs.vterm) で入れたモジュールを使う (:straight nil)。
+;; `home-manager switch` 前は vterm が無いので、読み込み失敗で起動を止めないよう保護する。
+(leaf vterm
+    :straight nil
+    :leaf-defer t
+    :when (locate-library "vterm")
+    :custom (vterm-max-scrollback . 10000))
+
+;; eat: 純 elisp の端末 (ビルド不要)。vterm が無い環境でも TUI (claude, codex) を動かせる。
+;; 使い方: M-x eat → `claude --resume <session-id>` で /status /cost /compact が使える。
+(leaf eat
+    :straight t
+    :leaf-defer t
+    :commands (eat eat-other-window)
+    :custom (eat-kill-buffer-on-exit . t))
+
+;; TUI をすぐ開くための補助コマンド: vterm があれば vterm、無ければ eat を使う。
+(defun my/claude-tui (&optional session-id)
+    "Open the Claude Code TUI in a terminal buffer (vterm if available, else eat).
+With a prefix argument, prompt for a SESSION-ID to resume."
+    (interactive (list (when current-prefix-arg (read-string "Resume session id: "))))
+    (let ((cmd (if (and session-id (not (string-empty-p session-id)))
+                   (format "claude --resume %s" session-id)
+                 "claude")))
+        (if (fboundp 'vterm)
+            (progn (vterm "*claude-tui*") (vterm-send-string cmd) (vterm-send-return))
+            (eat cmd))))
 
 ;; (leaf claude-code-ide
 ;;     :straight (claude-code-ide
@@ -516,7 +540,13 @@
 ;; Codex IDE session mode uses C-c C-d for session diff.
 ;;(global-set-key (kbd "C-c C-d") 'my/set-cwd-to-current-file)
 
-(leaf markdown-mode :straight t :leaf-defer t :mode ("\\.md\\'" . markdown-mode))
+(leaf markdown-mode
+    :straight t
+    :leaf-defer t
+    :mode ("\\.md\\'" . markdown-mode)
+    :custom
+    ((markdown-command . '("pandoc" "--from=gfm" "--to=html5" "--standalone"))
+        (markdown-split-window-direction . 'right)))
 
 (leaf org
     :straight t
