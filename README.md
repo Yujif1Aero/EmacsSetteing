@@ -369,6 +369,7 @@ sudo apt install bear
 ```bash
 emacs --daemon=work
 emacsclient -s work -c -n
+emacsclient -s work -e '(kill-emacs)'
 ```
 - ref :
 1. https://qiita.com/fnobi/items/8906c8e7759751d32b6b
