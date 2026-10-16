@@ -34,8 +34,8 @@
 ;; Windows は check-hashes(全パッケージのファイルをハッシュ計算)が特に重いため、
 ;; 保存時のみチェックする check-on-save に切り替える。Linux/WSL は従来どおり。
 (setq straight-check-for-modifications
-      (if (eq system-type 'windows-nt)
-          '(check-on-save find-when-checking)
+    (if (eq system-type 'windows-nt)
+        '(check-on-save find-when-checking)
         '(check-hashes find-when-checking)))
 
 (defvar bootstrap-version)
@@ -374,6 +374,33 @@
     :commands (eat eat-other-window)
     :custom (eat-kill-buffer-on-exit . t))
 
+;;; AI CLI TUI (Claude Code / Codex)
+
+(require 'subr-x)
+
+
+;; Codex
+(defun my/codex-tui (&optional session-id)
+    "Open Codex TUI.
+With a prefix argument, resume SESSION-ID."
+    (interactive
+        (list (when current-prefix-arg
+                  (read-string "Resume Codex session id: "))))
+    (my/open-ai-tui
+        "*codex-tui*"
+        (if (and session-id (not (string-empty-p session-id)))
+            (format "codex resume %s"
+                (shell-quote-argument session-id))
+            "codex")))
+
+;; Codex: Resume last session
+(defun my/codex-resume-last ()
+    "Resume the most recent Codex session."
+    (interactive)
+    (my/open-ai-tui
+        "*codex-tui*"
+        "codex resume --last"))
+
 ;; TUI をすぐ開くための補助コマンド: vterm があれば vterm、無ければ eat を使う。
 (defun my/claude-tui (&optional session-id)
     "Open the Claude Code TUI in a terminal buffer (vterm if available, else eat).
@@ -381,10 +408,19 @@ With a prefix argument, prompt for a SESSION-ID to resume."
     (interactive (list (when current-prefix-arg (read-string "Resume session id: "))))
     (let ((cmd (if (and session-id (not (string-empty-p session-id)))
                    (format "claude --resume %s" session-id)
-                 "claude")))
+                   "claude")))
         (if (fboundp 'vterm)
             (progn (vterm "*claude-tui*") (vterm-send-string cmd) (vterm-send-return))
             (eat cmd))))
+
+
+(defun my/claude-resume-last ()
+  "Resume the most recent Claude Code session."
+  (interactive)
+  (my/open-ai-tui
+   "*claude-tui*"
+   "claude --continue"))
+
 
 ;; (leaf claude-code-ide
 ;;     :straight (claude-code-ide
@@ -504,8 +540,8 @@ With a prefix argument, prompt for a SESSION-ID to resume."
     (defun my/agent-shell-submit-or-local-command (orig &rest args)
         "Handle local `agent-shell' slash commands before ORIG submit."
         (if (and (derived-mode-p 'agent-shell-mode)
-                 (null (plist-get args :input))
-                 (string= (my/agent-shell-current-prompt-input) "/model"))
+                (null (plist-get args :input))
+                (string= (my/agent-shell-current-prompt-input) "/model"))
             (progn
                 (call-interactively #'agent-shell-set-session-model)
                 (my/agent-shell-clear-current-prompt-input))
@@ -710,7 +746,7 @@ With a prefix argument, prompt for a SESSION-ID to resume."
     (format-time-string "%Y-%m-%d %H:%M"))
 
 (setq global-mode-string
-      (delq 'display-time-string global-mode-string))
+    (delq 'display-time-string global-mode-string))
 (display-time-mode -1)
 
 (defun my/tab-bar-date-time ()
@@ -722,4 +758,4 @@ With a prefix argument, prompt for a SESSION-ID to resume."
 (when (timerp my/header-line-clock-timer)
     (cancel-timer my/header-line-clock-timer))
 (setq my/header-line-clock-timer
-      (run-at-time t 60 #'force-mode-line-update t))
+    (run-at-time t 60 #'force-mode-line-update t))
